@@ -1,4 +1,3 @@
-"""Tests for GameRoom entity."""
 
 import pytest
 
@@ -8,7 +7,6 @@ from src.domain.entities.player import Player
 
 
 def test_game_room_creation():
-    """Test creating a new game room."""
     room = GameRoom()
     assert room.room_id is not None
     assert room.status == RoomStatus.WAITING
@@ -18,7 +16,6 @@ def test_game_room_creation():
 
 
 def test_add_first_player_sets_creator():
-    """Test that adding first player sets them as creator."""
     room = GameRoom()
     player = Player(name="Alice")
 
@@ -29,7 +26,6 @@ def test_add_first_player_sets_creator():
 
 
 def test_add_multiple_players():
-    """Test adding multiple players to a room."""
     room = GameRoom()
     alice = Player(name="Alice")
     bob = Player(name="Bob")
@@ -42,7 +38,6 @@ def test_add_multiple_players():
 
 
 def test_cannot_add_duplicate_player():
-    """Test that adding the same player twice raises error."""
     room = GameRoom()
     player = Player(name="Alice")
 
@@ -53,7 +48,6 @@ def test_cannot_add_duplicate_player():
 
 
 def test_cannot_add_player_after_game_starts():
-    """Test that players cannot be added after game starts."""
     room = GameRoom()
     for i in range(5):
         room.add_player(Player(name=f"Player{i}"))
@@ -66,7 +60,6 @@ def test_cannot_add_player_after_game_starts():
 
 
 def test_remove_player():
-    """Test removing a player from the room."""
     room = GameRoom()
     alice = Player(name="Alice")
     bob = Player(name="Bob")
@@ -81,7 +74,6 @@ def test_remove_player():
 
 
 def test_remove_creator_transfers_ownership():
-    """Test that removing creator transfers ownership to next player."""
     room = GameRoom()
     alice = Player(name="Alice")
     bob = Player(name="Bob")
@@ -97,7 +89,6 @@ def test_remove_creator_transfers_ownership():
 
 
 def test_cannot_remove_player_after_game_starts():
-    """Test that players cannot be removed after game starts."""
     room = GameRoom()
     players = [Player(name=f"Player{i}") for i in range(5)]
     for player in players:
@@ -113,7 +104,6 @@ def test_cannot_remove_player_after_game_starts():
 
 
 def test_get_player():
-    """Test retrieving a player by ID."""
     room = GameRoom()
     alice = Player(name="Alice")
     bob = Player(name="Bob")
@@ -126,7 +116,6 @@ def test_get_player():
 
 
 def test_player_count():
-    """Test getting the player count."""
     room = GameRoom()
 
     assert room.player_count() == 0
@@ -138,7 +127,6 @@ def test_player_count():
 
 
 def test_can_start_game_with_enough_players():
-    """Test that game can start with 5 or more players."""
     room = GameRoom()
 
     assert not room.can_start_game()
@@ -154,7 +142,6 @@ def test_can_start_game_with_enough_players():
 
 
 def test_start_game():
-    """Test starting a game."""
     room = GameRoom()
     for i in range(5):
         room.add_player(Player(name=f"Player{i}"))
@@ -167,7 +154,6 @@ def test_start_game():
 
 
 def test_cannot_start_game_with_too_few_players():
-    """Test that game cannot start with fewer than 5 players."""
     room = GameRoom()
     for i in range(4):
         room.add_player(Player(name=f"Player{i}"))
@@ -179,7 +165,6 @@ def test_cannot_start_game_with_too_few_players():
 
 
 def test_end_game():
-    """Test ending a game."""
     room = GameRoom()
     for i in range(5):
         room.add_player(Player(name=f"Player{i}"))
@@ -193,7 +178,6 @@ def test_end_game():
 
 
 def test_is_creator():
-    """Test checking if a player is the creator."""
     room = GameRoom()
     alice = Player(name="Alice")
     bob = Player(name="Bob")
@@ -206,7 +190,6 @@ def test_is_creator():
 
 
 def test_active_players():
-    """Test getting list of active players."""
     room = GameRoom()
     alice = Player(name="Alice")
     bob = Player(name="Bob")
@@ -226,7 +209,6 @@ def test_active_players():
 
 
 def test_room_equality():
-    """Test room equality based on room_id."""
     room1 = GameRoom()
     room2 = GameRoom()
 
@@ -237,7 +219,6 @@ def test_room_equality():
 
 
 def test_room_hash():
-    """Test room can be used in sets and as dict keys."""
     room1 = GameRoom()
     room2 = GameRoom()
 

@@ -66,25 +66,9 @@ class GetRoomStateHandler:
     """
 
     def __init__(self, repository: RoomRepositoryPort) -> None:
-        """Initialize the handler with a repository.
-
-        Args:
-            repository: The room repository for data access.
-        """
         self._repository = repository
 
     def handle(self, query: GetRoomStateQuery) -> RoomStateDTO:
-        """Handle the get room state query.
-
-        Args:
-            query: The get room state query.
-
-        Returns:
-            DTO containing the room state.
-
-        Raises:
-            ValueError: If room doesn't exist.
-        """
         room = self._repository.find_by_id(query.room_id)
         if room is None:
             raise ValueError(f"Room {query.room_id} not found")
@@ -92,14 +76,6 @@ class GetRoomStateHandler:
         return self._to_dto(room)
 
     def _to_dto(self, room: GameRoom) -> RoomStateDTO:
-        """Convert a GameRoom entity to a DTO.
-
-        Args:
-            room: The game room entity.
-
-        Returns:
-            DTO representation of the room state.
-        """
         player_dtos = [
             PlayerDTO(
                 player_id=player.player_id,

@@ -1,4 +1,3 @@
-"""Tests for PolicyDeck entity."""
 
 import pytest
 
@@ -7,7 +6,6 @@ from src.domain.value_objects.policy import Policy, PolicyType
 
 
 def test_create_initial_deck():
-    """Test creating a deck with standard distribution."""
     deck = PolicyDeck.create_initial_deck()
 
     assert deck.total_cards() == 17
@@ -23,7 +21,6 @@ def test_create_initial_deck():
 
 
 def test_draw_policies():
-    """Test drawing policies from the deck."""
     deck = PolicyDeck.create_initial_deck()
     initial_count = deck.cards_remaining()
 
@@ -35,7 +32,6 @@ def test_draw_policies():
 
 
 def test_draw_not_enough_policies_raises_error():
-    """Test that drawing more policies than available raises error."""
     deck = PolicyDeck.create_initial_deck()
 
     with pytest.raises(ValueError, match="Not enough policies to draw"):
@@ -43,7 +39,6 @@ def test_draw_not_enough_policies_raises_error():
 
 
 def test_discard_policies():
-    """Test discarding policies."""
     deck = PolicyDeck.create_initial_deck()
     policies = deck.draw(3)
 
@@ -55,7 +50,6 @@ def test_discard_policies():
 
 
 def test_reshuffle_when_low():
-    """Test that discard pile is reshuffled when draw pile is low."""
     deck = PolicyDeck.create_initial_deck()
 
     # Draw cards until we have fewer than 3 left
@@ -76,7 +70,6 @@ def test_reshuffle_when_low():
 
 
 def test_peek_policies():
-    """Test peeking at top policies without removing them."""
     deck = PolicyDeck.create_initial_deck()
     initial_count = deck.cards_remaining()
 
@@ -88,7 +81,6 @@ def test_peek_policies():
 
 
 def test_peek_not_enough_policies_raises_error():
-    """Test that peeking at more policies than available raises error."""
     deck = PolicyDeck.create_initial_deck()
 
     with pytest.raises(ValueError, match="Not enough policies to peek"):
@@ -96,7 +88,6 @@ def test_peek_not_enough_policies_raises_error():
 
 
 def test_total_cards():
-    """Test total card count across both piles."""
     deck = PolicyDeck.create_initial_deck()
 
     assert deck.total_cards() == 17

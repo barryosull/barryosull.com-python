@@ -39,38 +39,15 @@ class CreateRoomHandler:
     """
 
     def __init__(self, repository: RoomRepositoryPort) -> None:
-        """Initialize the handler with a repository.
-
-        Args:
-            repository: The room repository for persistence.
-        """
         self._repository = repository
 
     def handle(self, command: CreateRoomCommand) -> CreateRoomResult:
-        """Handle the create room command.
-
-        Args:
-            command: The create room command.
-
-        Returns:
-            Result containing the room ID and creator player ID.
-
-        Raises:
-            ValueError: If player name is empty.
-        """
         if not command.player_name or not command.player_name.strip():
             raise ValueError("Player name cannot be empty")
 
-        # Create the room
         room = GameRoom()
-
-        # Create the creator player
         creator = Player(name=command.player_name.strip())
-
-        # Add creator to the room
         room.add_player(creator)
-
-        # Save the room
         self._repository.save(room)
 
         return CreateRoomResult(room_id=room.room_id, player_id=creator.player_id)

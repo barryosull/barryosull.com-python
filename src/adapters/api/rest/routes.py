@@ -35,17 +35,6 @@ router = APIRouter(prefix="/api", tags=["rooms"])
     responses={400: {"model": ErrorResponse}},
 )
 def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
-    """Create a new game room.
-
-    Args:
-        request: Request containing the creator's player name.
-
-    Returns:
-        Response containing the room ID and creator player ID.
-
-    Raises:
-        HTTPException: If the player name is invalid.
-    """
     try:
         handler = CreateRoomHandler(repository)
         command = CreateRoomCommand(player_name=request.player_name)
@@ -63,18 +52,6 @@ def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
 def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse:
-    """Join an existing game room.
-
-    Args:
-        room_id: ID of the room to join.
-        request: Request containing the player's name.
-
-    Returns:
-        Response containing the player ID.
-
-    Raises:
-        HTTPException: If the room doesn't exist or the player name is invalid.
-    """
     try:
         handler = JoinRoomHandler(repository)
         command = JoinRoomCommand(room_id=room_id, player_name=request.player_name)
@@ -95,17 +72,6 @@ def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse:
     responses={404: {"model": ErrorResponse}},
 )
 def get_room_state(room_id: UUID) -> RoomStateResponse:
-    """Get the current state of a game room.
-
-    Args:
-        room_id: ID of the room to retrieve.
-
-    Returns:
-        Response containing the room state.
-
-    Raises:
-        HTTPException: If the room doesn't exist.
-    """
     try:
         handler = GetRoomStateHandler(repository)
         query = GetRoomStateQuery(room_id=room_id)
