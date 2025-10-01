@@ -1,1 +1,0 @@
-"""Core business logic shared between CLI and web interfaces."""
