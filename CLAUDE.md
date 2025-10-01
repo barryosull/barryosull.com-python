@@ -4,8 +4,15 @@
 - Follow PEP 8 style guide strictly
 - Use type hints for all function signatures and class attributes
 - Maximum line length: 88 characters (Black formatter standard)
-- Use docstrings (Google or NumPy style) for all public modules, classes, and functions
 - Prefer f-strings over .format() or % formatting
+
+## Documentation Style
+- Module-level docstrings: Only at the top of files to describe the module's purpose
+- Class/Function docstrings: AVOID redundant docstrings - let type hints and clear naming speak for themselves
+- Only add docstrings when they provide non-obvious information that type hints cannot convey
+- No redundant "Args", "Returns", "Raises" sections when the signature is self-explanatory
+- Test functions: No docstrings - the function name should describe what's being tested
+- Inline comments: Only for complex algorithms or non-obvious business logic
 
 ## Project Structure
 - Use `src/` layout for packages
@@ -47,11 +54,11 @@
 - Use virtual environments always
 - Regular dependency updates and security audits
 
-## Documentation
+## External Documentation
 - README with setup, usage, and examples
-- Inline documentation for complex algorithms
 - API documentation for public interfaces
 - Keep docs close to code to ensure they stay updated
+- Avoid documentation that duplicates what the code already expresses
 
 ## Git Practices
 - Conventional commits format
