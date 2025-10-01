@@ -6,15 +6,6 @@ from uuid import UUID, uuid4
 
 @dataclass
 class Player:
-    """Entity representing a player in the game.
-
-    Attributes:
-        player_id: Unique identifier for the player.
-        name: Display name of the player.
-        is_connected: Whether the player is currently connected.
-        is_alive: Whether the player is alive (can be killed by execution).
-    """
-
     player_id: UUID = field(default_factory=uuid4)
     name: str = ""
     is_connected: bool = True

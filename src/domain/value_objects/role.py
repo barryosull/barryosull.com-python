@@ -4,18 +4,11 @@ from enum import Enum
 
 
 class Team(Enum):
-    """Enum representing the team a player belongs to."""
-
     LIBERAL = "LIBERAL"
     FASCIST = "FASCIST"
 
 
 class Role:
-    """Value object representing a player's role in the game.
-
-    A role consists of a team (Liberal or Fascist) and whether the player is Hitler.
-    This is an immutable value object.
-    """
 
     def __init__(self, team: Team, is_hitler: bool = False) -> None:
         if is_hitler and team != Team.FASCIST:

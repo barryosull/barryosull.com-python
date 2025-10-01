@@ -10,34 +10,16 @@ from src.ports.repository_port import RoomRepositoryPort
 
 @dataclass
 class CreateRoomCommand:
-    """Command to create a new game room.
-
-    Attributes:
-        player_name: Name of the player creating the room.
-    """
-
     player_name: str
 
 
 @dataclass
 class CreateRoomResult:
-    """Result of creating a game room.
-
-    Attributes:
-        room_id: ID of the created room.
-        player_id: ID of the creator player.
-    """
-
     room_id: UUID
     player_id: UUID
 
 
 class CreateRoomHandler:
-    """Handler for the CreateRoomCommand.
-
-    This handler creates a new game room with the creator as the first player.
-    """
-
     def __init__(self, repository: RoomRepositoryPort) -> None:
         self._repository = repository
 

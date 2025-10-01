@@ -8,12 +8,6 @@ from src.ports.repository_port import RoomRepositoryPort
 
 
 class InMemoryRoomRepository(RoomRepositoryPort):
-    """In-memory implementation of the room repository.
-
-    This adapter stores game rooms in memory using a dictionary.
-    Suitable for development and testing.
-    """
-
     def __init__(self) -> None:
         self._rooms: dict[UUID, GameRoom] = {}
 

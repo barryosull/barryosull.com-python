@@ -8,12 +8,6 @@ from src.domain.entities.game_room import GameRoom
 
 
 class RoomRepositoryPort(ABC):
-    """Abstract base class defining the repository interface for game rooms.
-
-    This port defines the contract for persisting and retrieving game rooms,
-    following the ports and adapters (hexagonal) architecture pattern.
-    """
-
     @abstractmethod
     def save(self, room: GameRoom) -> None:
         pass

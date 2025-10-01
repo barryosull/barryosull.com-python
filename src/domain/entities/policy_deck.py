@@ -8,16 +8,6 @@ from src.domain.value_objects.policy import Policy, PolicyType
 
 @dataclass
 class PolicyDeck:
-    """Entity representing the policy deck in the game.
-
-    The deck contains liberal and fascist policies. It manages drawing,
-    discarding, and reshuffling of policies.
-
-    Attributes:
-        draw_pile: List of policies available to draw.
-        discard_pile: List of discarded policies.
-    """
-
     draw_pile: list[Policy] = field(default_factory=list)
     discard_pile: list[Policy] = field(default_factory=list)
 

@@ -11,8 +11,6 @@ from src.domain.entities.player import Player
 
 
 class RoomStatus(Enum):
-    """Enum representing the status of a game room."""
-
     WAITING = "WAITING"
     IN_PROGRESS = "IN_PROGRESS"
     COMPLETED = "COMPLETED"
@@ -20,20 +18,6 @@ class RoomStatus(Enum):
 
 @dataclass
 class GameRoom:
-    """Entity representing a game room (aggregate root).
-
-    A game room is the main aggregate that contains players and manages
-    the game lifecycle from creation through completion.
-
-    Attributes:
-        room_id: Unique identifier for the room.
-        creator_id: ID of the player who created the room.
-        status: Current status of the room.
-        players: List of players in the room.
-        game_state: Current game state (None if game hasn't started).
-        created_at: Timestamp when the room was created.
-    """
-
     room_id: UUID = field(default_factory=uuid4)
     creator_id: Optional[UUID] = None
     status: RoomStatus = RoomStatus.WAITING

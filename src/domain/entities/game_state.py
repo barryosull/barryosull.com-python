@@ -11,8 +11,6 @@ from src.domain.value_objects.role import Role
 
 
 class GamePhase(Enum):
-    """Enum representing the current phase of the game."""
-
     NOMINATION = "NOMINATION"
     ELECTION = "ELECTION"
     LEGISLATIVE_PRESIDENT = "LEGISLATIVE_PRESIDENT"
@@ -22,8 +20,6 @@ class GamePhase(Enum):
 
 
 class PresidentialPower(Enum):
-    """Enum representing presidential powers triggered by fascist policies."""
-
     INVESTIGATE_LOYALTY = "INVESTIGATE_LOYALTY"
     CALL_SPECIAL_ELECTION = "CALL_SPECIAL_ELECTION"
     POLICY_PEEK = "POLICY_PEEK"
@@ -32,26 +28,6 @@ class PresidentialPower(Enum):
 
 @dataclass
 class GameState:
-    """Entity representing the current state of an active game.
-
-    Attributes:
-        round_number: Current round number.
-        president_id: ID of the current president.
-        chancellor_id: ID of the current chancellor (None if not yet elected).
-        nominated_chancellor_id: ID of the nominated chancellor during election.
-        previous_president_id: ID of the previous president.
-        previous_chancellor_id: ID of the previous chancellor.
-        policy_deck: The policy deck for the game.
-        liberal_policies: Number of liberal policies enacted (0-5).
-        fascist_policies: Number of fascist policies enacted (0-6).
-        election_tracker: Number of consecutive failed elections (0-3).
-        current_phase: The current phase of the game.
-        role_assignments: Mapping of player IDs to their roles.
-        votes: Mapping of player IDs to their votes (during election phase).
-        president_policies: Policies held by president during legislative session.
-        chancellor_policies: Policies held by chancellor during legislative session.
-    """
-
     round_number: int = 1
     president_id: Optional[UUID] = None
     chancellor_id: Optional[UUID] = None

@@ -4,17 +4,11 @@ from enum import Enum
 
 
 class PolicyType(Enum):
-    """Enum representing the type of policy."""
-
     LIBERAL = "LIBERAL"
     FASCIST = "FASCIST"
 
 
 class Policy:
-    """Value object representing a policy card in the game.
-
-    Policies can be either Liberal or Fascist. This is an immutable value object.
-    """
 
     def __init__(self, policy_type: PolicyType) -> None:
         self._type = policy_type

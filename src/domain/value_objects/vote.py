@@ -4,17 +4,11 @@ from enum import Enum
 
 
 class VoteChoice(Enum):
-    """Enum representing a player's vote choice."""
-
-    JA = "JA"  # Yes in German
-    NEIN = "NEIN"  # No in German
+    JA = "JA"
+    NEIN = "NEIN"
 
 
 class Vote:
-    """Value object representing a player's vote on a proposed government.
-
-    This is an immutable value object.
-    """
 
     def __init__(self, choice: VoteChoice) -> None:
         self._choice = choice

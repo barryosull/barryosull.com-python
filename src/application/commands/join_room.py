@@ -9,34 +9,16 @@ from src.ports.repository_port import RoomRepositoryPort
 
 @dataclass
 class JoinRoomCommand:
-    """Command to join an existing game room.
-
-    Attributes:
-        room_id: ID of the room to join.
-        player_name: Name of the player joining.
-    """
-
     room_id: UUID
     player_name: str
 
 
 @dataclass
 class JoinRoomResult:
-    """Result of joining a game room.
-
-    Attributes:
-        player_id: ID of the player who joined.
-    """
-
     player_id: UUID
 
 
 class JoinRoomHandler:
-    """Handler for the JoinRoomCommand.
-
-    This handler adds a player to an existing game room.
-    """
-
     def __init__(self, repository: RoomRepositoryPort) -> None:
         self._repository = repository
 

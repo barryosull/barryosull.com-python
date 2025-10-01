@@ -10,15 +10,6 @@ from src.ports.repository_port import RoomRepositoryPort
 
 @dataclass
 class PlayerDTO:
-    """Data transfer object for player information.
-
-    Attributes:
-        player_id: ID of the player.
-        name: Name of the player.
-        is_connected: Whether the player is connected.
-        is_alive: Whether the player is alive.
-    """
-
     player_id: UUID
     name: str
     is_connected: bool
@@ -27,18 +18,6 @@ class PlayerDTO:
 
 @dataclass
 class RoomStateDTO:
-    """Data transfer object for room state information.
-
-    Attributes:
-        room_id: ID of the room.
-        status: Current status of the room.
-        creator_id: ID of the room creator.
-        players: List of players in the room.
-        player_count: Number of players in the room.
-        can_start: Whether the game can be started.
-        created_at: When the room was created.
-    """
-
     room_id: UUID
     status: str
     creator_id: Optional[UUID]
@@ -50,21 +29,10 @@ class RoomStateDTO:
 
 @dataclass
 class GetRoomStateQuery:
-    """Query to get the state of a game room.
-
-    Attributes:
-        room_id: ID of the room to retrieve.
-    """
-
     room_id: UUID
 
 
 class GetRoomStateHandler:
-    """Handler for the GetRoomStateQuery.
-
-    This handler retrieves the current state of a game room.
-    """
-
     def __init__(self, repository: RoomRepositoryPort) -> None:
         self._repository = repository
 
