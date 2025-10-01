@@ -1,21 +1,36 @@
-# barryosull.com-python
-My personal site and blog in Python.
+# Secret Hitler - Online Game
+
+Online implementation of the Secret Hitler board game using Python and FastAPI.
+
+Rules can be found here: https://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf
 
 ## Local Development
 
 ### Setup
 ```bash
+# Create virtual environment
+python3 -m venv venv
+
 # Install dependencies
-pip install -e ".[dev]"
-
-# Run CLI
-my-app hello World
-
-# Run web server
-my-app-web
+./venv/bin/pip install -e ".[dev]"
 
 # Run tests
-pytest
+./venv/bin/pytest tests/domain/ -v
+
+# Run tests with coverage
+./venv/bin/pytest tests/ --cov=src --cov-report=html
+
+# Run web server
+./venv/bin/python -m uvicorn src.adapters.api.main:app --reload
+
+# Format code
+./venv/bin/black src/ tests/
+
+# Lint code
+./venv/bin/ruff check src/ tests/
+
+# Type check
+./venv/bin/mypy src/
 ```
 
 ## Docker
