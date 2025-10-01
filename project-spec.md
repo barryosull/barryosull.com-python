@@ -3,6 +3,8 @@
 ## Overview
 An online implementation of the social deduction game Secret Hitler, where players are secretly divided into two teams—liberals and fascists—and must navigate deception and strategy to either elect Hitler or pass policies to win.
 
+Game rules can be found here: https://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf
+
 ## Technology Stack
 - **Backend**: Python with FastAPI for REST endpoints
 - **Frontend**: React JS
