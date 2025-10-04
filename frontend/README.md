@@ -17,6 +17,18 @@ npm run dev
 
 The app will be available at http://localhost:3000
 
+### Storage Configuration
+
+By default, player state is stored in **localStorage** (persists across browser restarts).
+
+To use **sessionStorage** instead (isolates each tab, useful for testing multiple players):
+
+```
+http://localhost:3000/?storage=session
+```
+
+This allows you to open multiple tabs and play as different players in the same browser.
+
 ## Build
 
 ```bash

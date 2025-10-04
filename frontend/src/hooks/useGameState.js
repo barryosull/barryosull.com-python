@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import { playerStorage } from '../services/storage';
 
 export function useGameState(roomId) {
   const [gameState, setGameState] = useState(null);
@@ -8,7 +9,7 @@ export function useGameState(roomId) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const playerId = localStorage.getItem('playerId');
+  const playerId = playerStorage.getPlayerId();
 
   const fetchGameState = async () => {
     try {

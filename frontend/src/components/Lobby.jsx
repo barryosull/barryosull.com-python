@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { playerStorage } from '../services/storage';
 
 export default function Lobby() {
   const { roomId } = useParams();
@@ -8,7 +9,7 @@ export default function Lobby() {
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const playerId = localStorage.getItem('playerId');
+  const playerId = playerStorage.getPlayerId();
 
   useEffect(() => {
     fetchRoomState();

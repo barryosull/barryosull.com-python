@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { playerStorage } from '../services/storage';
 
 export default function HomePage() {
   const [playerName, setPlayerName] = useState('');
@@ -21,8 +22,8 @@ export default function HomePage() {
     setLoading(true);
     try {
       const result = await api.createRoom(playerName.trim());
-      localStorage.setItem('playerId', result.player_id);
-      localStorage.setItem('playerName', playerName.trim());
+      playerStorage.setPlayerId(result.player_id);
+      playerStorage.setPlayerName(playerName.trim());
       navigate(`/room/${result.room_id}`);
     } catch (err) {
       setError(err.message);
@@ -48,8 +49,8 @@ export default function HomePage() {
     setLoading(true);
     try {
       const result = await api.joinRoom(roomId.trim(), playerName.trim());
-      localStorage.setItem('playerId', result.player_id);
-      localStorage.setItem('playerName', playerName.trim());
+      playerStorage.setPlayerId(result.player_id);
+      playerStorage.setPlayerName(playerName.trim());
       navigate(`/room/${roomId.trim()}`);
     } catch (err) {
       setError(err.message);
