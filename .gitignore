@@ -135,3 +135,9 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Node.js / Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
