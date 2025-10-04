@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useGameState } from '../hooks/useGameState';
 import { api } from '../services/api';
-import { playerStorage } from '../services/storage';
+import { playerStorage, preserveParams } from '../services/storage';
 import PlayerList from './PlayerList';
 import PolicyTracks from './PolicyTracks';
 import NominationView from './NominationView';
@@ -26,7 +26,7 @@ export default function GameBoard() {
     return (
       <div style={styles.container}>
         <div style={styles.error}>{error}</div>
-        <button onClick={() => navigate('/')} style={styles.button}>
+        <button onClick={() => navigate(preserveParams('/'))} style={styles.button}>
           Return Home
         </button>
       </div>
@@ -37,7 +37,7 @@ export default function GameBoard() {
     return (
       <div style={styles.container}>
         <div style={styles.error}>Game not found</div>
-        <button onClick={() => navigate('/')} style={styles.button}>
+        <button onClick={() => navigate(preserveParams('/'))} style={styles.button}>
           Return Home
         </button>
       </div>
@@ -134,7 +134,7 @@ export default function GameBoard() {
         return (
           <div style={styles.phaseBox}>
             <h2 style={styles.gameOver}>Game Over!</h2>
-            <button onClick={() => navigate('/')} style={styles.button}>
+            <button onClick={() => navigate(preserveParams('/'))} style={styles.button}>
               Return to Home
             </button>
           </div>

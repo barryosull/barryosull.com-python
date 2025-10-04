@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { playerStorage } from '../services/storage';
+import { playerStorage, preserveParams } from '../services/storage';
 
 export default function HomePage() {
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('name') || '';
+  });
   const [roomId, setRoomId] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +27,7 @@ export default function HomePage() {
       const result = await api.createRoom(playerName.trim());
       playerStorage.setPlayerId(result.player_id);
       playerStorage.setPlayerName(playerName.trim());
-      navigate(`/room/${result.room_id}`);
+      navigate(preserveParams(`/room/${result.room_id}`));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -51,7 +54,7 @@ export default function HomePage() {
       const result = await api.joinRoom(roomId.trim(), playerName.trim());
       playerStorage.setPlayerId(result.player_id);
       playerStorage.setPlayerName(playerName.trim());
-      navigate(`/room/${roomId.trim()}`);
+      navigate(preserveParams(`/room/${roomId.trim()}`));
     } catch (err) {
       setError(err.message);
     } finally {

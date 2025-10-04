@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { playerStorage } from '../services/storage';
+import { playerStorage, preserveParams } from '../services/storage';
 
 export default function Lobby() {
   const { roomId } = useParams();
@@ -23,7 +23,7 @@ export default function Lobby() {
       setRoom(data);
 
       if (data.status === 'IN_PROGRESS') {
-        navigate(`/game/${roomId}`);
+        navigate(preserveParams(`/game/${roomId}`));
       }
     } catch (err) {
       setError(err.message);
