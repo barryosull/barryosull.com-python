@@ -166,11 +166,8 @@
     <ol>
       <li>Make sure the backend is running on <code>http://localhost:8000</code></li>
       <li>Make sure the frontend dev server is running: <code>npm run dev</code></li>
-      <li>Click "Reload All Players" to start fresh</li>
-      <li>In Player 1, create a new game room and note the Room ID</li>
-      <li>In Players 2-5, join the room using that Room ID</li>
-      <li>In Player 1, start the game once all 5 players have joined</li>
-      <li>Play through the game mechanics in each player's window</li>
+      <li><strong>New Game:</strong> Click "Reload All Players" to start fresh, create room in Player 1, join in others</li>
+      <li><strong>Continue Game:</strong> Enter Room ID and Player IDs below, then click "Load Game"</li>
     </ol>
   </div>
 
@@ -179,18 +176,33 @@
     <button onclick="openInTabs()" class="secondary">🗗 Open in Separate Tabs</button>
   </div>
 
+  <div class="controls" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
+    <input
+      type="text"
+      id="roomId"
+      placeholder="Room ID"
+      style="padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; width: 300px;">
+    <input
+      type="text"
+      id="playerIds"
+      placeholder="Player IDs (comma-separated, 5 total)"
+      style="padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; width: 400px;">
+    <button onclick="loadGame()">🎮 Load Game</button>
+  </div>
+
   <div class="grid" id="player-grid">
     <!-- Players will be inserted here -->
   </div>
 
   <script>
     const playerCount = 5;
-    const baseUrl = 'http://localhost:3000/?storage=local';
+    const baseUrl = 'http://localhost:3000';
+    let currentGameState = null; // Store current room/player IDs
 
-    function createPlayerFrame(playerNumber) {
+    function createPlayerFrame(playerNumber, playerUrl) {
       const container = document.createElement('div');
       container.className = 'player-container';
-      const playerUrl = `${baseUrl}&name=Player${playerNumber}`;
+      const url = playerUrl || `${baseUrl}?storage=local&name=Player${playerNumber}`;
       container.innerHTML = `
         <div class="player-header">
           <span class="player-number">Player ${playerNumber}</span>
@@ -198,7 +210,7 @@
         </div>
         <iframe
           id="player-${playerNumber}"
-          src="${playerUrl}"
+          src="${url}"
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
           title="Player ${playerNumber}"
           allow="clipboard-write">
@@ -207,27 +219,61 @@
       return container;
     }
 
-    function initializePlayers() {
+    function initializePlayers(roomId = null, playerIds = null) {
       const grid = document.getElementById('player-grid');
       grid.innerHTML = '';
 
       for (let i = 1; i <= playerCount; i++) {
-        grid.appendChild(createPlayerFrame(i));
+        let playerUrl;
+        if (roomId && playerIds && playerIds[i - 1]) {
+          playerUrl = `${baseUrl}/game/${roomId}?storage=local&name=Player${i}&playerId=${playerIds[i - 1]}`;
+        } else {
+          playerUrl = `${baseUrl}?storage=local&name=Player${i}`;
+        }
+        grid.appendChild(createPlayerFrame(i, playerUrl));
       }
     }
 
+    function loadGame() {
+      const roomIdInput = document.getElementById('roomId').value.trim();
+      const playerIdsInput = document.getElementById('playerIds').value.trim();
+
+      if (!roomIdInput) {
+        alert('Please enter a Room ID');
+        return;
+      }
+
+      if (!playerIdsInput) {
+        alert('Please enter Player IDs (comma-separated)');
+        return;
+      }
+
+      const playerIds = playerIdsInput.split(',').map(id => id.trim()).filter(id => id);
+
+      if (playerIds.length !== 5) {
+        alert('Please provide exactly 5 Player IDs (comma-separated)');
+        return;
+      }
+
+      currentGameState = { roomId: roomIdInput, playerIds };
+      initializePlayers(roomIdInput, playerIds);
+    }
+
     function reloadAll() {
-      for (let i = 1; i <= playerCount; i++) {
-        const iframe = document.getElementById(`player-${i}`);
-        if (iframe) {
-          iframe.src = iframe.src;
-        }
+      if (currentGameState) {
+        initializePlayers(currentGameState.roomId, currentGameState.playerIds);
+      } else {
+        initializePlayers();
       }
     }
 
     function openInTabs() {
       for (let i = 1; i <= playerCount; i++) {
-        window.open(baseUrl, `player-${i}`);
+        let url = baseUrl;
+        if (currentGameState && currentGameState.playerIds[i - 1]) {
+          url = `${baseUrl}?storage=local&name=Player${i}&playerId=${currentGameState.playerIds[i - 1]}#/game/${currentGameState.roomId}`;
+        }
+        window.open(url, `player-${i}`);
       }
     }
 
