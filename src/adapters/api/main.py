@@ -2,8 +2,16 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+import logging
 from src.adapters.api.rest.routes import router
+
+
+# Configure logger
+logging.basicConfig(
+    filename='/var/log/secret-hitler.log',  # or '/tmp/secret-hitler.log'
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 # Create FastAPI application
 app = FastAPI(

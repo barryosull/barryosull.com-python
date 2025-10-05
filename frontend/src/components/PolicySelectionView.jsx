@@ -6,15 +6,21 @@ export default function PolicySelectionView({
   onSelectPolicy,
   isPresident
 }) {
-  const [selectedPolicy, setSelectedPolicy] = useState(null);
+  const [selectedPolicyIndex, setSelectedPolicyIndex] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSelect = async () => {
-    if (!selectedPolicy) return;
+    if (selectedPolicyIndex === null) return;
+
+    const policies = isPresident
+      ? gameState.president_policies
+      : gameState.chancellor_policies;
+
+    const selectedPolicy = policies[selectedPolicyIndex];
 
     setLoading(true);
     try {
-      await onSelectPolicy(selectedPolicy);
+      await onSelectPolicy(selectedPolicy.type);
     } finally {
       setLoading(false);
     }
@@ -53,13 +59,13 @@ export default function PolicySelectionView({
         {policies?.map((policy, index) => (
           <button
             key={index}
-            onClick={() => setSelectedPolicy(policy.type)}
+            onClick={() => setSelectedPolicyIndex(index)}
             style={{
               ...styles.policyCard,
               ...(policy.type === 'LIBERAL'
                 ? styles.liberalCard
                 : styles.fascistCard),
-              ...(selectedPolicy === policy.type && styles.selectedCard)
+              ...(selectedPolicyIndex === index && styles.selectedCard)
             }}
             disabled={loading}
           >
@@ -77,9 +83,9 @@ export default function PolicySelectionView({
         onClick={handleSelect}
         style={{
           ...styles.confirmButton,
-          ...(!selectedPolicy && styles.buttonDisabled)
+          ...(selectedPolicyIndex === null && styles.buttonDisabled)
         }}
-        disabled={!selectedPolicy || loading}
+        disabled={selectedPolicyIndex === null || loading}
       >
         {loading ? `${actionText}ing...` : `${actionText} Policy`}
       </button>
