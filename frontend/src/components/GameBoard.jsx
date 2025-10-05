@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { api } from '../services/api';
 import { playerStorage, preserveParams, initializeFromUrl } from '../services/storage';
@@ -15,6 +15,7 @@ export default function GameBoard() {
   const navigate = useNavigate();
   const { gameState, room, myRole, error, loading, refresh } = useGameState(roomId);
   const myPlayerId = playerStorage.getPlayerId();
+  const [roleVisible, setRoleVisible] = useState(false);
 
   useEffect(() => {
     initializeFromUrl();
@@ -220,18 +221,23 @@ export default function GameBoard() {
       </div>
 
       {myRole && (
-        <div style={styles.roleBox}>
-          <div style={styles.roleLabel}>Your Role:</div>
-          <div
-            style={{
-              ...styles.roleValue,
-              ...(myRole.team === 'LIBERAL'
-                ? styles.liberal
-                : styles.fascist)
-            }}
-          >
-            {myRole.is_hitler ? 'Hitler' : myRole.team}
-          </div>
+        <div
+          style={styles.roleBox}
+          onClick={() => setRoleVisible(!roleVisible)}
+        >
+          <div style={styles.roleLabel}>Your Role: {roleVisible ? '' : '(click to reveal)'}</div>
+          {roleVisible && (
+            <div
+              style={{
+                ...styles.roleValue,
+                ...(myRole.team === 'LIBERAL'
+                  ? styles.liberal
+                  : styles.fascist)
+              }}
+            >
+              {myRole.is_hitler ? 'Hitler' : myRole.team}
+            </div>
+          )}
         </div>
       )}
 
@@ -278,7 +284,9 @@ const styles = {
     marginBottom: '20px',
     textAlign: 'center',
     maxWidth: '400px',
-    margin: '0 auto 20px'
+    margin: '0 auto 20px',
+    cursor: 'pointer',
+    userSelect: 'none'
   },
   roleLabel: {
     color: '#888',
