@@ -4,10 +4,12 @@ export default function PolicySelectionView({
   gameState,
   myPlayerId,
   onSelectPolicy,
-  isPresident
+  isPresident,
+  onVeto
 }) {
   const [selectedPolicyIndex, setSelectedPolicyIndex] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [vetoRequested, setVetoRequested] = useState(false);
 
   const handleSelect = async () => {
     if (selectedPolicyIndex === null) return;
@@ -26,12 +28,22 @@ export default function PolicySelectionView({
     }
   };
 
+  const handleVeto = async (approve) => {
+    setLoading(true);
+    try {
+      await onVeto(approve);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const policies = isPresident
     ? gameState.president_policies
     : gameState.chancellor_policies;
 
   const actionText = isPresident ? 'Discard' : 'Enact';
   const roleText = isPresident ? 'President' : 'Chancellor';
+  const vetoAvailable = gameState.fascist_policies >= 5;
 
   const isMyTurn = isPresident
     ? gameState.president_id === myPlayerId
@@ -43,6 +55,34 @@ export default function PolicySelectionView({
         <h3 style={styles.title}>Legislative Session</h3>
         <div style={styles.waiting}>
           Waiting for {roleText} to {actionText.toLowerCase()} a policy...
+        </div>
+      </div>
+    );
+  }
+
+  if (vetoRequested && isPresident) {
+    return (
+      <div style={styles.container}>
+        <h3 style={styles.title}>Veto Request</h3>
+        <div style={styles.subtitle}>
+          The Chancellor has requested to veto the agenda. Do you approve?
+        </div>
+
+        <div style={styles.vetoButtons}>
+          <button
+            onClick={() => handleVeto(true)}
+            style={{ ...styles.vetoButton, ...styles.approveButton }}
+            disabled={loading}
+          >
+            Approve Veto
+          </button>
+          <button
+            onClick={() => handleVeto(false)}
+            style={{ ...styles.vetoButton, ...styles.rejectButton }}
+            disabled={loading}
+          >
+            Reject Veto
+          </button>
         </div>
       </div>
     );
@@ -89,6 +129,16 @@ export default function PolicySelectionView({
       >
         {loading ? `${actionText}ing...` : `${actionText} Policy`}
       </button>
+
+      {vetoAvailable && !isPresident && (
+        <button
+          onClick={() => setVetoRequested(true)}
+          style={styles.vetoRequestButton}
+          disabled={loading}
+        >
+          Request Veto
+        </button>
+      )}
     </div>
   );
 }
@@ -171,5 +221,38 @@ const styles = {
   buttonDisabled: {
     backgroundColor: '#555',
     cursor: 'not-allowed'
+  },
+  vetoRequestButton: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    border: 'none',
+    backgroundColor: '#ff9800',
+    color: '#fff',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: '10px'
+  },
+  vetoButtons: {
+    display: 'flex',
+    gap: '10px',
+    marginTop: '20px'
+  },
+  vetoButton: {
+    flex: 1,
+    padding: '15px',
+    fontSize: '16px',
+    borderRadius: '4px',
+    border: 'none',
+    color: '#fff',
+    cursor: 'pointer',
+    fontWeight: 'bold'
+  },
+  approveButton: {
+    backgroundColor: '#4caf50'
+  },
+  rejectButton: {
+    backgroundColor: '#f44336'
   }
 };

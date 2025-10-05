@@ -84,6 +84,24 @@ class RoleResponse(BaseModel):
     is_hitler: bool
 
 
+class UseExecutiveActionRequest(BaseModel):
+    player_id: UUID
+    target_player_id: UUID | None = None
+
+
+class ExecutiveActionResponse(BaseModel):
+    party_membership: str | None = None
+    policies: list[dict[str, str]] | None = None
+    executed_player_id: str | None = None
+    game_over: bool | None = None
+    winning_team: str | None = None
+
+
+class VetoAgendaRequest(BaseModel):
+    player_id: UUID
+    approve_veto: bool
+
+
 class ErrorResponse(BaseModel):
     error: str
     detail: str | None = None

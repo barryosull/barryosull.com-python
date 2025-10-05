@@ -15,7 +15,7 @@ python3 -m venv venv
 ./venv/bin/pip install -e ".[dev]"
 
 # Run tests
-./venv/bin/pytest tests/domain/ -v
+./venv/bin/pytest tests/ -v
 
 # Run tests with coverage
 ./venv/bin/pytest tests/ --cov=src --cov-report=html

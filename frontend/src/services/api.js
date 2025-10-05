@@ -95,5 +95,32 @@ export const api = {
   async getMyRole(roomId, playerId) {
     const response = await fetch(`${API_BASE}/games/${roomId}/my-role?player_id=${playerId}`);
     return handleResponse(response);
+  },
+
+  async useExecutiveAction(roomId, playerId, targetPlayerId = null) {
+    const response = await fetch(`${API_BASE}/games/${roomId}/use-power`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        player_id: playerId,
+        target_player_id: targetPlayerId
+      })
+    });
+    return handleResponse(response);
+  },
+
+  async veto(roomId, playerId, approveVeto) {
+    const response = await fetch(`${API_BASE}/games/${roomId}/veto`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        player_id: playerId,
+        approve_veto: approveVeto
+      })
+    });
+    if (response.status === 204) {
+      return null;
+    }
+    return handleResponse(response);
   }
 };

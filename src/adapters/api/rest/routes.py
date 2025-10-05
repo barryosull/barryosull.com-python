@@ -11,6 +11,7 @@ from src.adapters.api.rest.schemas import (
     DiscardPolicyRequest,
     EnactPolicyRequest,
     ErrorResponse,
+    ExecutiveActionResponse,
     GameStateResponse,
     JoinRoomRequest,
     JoinRoomResponse,
@@ -19,6 +20,8 @@ from src.adapters.api.rest.schemas import (
     RoleResponse,
     RoomStateResponse,
     StartGameRequest,
+    UseExecutiveActionRequest,
+    VetoAgendaRequest,
 )
 from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
 from src.application.commands.cast_vote import CastVoteCommand, CastVoteHandler
@@ -34,6 +37,11 @@ from src.application.commands.nominate_chancellor import (
     NominateChancellorHandler,
 )
 from src.application.commands.start_game import StartGameCommand, StartGameHandler
+from src.application.commands.use_executive_action import (
+    UseExecutiveActionCommand,
+    UseExecutiveActionHandler,
+)
+from src.application.commands.veto_agenda import VetoAgendaCommand, VetoAgendaHandler
 from src.application.queries.get_room_state import (
     GetRoomStateHandler,
     GetRoomStateQuery,
@@ -290,3 +298,48 @@ def get_my_role(room_id: UUID, player_id: UUID) -> RoleResponse:
         return RoleResponse(team=role.team, is_hitler=role.is_hitler)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+
+@router.post(
+    "/games/{room_id}/use-power",
+    response_model=ExecutiveActionResponse,
+    status_code=status.HTTP_200_OK,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest) -> ExecutiveActionResponse:
+    try:
+        handler = UseExecutiveActionHandler(repository)
+        command = UseExecutiveActionCommand(
+            room_id=room_id,
+            player_id=request.player_id,
+            target_player_id=request.target_player_id,
+        )
+        result = handler.handle(command)
+        return ExecutiveActionResponse(**result)
+    except ValueError as e:
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+
+
+@router.post(
+    "/games/{room_id}/veto",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
+    try:
+        handler = VetoAgendaHandler(repository)
+        command = VetoAgendaCommand(
+            room_id=room_id,
+            player_id=request.player_id,
+            approve_veto=request.approve_veto,
+        )
+        handler.handle(command)
+    except ValueError as e:
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+
