@@ -27,6 +27,24 @@ function getStorageType() {
 
 const storage = getStorageType();
 
+function isUsingMemoryStorage() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('storage') === 'local';
+}
+
+export function initializeFromUrl() {
+  if (!isUsingMemoryStorage()) {
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const playerIdParam = params.get('playerId');
+
+  if (playerIdParam && !memoryStorage.playerId) {
+    memoryStorage.playerId = playerIdParam;
+  }
+}
+
 export function preserveParams(path) {
   const params = new URLSearchParams(window.location.search);
   const storageParam = params.get('storage');

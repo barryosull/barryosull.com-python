@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { api } from '../services/api';
-import { playerStorage, preserveParams } from '../services/storage';
+import { playerStorage, preserveParams, initializeFromUrl } from '../services/storage';
 import PlayerList from './PlayerList';
 import PolicyTracks from './PolicyTracks';
 import NominationView from './NominationView';
@@ -13,6 +14,10 @@ export default function GameBoard() {
   const navigate = useNavigate();
   const { gameState, room, myRole, error, loading, refresh } = useGameState(roomId);
   const myPlayerId = playerStorage.getPlayerId();
+
+  useEffect(() => {
+    initializeFromUrl();
+  }, []);
 
   if (loading) {
     return (
