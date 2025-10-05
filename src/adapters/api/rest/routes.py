@@ -20,7 +20,7 @@ from src.adapters.api.rest.schemas import (
     RoomStateResponse,
     StartGameRequest,
 )
-from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
 from src.application.commands.cast_vote import CastVoteCommand, CastVoteHandler
 from src.application.commands.create_room import CreateRoomCommand, CreateRoomHandler
 from src.application.commands.discard_policy import (
@@ -39,8 +39,7 @@ from src.application.queries.get_room_state import (
     GetRoomStateQuery,
 )
 
-# Initialize repository (in production, this would be injected via dependency injection)
-repository = InMemoryRoomRepository()
+repository = FileSystemRoomRepository()
 
 # Create router
 router = APIRouter(prefix="/api", tags=["rooms"])
