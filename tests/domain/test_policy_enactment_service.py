@@ -50,8 +50,8 @@ def test_president_discards_policy_not_in_hand():
 
 def test_chancellor_enacts_liberal_policy():
     game_state = GameState()
-    policies = [Policy(PolicyType.LIBERAL), Policy(PolicyType.FASCIST)]
-    enacted = policies[0]
+    policies = [Policy(PolicyType.FASCIST), Policy(PolicyType.LIBERAL)]
+    enacted = Policy(PolicyType.LIBERAL)
 
     result = PolicyEnactmentService.chancellor_enacts_policy(
         game_state, policies, enacted
@@ -66,7 +66,7 @@ def test_chancellor_enacts_liberal_policy():
 def test_chancellor_enacts_fascist_policy():
     game_state = GameState()
     policies = [Policy(PolicyType.LIBERAL), Policy(PolicyType.FASCIST)]
-    enacted = policies[1]
+    enacted = Policy(PolicyType.FASCIST)
 
     result = PolicyEnactmentService.chancellor_enacts_policy(
         game_state, policies, enacted
@@ -89,7 +89,7 @@ def test_chancellor_enacts_policy_invalid_count():
 
 def test_chancellor_enacts_policy_not_in_hand():
     game_state = GameState()
-    policies = [Policy(PolicyType.LIBERAL), Policy(PolicyType.FASCIST)]
+    policies = [Policy(PolicyType.FASCIST), Policy(PolicyType.FASCIST)]
     other_policy = Policy(PolicyType.LIBERAL)
 
     with pytest.raises(ValueError, match="must be one of the available policies"):

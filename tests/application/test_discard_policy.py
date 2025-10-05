@@ -40,7 +40,7 @@ def test_discard_policy_success():
     repository.save(room)
 
     command = DiscardPolicyCommand(
-        room_id=room.room_id, player_id=president_id, discarded_policy=policies[1]
+        room_id=room.room_id, player_id=president_id, policy_type="FASCIST"
     )
     handler.handle(command)
 
@@ -56,7 +56,6 @@ def test_discard_policy_wrong_phase():
     handler = DiscardPolicyHandler(repository)
 
     president_id = uuid4()
-    policy = Policy(PolicyType.LIBERAL)
 
     room = GameRoom()
     room.add_player(Player(president_id, "President"))
@@ -68,7 +67,7 @@ def test_discard_policy_wrong_phase():
     repository.save(room)
 
     command = DiscardPolicyCommand(
-        room_id=room.room_id, player_id=president_id, discarded_policy=policy
+        room_id=room.room_id, player_id=president_id, policy_type="LIBERAL"
     )
 
     with pytest.raises(ValueError, match="Cannot discard policy in phase"):
@@ -95,8 +94,37 @@ def test_discard_policy_not_president():
     repository.save(room)
 
     command = DiscardPolicyCommand(
-        room_id=room.room_id, player_id=other_player_id, discarded_policy=policy
+        room_id=room.room_id, player_id=other_player_id, policy_type="LIBERAL"
     )
 
     with pytest.raises(ValueError, match="Only the president"):
+        handler.handle(command)
+
+
+def test_discard_policy_not_found():
+    repository = InMemoryRoomRepository()
+    handler = DiscardPolicyHandler(repository)
+
+    president_id = uuid4()
+    policies = [
+        Policy(PolicyType.LIBERAL),
+        Policy(PolicyType.LIBERAL),
+        Policy(PolicyType.LIBERAL),
+    ]
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.status = RoomStatus.IN_PROGRESS
+    room.game_state = GameState(
+        president_id=president_id, current_phase=GamePhase.LEGISLATIVE_PRESIDENT
+    )
+    room.game_state.president_policies = policies
+
+    repository.save(room)
+
+    command = DiscardPolicyCommand(
+        room_id=room.room_id, player_id=president_id, policy_type="FASCIST"
+    )
+
+    with pytest.raises(ValueError, match="Policy FASCIST not found in president policies"):
         handler.handle(command)

@@ -27,7 +27,7 @@ class PolicyEnactmentService:
         if len(policies) != 2:
             raise ValueError("Chancellor must have exactly 2 policies")
 
-        if not any(p is enacted_policy for p in policies):
+        if not enacted_policy in policies:
             raise ValueError("Enacted policy must be one of the available policies")
 
         discarded = [p for p in policies if p is not enacted_policy]

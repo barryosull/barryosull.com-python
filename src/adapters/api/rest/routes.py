@@ -179,25 +179,11 @@ def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
 )
 def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
     try:
-        room = repository.find_by_id(room_id)
-        if not room:
-            raise ValueError(f"Room {room_id} not found")
-
-        if not room.game_state:
-            raise ValueError("Game not started")
-
-        policy = next(
-            (p for p in room.game_state.president_policies if p.type.value == request.policy_type),
-            None
-        )
-        if not policy:
-            raise ValueError(f"Policy {request.policy_type} not found in president policies")
-
         handler = DiscardPolicyHandler(repository)
         command = DiscardPolicyCommand(
             room_id=room_id,
             player_id=request.player_id,
-            discarded_policy=policy,
+            policy_type=request.policy_type,
         )
         handler.handle(command)
     except ValueError as e:

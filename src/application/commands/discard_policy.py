@@ -3,7 +3,6 @@ from uuid import UUID
 
 from src.domain.entities.game_state import GamePhase
 from src.domain.services.policy_enactment_service import PolicyEnactmentService
-from src.domain.value_objects.policy import Policy
 from src.ports.repository_port import RoomRepositoryPort
 
 
@@ -11,7 +10,7 @@ from src.ports.repository_port import RoomRepositoryPort
 class DiscardPolicyCommand:
     room_id: UUID
     player_id: UUID
-    discarded_policy: Policy
+    policy_type: str
 
 
 class DiscardPolicyHandler:
@@ -36,11 +35,18 @@ class DiscardPolicyHandler:
         if game_state.president_id != command.player_id:
             raise ValueError("Only the president can discard a policy")
 
+        policy = next(
+            (p for p in game_state.president_policies if p.type.value == command.policy_type),
+            None
+        )
+        if not policy:
+            raise ValueError(f"Policy {command.policy_type} not found in president policies")
+
         remaining = PolicyEnactmentService.president_discards_policy(
-            game_state.president_policies, command.discarded_policy
+            game_state.president_policies, policy
         )
 
-        game_state.policy_deck.discard([command.discarded_policy])
+        game_state.policy_deck.discard([policy])
         game_state.chancellor_policies = remaining
         game_state.president_policies = []
         game_state.current_phase = GamePhase.LEGISLATIVE_CHANCELLOR
