@@ -9,9 +9,10 @@ export function useGameState(roomId) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const playerId = playerStorage.getPlayerId();
-
   const fetchGameState = async () => {
+    
+    const playerId = playerStorage.getPlayerId();
+    
     try {
       const [roomData, gameData, roleData] = await Promise.all([
         api.getRoomState(roomId),

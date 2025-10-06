@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { api } from '../services/api';
 import { playerStorage, preserveParams, initializeFromUrl } from '../services/storage';
@@ -8,12 +8,14 @@ import PolicyTracks from './PolicyTracks';
 import NominationView from './NominationView';
 import VotingView from './VotingView';
 import PolicySelectionView from './PolicySelectionView';
+import ExecutiveActionView from './ExecutiveActionView';
 
 export default function GameBoard() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const { gameState, room, myRole, error, loading, refresh } = useGameState(roomId);
   const myPlayerId = playerStorage.getPlayerId();
+  const [roleVisible, setRoleVisible] = useState(false);
 
   useEffect(() => {
     initializeFromUrl();
@@ -85,6 +87,58 @@ export default function GameBoard() {
     }
   };
 
+  const handleExecutiveAction = async (targetPlayerId) => {
+    try {
+      const result = await api.useExecutiveAction(roomId, myPlayerId, targetPlayerId);
+      refresh();
+      return result;
+    } catch (err) {
+      alert(err.message);
+      throw err;
+    }
+  };
+
+  const handleVeto = async (approveVeto) => {
+    try {
+      await api.veto(roomId, myPlayerId, approveVeto);
+      refresh();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const getPresidentialPower = () => {
+    const playerCount = room.player_count;
+    const fascistPolicies = gameState.fascist_policies;
+
+    if (playerCount <= 6) {
+      const powerMap = {
+        3: 'POLICY_PEEK',
+        4: 'EXECUTION',
+        5: 'EXECUTION'
+      };
+      return powerMap[fascistPolicies];
+    } else if (playerCount <= 8) {
+      const powerMap = {
+        1: 'INVESTIGATE_LOYALTY',
+        2: 'CALL_SPECIAL_ELECTION',
+        3: 'POLICY_PEEK',
+        4: 'EXECUTION',
+        5: 'EXECUTION'
+      };
+      return powerMap[fascistPolicies];
+    } else {
+      const powerMap = {
+        1: 'INVESTIGATE_LOYALTY',
+        2: 'INVESTIGATE_LOYALTY',
+        3: 'CALL_SPECIAL_ELECTION',
+        4: 'EXECUTION',
+        5: 'EXECUTION'
+      };
+      return powerMap[fascistPolicies];
+    }
+  };
+
   const renderPhaseView = () => {
     switch (gameState.current_phase) {
       case 'NOMINATION':
@@ -113,6 +167,7 @@ export default function GameBoard() {
             gameState={gameState}
             myPlayerId={myPlayerId}
             onSelectPolicy={handleDiscardPolicy}
+            onVeto={handleVeto}
             isPresident={true}
           />
         );
@@ -123,16 +178,20 @@ export default function GameBoard() {
             gameState={gameState}
             myPlayerId={myPlayerId}
             onSelectPolicy={handleEnactPolicy}
+            onVeto={handleVeto}
             isPresident={false}
           />
         );
 
       case 'EXECUTIVE_ACTION':
         return (
-          <div style={styles.phaseBox}>
-            <h3>Executive Action Phase</h3>
-            <p>Executive actions coming in Phase 4!</p>
-          </div>
+          <ExecutiveActionView
+            gameState={gameState}
+            myPlayerId={myPlayerId}
+            players={room.players}
+            onUseAction={handleExecutiveAction}
+            presidentialPower={getPresidentialPower()}
+          />
         );
 
       case 'GAME_OVER':
@@ -162,18 +221,23 @@ export default function GameBoard() {
       </div>
 
       {myRole && (
-        <div style={styles.roleBox}>
-          <div style={styles.roleLabel}>Your Role:</div>
-          <div
-            style={{
-              ...styles.roleValue,
-              ...(myRole.team === 'LIBERAL'
-                ? styles.liberal
-                : styles.fascist)
-            }}
-          >
-            {myRole.is_hitler ? 'Hitler' : myRole.team}
-          </div>
+        <div
+          style={styles.roleBox}
+          onClick={() => setRoleVisible(!roleVisible)}
+        >
+          <div style={styles.roleLabel}>Your Role: {roleVisible ? '' : '(click to reveal)'}</div>
+          {roleVisible && (
+            <div
+              style={{
+                ...styles.roleValue,
+                ...(myRole.team === 'LIBERAL'
+                  ? styles.liberal
+                  : styles.fascist)
+              }}
+            >
+              {myRole.is_hitler ? 'Hitler' : myRole.team}
+            </div>
+          )}
         </div>
       )}
 
@@ -220,7 +284,9 @@ const styles = {
     marginBottom: '20px',
     textAlign: 'center',
     maxWidth: '400px',
-    margin: '0 auto 20px'
+    margin: '0 auto 20px',
+    cursor: 'pointer',
+    userSelect: 'none'
   },
   roleLabel: {
     color: '#888',
