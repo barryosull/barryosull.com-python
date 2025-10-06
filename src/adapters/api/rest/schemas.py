@@ -79,6 +79,7 @@ class GameStateResponse(BaseModel):
     chancellor_policies: list[dict[str, str]]
     peeked_policies: list[dict[str, str]] | None = None
     game_over_reason: str | None = None
+    eligible_chancellor_nominees: list[UUID] | None = None
 
 
 class RoleResponse(BaseModel):

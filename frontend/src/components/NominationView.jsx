@@ -17,8 +17,9 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
     }
   };
 
-  const eligiblePlayers = players.filter(
-    (p) => p.is_alive && p.player_id !== gameState.president_id
+  const eligiblePlayerIds = gameState.eligible_chancellor_nominees || [];
+  const eligiblePlayers = players.filter((p) =>
+    eligiblePlayerIds.includes(p.player_id)
   );
 
   if (!isPresident) {

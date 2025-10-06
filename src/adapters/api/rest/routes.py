@@ -39,6 +39,9 @@ from src.application.queries.get_room_state import (
     GetRoomStateQuery,
 )
 from src.domain.entities.game_state import GamePhase, PresidentialPower
+from src.domain.services.government_formation_service import (
+    GovernmentFormationService,
+)
 
 repository = FileSystemRoomRepository()
 command_bus = CommandBus(repository)
@@ -239,6 +242,17 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
         if not game_state:
             raise ValueError("Game has not started yet")
 
+        eligible_chancellor_nominees = None
+        if game_state.current_phase == GamePhase.NOMINATION:
+            eligible = []
+            for player in room.active_players():
+                can_nominate, _ = GovernmentFormationService.can_nominate_chancellor(
+                    game_state, player.player_id, room.active_players()
+                )
+                if can_nominate:
+                    eligible.append(player.player_id)
+            eligible_chancellor_nominees = eligible
+
         return GameStateResponse(
             round_number=game_state.round_number,
             president_id=game_state.president_id,
@@ -264,6 +278,7 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
                 else None
             ),
             game_over_reason=game_state.game_over_reason,
+            eligible_chancellor_nominees=eligible_chancellor_nominees,
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
