@@ -24,31 +24,24 @@ from src.adapters.api.rest.schemas import (
     VetoAgendaRequest,
 )
 from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
-from src.application.commands.cast_vote import CastVoteCommand, CastVoteHandler
-from src.application.commands.create_room import CreateRoomCommand, CreateRoomHandler
-from src.domain.entities.game_state import GamePhase, PresidentialPower
-from src.application.commands.discard_policy import (
-    DiscardPolicyCommand,
-    DiscardPolicyHandler,
-)
-from src.application.commands.enact_policy import EnactPolicyCommand, EnactPolicyHandler
-from src.application.commands.join_room import JoinRoomCommand, JoinRoomHandler
-from src.application.commands.nominate_chancellor import (
-    NominateChancellorCommand,
-    NominateChancellorHandler,
-)
-from src.application.commands.start_game import StartGameCommand, StartGameHandler
-from src.application.commands.use_executive_action import (
-    UseExecutiveActionCommand,
-    UseExecutiveActionHandler,
-)
-from src.application.commands.veto_agenda import VetoAgendaCommand, VetoAgendaHandler
+from src.application.command_bus import CommandBus
+from src.application.commands.cast_vote import CastVoteCommand
+from src.application.commands.create_room import CreateRoomCommand
+from src.application.commands.discard_policy import DiscardPolicyCommand
+from src.application.commands.enact_policy import EnactPolicyCommand
+from src.application.commands.join_room import JoinRoomCommand
+from src.application.commands.nominate_chancellor import NominateChancellorCommand
+from src.application.commands.start_game import StartGameCommand
+from src.application.commands.use_executive_action import UseExecutiveActionCommand
+from src.application.commands.veto_agenda import VetoAgendaCommand
 from src.application.queries.get_room_state import (
     GetRoomStateHandler,
     GetRoomStateQuery,
 )
+from src.domain.entities.game_state import GamePhase, PresidentialPower
 
 repository = FileSystemRoomRepository()
+command_bus = CommandBus(repository)
 
 # Create router
 router = APIRouter(prefix="/api", tags=["rooms"])
@@ -62,9 +55,8 @@ router = APIRouter(prefix="/api", tags=["rooms"])
 )
 def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
     try:
-        handler = CreateRoomHandler(repository)
         command = CreateRoomCommand(player_name=request.player_name)
-        result = handler.handle(command)
+        result = command_bus.execute(command)
 
         return CreateRoomResponse(room_id=result.room_id, player_id=result.player_id)
     except ValueError as e:
@@ -79,9 +71,8 @@ def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
 )
 def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse:
     try:
-        handler = JoinRoomHandler(repository)
         command = JoinRoomCommand(room_id=room_id, player_name=request.player_name)
-        result = handler.handle(command)
+        result = command_bus.execute(command)
 
         return JoinRoomResponse(player_id=result.player_id)
     except ValueError as e:
@@ -131,9 +122,8 @@ def get_room_state(room_id: UUID) -> RoomStateResponse:
 )
 def start_game(room_id: UUID, request: StartGameRequest) -> None:
     try:
-        handler = StartGameHandler(repository)
         command = StartGameCommand(room_id=room_id, requester_id=request.player_id)
-        handler.handle(command)
+        command_bus.execute(command)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -148,13 +138,12 @@ def start_game(room_id: UUID, request: StartGameRequest) -> None:
 )
 def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest) -> None:
     try:
-        handler = NominateChancellorHandler(repository)
         command = NominateChancellorCommand(
             room_id=room_id,
             nominating_player_id=request.player_id,
             chancellor_id=request.chancellor_id,
         )
-        handler.handle(command)
+        command_bus.execute(command)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -169,11 +158,10 @@ def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest) -> No
 )
 def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
     try:
-        handler = CastVoteHandler(repository)
         command = CastVoteCommand(
             room_id=room_id, player_id=request.player_id, vote=request.vote
         )
-        handler.handle(command)
+        command_bus.execute(command)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -188,13 +176,12 @@ def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
 )
 def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
     try:
-        handler = DiscardPolicyHandler(repository)
         command = DiscardPolicyCommand(
             room_id=room_id,
             player_id=request.player_id,
             policy_type=request.policy_type,
         )
-        handler.handle(command)
+        command_bus.execute(command)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -223,13 +210,12 @@ def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
         if not policy:
             raise ValueError(f"Policy {request.policy_type} not found in chancellor policies")
 
-        handler = EnactPolicyHandler(repository)
         command = EnactPolicyCommand(
             room_id=room_id,
             player_id=request.player_id,
             enacted_policy=policy,
         )
-        handler.handle(command)
+        command_bus.execute(command)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -316,13 +302,12 @@ def get_my_role(room_id: UUID, player_id: UUID) -> RoleResponse:
 )
 def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest) -> ExecutiveActionResponse:
     try:
-        handler = UseExecutiveActionHandler(repository)
         command = UseExecutiveActionCommand(
             room_id=room_id,
             player_id=request.player_id,
             target_player_id=request.target_player_id,
         )
-        result = handler.handle(command)
+        result = command_bus.execute(command)
         return ExecutiveActionResponse(**result)
     except ValueError as e:
         error_msg = str(e)
@@ -338,13 +323,12 @@ def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest) -> Ex
 )
 def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
     try:
-        handler = VetoAgendaHandler(repository)
         command = VetoAgendaCommand(
             room_id=room_id,
             player_id=request.player_id,
             approve_veto=request.approve_veto,
         )
-        handler.handle(command)
+        command_bus.execute(command)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():

@@ -3,7 +3,8 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.commands.enact_policy import EnactPolicyCommand, EnactPolicyHandler
+from src.application.command_bus import CommandBus
+from src.application.commands.enact_policy import EnactPolicyCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -12,7 +13,7 @@ from src.domain.value_objects.policy import Policy, PolicyType
 
 def test_enact_policy_success():
     repository = InMemoryRoomRepository()
-    handler = EnactPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -35,7 +36,7 @@ def test_enact_policy_success():
     command = EnactPolicyCommand(
         room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.liberal_policies == 1
@@ -45,7 +46,7 @@ def test_enact_policy_success():
 
 def test_enact_policy_triggers_executive_action():
     repository = InMemoryRoomRepository()
-    handler = EnactPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -71,7 +72,7 @@ def test_enact_policy_triggers_executive_action():
     command = EnactPolicyCommand(
         room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.fascist_policies == 1
@@ -80,7 +81,7 @@ def test_enact_policy_triggers_executive_action():
 
 def test_enact_policy_liberal_victory():
     repository = InMemoryRoomRepository()
-    handler = EnactPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -104,7 +105,7 @@ def test_enact_policy_liberal_victory():
     command = EnactPolicyCommand(
         room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.liberal_policies == 5
@@ -114,7 +115,7 @@ def test_enact_policy_liberal_victory():
 
 def test_enact_policy_fascist_victory():
     repository = InMemoryRoomRepository()
-    handler = EnactPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -138,7 +139,7 @@ def test_enact_policy_fascist_victory():
     command = EnactPolicyCommand(
         room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.fascist_policies == 6
@@ -148,7 +149,7 @@ def test_enact_policy_fascist_victory():
 
 def test_enact_policy_wrong_phase():
     repository = InMemoryRoomRepository()
-    handler = EnactPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     chancellor_id = uuid4()
     policy = Policy(PolicyType.LIBERAL)
@@ -167,12 +168,12 @@ def test_enact_policy_wrong_phase():
     )
 
     with pytest.raises(ValueError, match="Cannot enact policy in phase"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_enact_policy_not_chancellor():
     repository = InMemoryRoomRepository()
-    handler = EnactPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     chancellor_id = uuid4()
     other_player_id = uuid4()
@@ -194,4 +195,4 @@ def test_enact_policy_not_chancellor():
     )
 
     with pytest.raises(ValueError, match="Only the chancellor"):
-        handler.handle(command)
+        command_bus.execute(command)

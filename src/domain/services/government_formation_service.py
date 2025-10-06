@@ -21,11 +21,11 @@ class GovernmentFormationService:
 
         alive_count = len(active_players)
 
-        if alive_count > 5:
-            if chancellor_id == game_state.previous_chancellor_id:
-                return False, "Cannot nominate previous chancellor"
-            if chancellor_id == game_state.previous_president_id:
-                return False, "Cannot nominate previous president"
+        if chancellor_id == game_state.previous_chancellor_id:
+            return False, "Cannot nominate previous chancellor"
+
+        if alive_count > 5 and chancellor_id == game_state.previous_president_id:
+            return False, "Cannot nominate previous president"
 
         return True, ""
 

@@ -11,6 +11,7 @@ from src.ports.repository_port import RoomRepositoryPort
 class StartGameCommand:
     room_id: UUID
     requester_id: UUID
+    first_president_id: UUID | None = None
 
 
 class StartGameHandler:
@@ -32,7 +33,12 @@ class StartGameHandler:
 
         role_assignments = RoleAssignmentService.assign_roles(player_ids)
 
-        first_president_id = random.choice(player_ids)
+        if command.first_president_id:
+            if command.first_president_id not in player_ids:
+                raise ValueError("first_president_id must be a player in the game")
+            first_president_id = command.first_president_id
+        else:
+            first_president_id = random.choice(player_ids)
 
         game_state = GameState(
             round_number=1,

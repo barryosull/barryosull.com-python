@@ -3,7 +3,8 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.commands.veto_agenda import VetoAgendaCommand, VetoAgendaHandler
+from src.application.command_bus import CommandBus
+from src.application.commands.veto_agenda import VetoAgendaCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -12,7 +13,7 @@ from src.domain.value_objects.policy import Policy, PolicyType
 
 def test_chancellor_initiates_veto():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -41,7 +42,7 @@ def test_chancellor_initiates_veto():
     command = VetoAgendaCommand(
         room_id=room.room_id, player_id=chancellor_id, approve_veto=True
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION
@@ -53,7 +54,7 @@ def test_chancellor_initiates_veto():
 
 def test_president_approves_veto():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -82,7 +83,7 @@ def test_president_approves_veto():
     command = VetoAgendaCommand(
         room_id=room.room_id, player_id=president_id, approve_veto=True
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION
@@ -94,7 +95,7 @@ def test_president_approves_veto():
 
 def test_president_rejects_veto():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -118,12 +119,12 @@ def test_president_rejects_veto():
     )
 
     with pytest.raises(ValueError, match="President rejected veto"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_chancellor_cannot_reject_veto():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -147,12 +148,12 @@ def test_chancellor_cannot_reject_veto():
     )
 
     with pytest.raises(ValueError, match="Chancellor initiated veto, cannot reject"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_veto_not_available_before_5_policies():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -178,12 +179,12 @@ def test_veto_not_available_before_5_policies():
     with pytest.raises(
         ValueError, match="Veto power is not available until 5 fascist policies"
     ):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_veto_wrong_phase():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -207,12 +208,12 @@ def test_veto_wrong_phase():
     )
 
     with pytest.raises(ValueError, match="Cannot veto in phase"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_non_government_member_cannot_veto():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -240,24 +241,24 @@ def test_non_government_member_cannot_veto():
     with pytest.raises(
         ValueError, match="Only the president or chancellor can respond to veto"
     ):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_room_not_found():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     command = VetoAgendaCommand(
         room_id=uuid4(), player_id=uuid4(), approve_veto=True
     )
 
     with pytest.raises(ValueError, match="not found"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_game_not_started():
     repository = InMemoryRoomRepository()
-    handler = VetoAgendaHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
 
@@ -271,4 +272,4 @@ def test_game_not_started():
     )
 
     with pytest.raises(ValueError, match="Game not started"):
-        handler.handle(command)
+        command_bus.execute(command)

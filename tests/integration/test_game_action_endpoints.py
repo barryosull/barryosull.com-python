@@ -6,6 +6,7 @@ from fastapi.testclient import TestClient
 
 from src.adapters.api.main import app
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.application.command_bus import CommandBus
 from src.domain.entities.game_room import GameRoom
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -45,6 +46,7 @@ def test_nominate_chancellor_success(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.post(
         f"/api/games/{room.room_id}/nominate",
@@ -76,6 +78,7 @@ def test_nominate_chancellor_not_president(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.post(
         f"/api/games/{room.room_id}/nominate",
@@ -104,6 +107,7 @@ def test_cast_vote_success(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     for player_id in player_ids:
         response = client.post(
@@ -142,6 +146,7 @@ def test_discard_policy_success(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.post(
         f"/api/games/{room.room_id}/discard-policy",
@@ -184,6 +189,7 @@ def test_enact_policy_success(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.post(
         f"/api/games/{room.room_id}/enact-policy",
@@ -208,6 +214,7 @@ def test_get_game_state_success(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.get(f"/api/games/{room.room_id}/state")
 
@@ -233,6 +240,7 @@ def test_get_game_state_not_started(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.get(f"/api/games/{room.room_id}/state")
 
@@ -255,6 +263,7 @@ def test_get_my_role_success(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.get(
         f"/api/games/{room.room_id}/my-role", params={"player_id": str(player_ids[0])}
@@ -282,6 +291,7 @@ def test_get_my_role_not_started(monkeypatch):
     import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     response = client.get(
         f"/api/games/{room.room_id}/my-role", params={"player_id": str(player_ids[0])}
