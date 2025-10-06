@@ -26,6 +26,7 @@ from src.adapters.api.rest.schemas import (
 from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
 from src.application.commands.cast_vote import CastVoteCommand, CastVoteHandler
 from src.application.commands.create_room import CreateRoomCommand, CreateRoomHandler
+from src.domain.entities.game_state import GamePhase, PresidentialPower
 from src.application.commands.discard_policy import (
     DiscardPolicyCommand,
     DiscardPolicyHandler,
@@ -270,6 +271,12 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
             chancellor_policies=[
                 {"type": p.type} for p in game_state.chancellor_policies
             ],
+            peeked_policies=(
+                [{"type": p.type.value} for p in game_state.peek_policies()]
+                if game_state.current_phase == GamePhase.EXECUTIVE_ACTION
+                and game_state.get_presidential_power(len(room.active_players())) == PresidentialPower.POLICY_PEEK
+                else None
+            ),
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ExecutiveActionView({
   gameState,
@@ -10,10 +10,20 @@ export default function ExecutiveActionView({
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [showingPolicies, setShowingPolicies] = useState(false);
 
   const isPresident = gameState.president_id === myPlayerId;
+  const hasPeekedPolicies = gameState.peeked_policies && gameState.peeked_policies.length > 0;
 
   const handleExecute = async () => {
+    if (presidentialPower === 'POLICY_PEEK' && hasPeekedPolicies && !showingPolicies) {
+      setShowingPolicies(true);
+      setTimeout(async () => {
+        await onUseAction(null);
+      }, 3000);
+      return;
+    }
+
     setLoading(true);
     try {
       const actionResult = await onUseAction(selectedPlayerId);
@@ -68,6 +78,27 @@ export default function ExecutiveActionView({
       <h3 style={styles.title}>Executive Action</h3>
       <div style={styles.subtitle}>{getPowerDescription()}</div>
 
+      {showingPolicies && hasPeekedPolicies && (
+        <div style={styles.result}>
+          <div>
+            <strong>Policy Peek:</strong>
+            <div style={styles.policyPeek}>
+              {gameState.peeked_policies.map((policy, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    ...styles.peekedPolicy,
+                    ...(policy.type === 'LIBERAL' ? styles.liberalPeek : styles.fascistPeek)
+                  }}
+                >
+                  {policy.type === 'LIBERAL' ? 'L' : 'F'}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {result && (
         <div style={styles.result}>
           {result.party_membership && (
@@ -79,24 +110,6 @@ export default function ExecutiveActionView({
               }}>
                 {result.party_membership}
               </span>
-            </div>
-          )}
-          {result.policies && (
-            <div>
-              <strong>Policy Peek:</strong>
-              <div style={styles.policyPeek}>
-                {result.policies.map((policy, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      ...styles.peekedPolicy,
-                      ...(policy.type === 'LIBERAL' ? styles.liberalPeek : styles.fascistPeek)
-                    }}
-                  >
-                    {policy.type === 'LIBERAL' ? 'L' : 'F'}
-                  </div>
-                ))}
-              </div>
             </div>
           )}
           {result.executed_player_id && (
@@ -112,7 +125,7 @@ export default function ExecutiveActionView({
         </div>
       )}
 
-      {needsTarget && !result && (
+      {needsTarget && !result && !showingPolicies && (
         <div style={styles.playerGrid}>
           {eligiblePlayers.map((player) => (
             <button
@@ -130,16 +143,24 @@ export default function ExecutiveActionView({
         </div>
       )}
 
-      <button
-        onClick={handleExecute}
-        style={{
-          ...styles.confirmButton,
-          ...((needsTarget && !selectedPlayerId && !result) && styles.buttonDisabled)
-        }}
-        disabled={(needsTarget && !selectedPlayerId && !result) || loading}
-      >
-        {loading ? 'Using Power...' : result ? 'Continue' : 'Use Power'}
-      </button>
+      {!showingPolicies && (
+        <button
+          onClick={handleExecute}
+          style={{
+            ...styles.confirmButton,
+            ...((needsTarget && !selectedPlayerId && !result) && styles.buttonDisabled)
+          }}
+          disabled={(needsTarget && !selectedPlayerId && !result) || loading}
+        >
+          {loading ? 'Using Power...' : result ? 'Continue' : hasPeekedPolicies && presidentialPower === 'POLICY_PEEK' ? 'View Policies' : 'Use Power'}
+        </button>
+      )}
+
+      {showingPolicies && (
+        <div style={styles.autoAdvanceMessage}>
+          Auto-advancing in 3 seconds...
+        </div>
+      )}
     </div>
   );
 }
@@ -242,5 +263,12 @@ const styles = {
   buttonDisabled: {
     backgroundColor: '#555',
     cursor: 'not-allowed'
+  },
+  autoAdvanceMessage: {
+    color: '#aaa',
+    fontSize: '16px',
+    textAlign: 'center',
+    padding: '20px',
+    fontStyle: 'italic'
   }
 };

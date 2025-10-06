@@ -55,8 +55,7 @@ class UseExecutiveActionHandler:
             result = {"party_membership": target_role.team}
 
         elif presidential_power == PresidentialPower.POLICY_PEEK:
-            peeked_policies = game_state.policy_deck.peek(3)
-            result = {"policies": [{"type": p.type.value} for p in peeked_policies]}
+            result = {}
 
         elif presidential_power == PresidentialPower.EXECUTION:
             if not command.target_player_id:
