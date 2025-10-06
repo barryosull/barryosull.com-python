@@ -27,10 +27,6 @@ class GovernmentFormationService:
             if chancellor_id == game_state.previous_president_id:
                 return False, "Cannot nominate previous president"
 
-        role = game_state.get_role(chancellor_id)
-        if role and role.is_hitler and game_state.fascist_policies >= 3:
-            return False, "Hitler cannot be nominated after 3 fascist policies"
-
         return True, ""
 
     @staticmethod
