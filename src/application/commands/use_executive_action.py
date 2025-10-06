@@ -75,6 +75,7 @@ class UseExecutiveActionHandler:
 
             if target_role and target_role.is_hitler:
                 game_state.current_phase = GamePhase.GAME_OVER
+                game_state.game_over_reason = "Liberals win! Hitler was executed."
                 room.end_game()
                 result["game_over"] = True
                 result["winning_team"] = "LIBERAL"

@@ -78,6 +78,7 @@ class GameStateResponse(BaseModel):
     president_policies: list[dict[str, str]]
     chancellor_policies: list[dict[str, str]]
     peeked_policies: list[dict[str, str]] | None = None
+    game_over_reason: str | None = None
 
 
 class RoleResponse(BaseModel):

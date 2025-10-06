@@ -43,6 +43,7 @@ class GameState:
     votes: dict[UUID, bool] = field(default_factory=dict)
     president_policies: list = field(default_factory=list)
     chancellor_policies: list = field(default_factory=list)
+    game_over_reason: Optional[str] = None
 
     def enact_liberal_policy(self) -> None:
         self.liberal_policies += 1

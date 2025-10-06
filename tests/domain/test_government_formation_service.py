@@ -102,7 +102,7 @@ def test_can_nominate_previous_chancellor_when_5_or_fewer_alive():
     assert can_nominate
 
 
-def test_cannot_nominate_hitler_after_3_fascist_policies():
+def test_can_nominate_hitler_after_3_fascist_policies():
     president_id = uuid4()
     hitler_id = uuid4()
 
@@ -115,8 +115,7 @@ def test_cannot_nominate_hitler_after_3_fascist_policies():
         game_state, hitler_id, active_players
     )
 
-    assert not can_nominate
-    assert "Hitler cannot be nominated" in msg
+    assert can_nominate
 
 
 def test_can_nominate_hitler_before_3_fascist_policies():

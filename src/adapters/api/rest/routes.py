@@ -277,6 +277,7 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
                 and game_state.get_presidential_power(len(room.active_players())) == PresidentialPower.POLICY_PEEK
                 else None
             ),
+            game_over_reason=game_state.game_over_reason,
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

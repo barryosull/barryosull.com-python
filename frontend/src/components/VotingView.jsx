@@ -21,6 +21,8 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
 
   const votesCount = Object.keys(gameState.votes || {}).length;
   const totalPlayers = players.filter((p) => p.is_alive).length;
+  const myPlayer = players.find((p) => p.player_id === myPlayerId);
+  const canVote = myPlayer && myPlayer.is_alive;
 
   return (
     <div style={styles.container}>
@@ -38,7 +40,14 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
         </div>
       </div>
 
-      {!hasVoted ? (
+      {!canVote ? (
+        <div style={styles.waiting}>
+          You cannot vote (dead players cannot participate)
+          <div style={styles.voteCount}>
+            {votesCount} / {totalPlayers} votes cast
+          </div>
+        </div>
+      ) : !hasVoted ? (
         <div style={styles.voteSection}>
           <div style={styles.votePrompt}>
             Vote on the proposed government:
