@@ -1,7 +1,8 @@
 from uuid import uuid4
 
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.commands.cast_vote import CastVoteCommand, CastVoteHandler
+from src.application.command_bus import CommandBus
+from src.application.commands.cast_vote import CastVoteCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -10,7 +11,7 @@ from src.domain.value_objects.role import Role
 
 def test_hitler_elected_after_3_fascist_policies_ends_game():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     hitler_id = uuid4()
@@ -34,7 +35,7 @@ def test_hitler_elected_after_3_fascist_policies_ends_game():
     repository.save(room)
 
     command = CastVoteCommand(room_id=room.room_id, player_id=voter1_id, vote=True)
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.GAME_OVER
@@ -43,7 +44,7 @@ def test_hitler_elected_after_3_fascist_policies_ends_game():
 
 def test_hitler_elected_before_3_fascist_policies_continues_game():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     hitler_id = uuid4()
@@ -67,7 +68,7 @@ def test_hitler_elected_before_3_fascist_policies_continues_game():
     repository.save(room)
 
     command = CastVoteCommand(room_id=room.room_id, player_id=voter1_id, vote=True)
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.LEGISLATIVE_PRESIDENT
@@ -77,7 +78,7 @@ def test_hitler_elected_before_3_fascist_policies_continues_game():
 
 def test_hitler_elected_exactly_3_fascist_policies_ends_game():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     hitler_id = uuid4()
@@ -101,7 +102,7 @@ def test_hitler_elected_exactly_3_fascist_policies_ends_game():
     repository.save(room)
 
     command = CastVoteCommand(room_id=room.room_id, player_id=voter1_id, vote=True)
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.GAME_OVER

@@ -3,7 +3,8 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.commands.cast_vote import CastVoteCommand, CastVoteHandler
+from src.application.command_bus import CommandBus
+from src.application.commands.cast_vote import CastVoteCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -11,7 +12,7 @@ from src.domain.entities.player import Player
 
 def test_cast_vote_success():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -31,7 +32,7 @@ def test_cast_vote_success():
     repository.save(room)
 
     command = CastVoteCommand(room_id=room.room_id, player_id=voter_id, vote=True)
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert voter_id in updated_room.game_state.votes
@@ -40,7 +41,7 @@ def test_cast_vote_success():
 
 def test_cast_vote_government_elected():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -67,7 +68,7 @@ def test_cast_vote_government_elected():
     repository.save(room)
 
     command = CastVoteCommand(room_id=room.room_id, player_id=voter2_id, vote=False)
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.LEGISLATIVE_PRESIDENT
@@ -77,7 +78,7 @@ def test_cast_vote_government_elected():
 
 def test_cast_vote_government_rejected():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -101,7 +102,7 @@ def test_cast_vote_government_rejected():
     command = CastVoteCommand(
         room_id=room.room_id, player_id=next_president_id, vote=False
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION
@@ -112,7 +113,7 @@ def test_cast_vote_government_rejected():
 
 def test_cast_vote_already_voted():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -133,12 +134,12 @@ def test_cast_vote_already_voted():
     command = CastVoteCommand(room_id=room.room_id, player_id=president_id, vote=False)
 
     with pytest.raises(ValueError, match="already voted"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_cast_vote_wrong_phase():
     repository = InMemoryRoomRepository()
-    handler = CastVoteHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
 
@@ -154,4 +155,4 @@ def test_cast_vote_wrong_phase():
     command = CastVoteCommand(room_id=room.room_id, player_id=president_id, vote=True)
 
     with pytest.raises(ValueError, match="Cannot vote in phase"):
-        handler.handle(command)
+        command_bus.execute(command)

@@ -3,7 +3,8 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.commands.start_game import StartGameCommand, StartGameHandler
+from src.application.command_bus import CommandBus
+from src.application.commands.start_game import StartGameCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase
 from src.domain.entities.player import Player
@@ -11,7 +12,7 @@ from src.domain.entities.player import Player
 
 def test_start_game_success():
     repository = InMemoryRoomRepository()
-    handler = StartGameHandler(repository)
+    command_bus = CommandBus(repository)
 
     room = GameRoom()
     creator_id = uuid4()
@@ -23,7 +24,7 @@ def test_start_game_success():
     repository.save(room)
 
     command = StartGameCommand(room_id=room.room_id, requester_id=creator_id)
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.status == RoomStatus.IN_PROGRESS
@@ -35,17 +36,17 @@ def test_start_game_success():
 
 def test_start_game_room_not_found():
     repository = InMemoryRoomRepository()
-    handler = StartGameHandler(repository)
+    command_bus = CommandBus(repository)
 
     command = StartGameCommand(room_id=uuid4(), requester_id=uuid4())
 
     with pytest.raises(ValueError, match="not found"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_start_game_not_creator():
     repository = InMemoryRoomRepository()
-    handler = StartGameHandler(repository)
+    command_bus = CommandBus(repository)
 
     room = GameRoom()
     creator_id = uuid4()
@@ -60,12 +61,12 @@ def test_start_game_not_creator():
     command = StartGameCommand(room_id=room.room_id, requester_id=other_player_id)
 
     with pytest.raises(ValueError, match="Only the room creator"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_start_game_not_enough_players():
     repository = InMemoryRoomRepository()
-    handler = StartGameHandler(repository)
+    command_bus = CommandBus(repository)
 
     room = GameRoom()
     creator_id = uuid4()
@@ -79,4 +80,4 @@ def test_start_game_not_enough_players():
     command = StartGameCommand(room_id=room.room_id, requester_id=creator_id)
 
     with pytest.raises(ValueError, match="at least 5 players"):
-        handler.handle(command)
+        command_bus.execute(command)

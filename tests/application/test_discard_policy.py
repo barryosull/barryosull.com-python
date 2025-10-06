@@ -3,10 +3,8 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.commands.discard_policy import (
-    DiscardPolicyCommand,
-    DiscardPolicyHandler,
-)
+from src.application.command_bus import CommandBus
+from src.application.commands.discard_policy import DiscardPolicyCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -15,7 +13,7 @@ from src.domain.value_objects.policy import Policy, PolicyType
 
 def test_discard_policy_success():
     repository = InMemoryRoomRepository()
-    handler = DiscardPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     chancellor_id = uuid4()
@@ -42,7 +40,7 @@ def test_discard_policy_success():
     command = DiscardPolicyCommand(
         room_id=room.room_id, player_id=president_id, policy_type="FASCIST"
     )
-    handler.handle(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.LEGISLATIVE_CHANCELLOR
@@ -53,7 +51,7 @@ def test_discard_policy_success():
 
 def test_discard_policy_wrong_phase():
     repository = InMemoryRoomRepository()
-    handler = DiscardPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
 
@@ -71,12 +69,12 @@ def test_discard_policy_wrong_phase():
     )
 
     with pytest.raises(ValueError, match="Cannot discard policy in phase"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_discard_policy_not_president():
     repository = InMemoryRoomRepository()
-    handler = DiscardPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     other_player_id = uuid4()
@@ -98,12 +96,12 @@ def test_discard_policy_not_president():
     )
 
     with pytest.raises(ValueError, match="Only the president"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_discard_policy_not_found():
     repository = InMemoryRoomRepository()
-    handler = DiscardPolicyHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     policies = [
@@ -127,4 +125,4 @@ def test_discard_policy_not_found():
     )
 
     with pytest.raises(ValueError, match="Policy FASCIST not found in president policies"):
-        handler.handle(command)
+        command_bus.execute(command)

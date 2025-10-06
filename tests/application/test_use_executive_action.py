@@ -3,10 +3,8 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.commands.use_executive_action import (
-    UseExecutiveActionCommand,
-    UseExecutiveActionHandler,
-)
+from src.application.command_bus import CommandBus
+from src.application.commands.use_executive_action import UseExecutiveActionCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -15,7 +13,7 @@ from src.domain.value_objects.role import Role, Team
 
 def test_investigate_loyalty():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     target_id = uuid4()
@@ -50,7 +48,7 @@ def test_investigate_loyalty():
     command = UseExecutiveActionCommand(
         room_id=room.room_id, player_id=president_id, target_player_id=target_id
     )
-    result = handler.handle(command)
+    result = command_bus.execute(command)
 
     assert result["party_membership"] == Team.LIBERAL
     updated_room = repository.find_by_id(room.room_id)
@@ -59,7 +57,7 @@ def test_investigate_loyalty():
 
 def test_policy_peek():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     player2_id = uuid4()
@@ -84,7 +82,7 @@ def test_policy_peek():
     repository.save(room)
 
     command = UseExecutiveActionCommand(room_id=room.room_id, player_id=president_id)
-    result = handler.handle(command)
+    result = command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert len(updated_room.game_state.peek_policies()) == 3
@@ -93,7 +91,7 @@ def test_policy_peek():
 
 def test_execution_regular_player():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     target_id = uuid4()
@@ -125,7 +123,7 @@ def test_execution_regular_player():
     command = UseExecutiveActionCommand(
         room_id=room.room_id, player_id=president_id, target_player_id=target_id
     )
-    result = handler.handle(command)
+    result = command_bus.execute(command)
 
     assert result["executed_player_id"] == str(target_id)
     assert "game_over" not in result
@@ -136,7 +134,7 @@ def test_execution_regular_player():
 
 def test_execution_hitler_ends_game():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     hitler_id = uuid4()
@@ -166,7 +164,7 @@ def test_execution_hitler_ends_game():
     command = UseExecutiveActionCommand(
         room_id=room.room_id, player_id=president_id, target_player_id=hitler_id
     )
-    result = handler.handle(command)
+    result = command_bus.execute(command)
 
     assert result["executed_player_id"] == str(hitler_id)
     assert result["game_over"] is True
@@ -178,7 +176,7 @@ def test_execution_hitler_ends_game():
 
 def test_call_special_election():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     special_president_id = uuid4()
@@ -215,7 +213,7 @@ def test_call_special_election():
         player_id=president_id,
         target_player_id=special_president_id,
     )
-    result = handler.handle(command)
+    result = command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.president_id == special_president_id
@@ -226,7 +224,7 @@ def test_call_special_election():
 
 def test_not_president_cannot_use_power():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     non_president_id = uuid4()
@@ -249,12 +247,12 @@ def test_not_president_cannot_use_power():
     )
 
     with pytest.raises(ValueError, match="Only the president can use executive actions"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_wrong_phase():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
 
@@ -271,12 +269,12 @@ def test_wrong_phase():
     command = UseExecutiveActionCommand(room_id=room.room_id, player_id=president_id)
 
     with pytest.raises(ValueError, match="Cannot use executive action in phase"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_execution_requires_target():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     player2_id = uuid4()
@@ -305,12 +303,12 @@ def test_execution_requires_target():
     command = UseExecutiveActionCommand(room_id=room.room_id, player_id=president_id)
 
     with pytest.raises(ValueError, match="Target player required for execution"):
-        handler.handle(command)
+        command_bus.execute(command)
 
 
 def test_execution_dead_player():
     repository = InMemoryRoomRepository()
-    handler = UseExecutiveActionHandler(repository)
+    command_bus = CommandBus(repository)
 
     president_id = uuid4()
     dead_player_id = uuid4()
@@ -343,4 +341,4 @@ def test_execution_dead_player():
     )
 
     with pytest.raises(ValueError, match="Target player is already dead"):
-        handler.handle(command)
+        command_bus.execute(command)
