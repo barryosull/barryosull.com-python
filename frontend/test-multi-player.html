@@ -167,7 +167,7 @@
       <li>Make sure the backend is running on <code>http://localhost:8000</code></li>
       <li>Make sure the frontend dev server is running: <code>npm run dev</code></li>
       <li><strong>New Game:</strong> Click "Reload All Players" to start fresh, create room in Player 1, join in others</li>
-      <li><strong>Continue Game:</strong> Enter Room ID and Player IDs below, then click "Load Game"</li>
+      <li><strong>Continue Game:</strong> Enter Room ID below, then click "Load Game" - players are loaded automatically</li>
     </ol>
   </div>
 
@@ -182,12 +182,8 @@
       id="roomId"
       placeholder="Room ID"
       style="padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; width: 300px;">
-    <input
-      type="text"
-      id="playerIds"
-      placeholder="Player IDs (comma-separated, 5 total)"
-      style="padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; width: 400px;">
     <button onclick="loadGame()">🎮 Load Game</button>
+    <span id="loadStatus" style="color: #888; font-size: 14px;"></span>
   </div>
 
   <div class="grid" id="player-grid">
@@ -195,85 +191,107 @@
   </div>
 
   <script>
-    const playerCount = 5;
     const baseUrl = 'http://localhost:3000';
+    const apiUrl = 'http://localhost:8000/api';
     let currentGameState = null; // Store current room/player IDs
 
-    function createPlayerFrame(playerNumber, playerUrl) {
+    function createPlayerFrame(playerNumber, playerName, playerUrl) {
       const container = document.createElement('div');
       container.className = 'player-container';
-      const url = playerUrl || `${baseUrl}?storage=local&name=Player${playerNumber}`;
+      const url = playerUrl || `${baseUrl}?storage=local&name=${playerName}`;
       container.innerHTML = `
         <div class="player-header">
-          <span class="player-number">Player ${playerNumber}</span>
+          <span class="player-number">${playerName}</span>
           <span class="player-status">memory</span>
         </div>
         <iframe
           id="player-${playerNumber}"
           src="${url}"
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-          title="Player ${playerNumber}"
+          title="${playerName}"
           allow="clipboard-write">
         </iframe>
       `;
       return container;
     }
 
-    function initializePlayers(roomId = null, playerIds = null) {
+    function initializePlayers(roomId = null, players = null) {
       const grid = document.getElementById('player-grid');
       grid.innerHTML = '';
 
-      for (let i = 1; i <= playerCount; i++) {
-        let playerUrl;
-        if (roomId && playerIds && playerIds[i - 1]) {
-          playerUrl = `${baseUrl}/game/${roomId}?storage=local&name=Player${i}&playerId=${playerIds[i - 1]}`;
-        } else {
-          playerUrl = `${baseUrl}?storage=local&name=Player${i}`;
+      if (players) {
+        players.forEach((player, index) => {
+          const playerUrl = `${baseUrl}/game/${roomId}?storage=local&name=${player.name}&playerId=${player.player_id}`;
+          grid.appendChild(createPlayerFrame(index + 1, player.name, playerUrl));
+        });
+      } else {
+        for (let i = 1; i <= 5; i++) {
+          grid.appendChild(createPlayerFrame(i, `Player${i}`, null));
         }
-        grid.appendChild(createPlayerFrame(i, playerUrl));
       }
     }
 
-    function loadGame() {
+    async function loadGame() {
       const roomIdInput = document.getElementById('roomId').value.trim();
-      const playerIdsInput = document.getElementById('playerIds').value.trim();
+      const statusEl = document.getElementById('loadStatus');
 
       if (!roomIdInput) {
         alert('Please enter a Room ID');
         return;
       }
 
-      if (!playerIdsInput) {
-        alert('Please enter Player IDs (comma-separated)');
-        return;
+      statusEl.textContent = 'Loading...';
+
+      try {
+        const response = await fetch(`${apiUrl}/rooms/${roomIdInput}`, {
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Room not found: ${response.status}`);
+        }
+
+        const roomData = await response.json();
+
+        if (!roomData.players || roomData.players.length === 0) {
+          throw new Error('No players found in room');
+        }
+
+        const players = roomData.players.map(p => ({
+          player_id: p.player_id,
+          name: p.name
+        }));
+
+        currentGameState = { roomId: roomIdInput, players };
+        initializePlayers(roomIdInput, players);
+        statusEl.textContent = `Loaded ${players.length} players`;
+        setTimeout(() => statusEl.textContent = '', 3000);
+      } catch (error) {
+        statusEl.textContent = '';
+        alert(`Error loading game: ${error.message}`);
       }
-
-      const playerIds = playerIdsInput.split(',').map(id => id.trim()).filter(id => id);
-
-      if (playerIds.length !== 5) {
-        alert('Please provide exactly 5 Player IDs (comma-separated)');
-        return;
-      }
-
-      currentGameState = { roomId: roomIdInput, playerIds };
-      initializePlayers(roomIdInput, playerIds);
     }
 
     function reloadAll() {
       if (currentGameState) {
-        initializePlayers(currentGameState.roomId, currentGameState.playerIds);
+        initializePlayers(currentGameState.roomId, currentGameState.players);
       } else {
         initializePlayers();
       }
     }
 
     function openInTabs() {
-      for (let i = 1; i <= playerCount; i++) {
-        let url = baseUrl;
-        if (currentGameState && currentGameState.playerIds[i - 1]) {
-          url = `${baseUrl}?storage=local&name=Player${i}&playerId=${currentGameState.playerIds[i - 1]}#/game/${currentGameState.roomId}`;
+      if (currentGameState && currentGameState.players) {
+        currentGameState.players.forEach((player) => {
+          const url = `${baseUrl}/game/${currentGameState.roomId}?storage=local&name=${player.name}&playerId=${player.player_id}`;
+          window.open(url, `player-${player.player_id}`);
+        });
+      } else {
+        for (let i = 1; i <= 5; i++) {
+          window.open(baseUrl, `player-${i}`);
         }
-        window.open(url, `player-${i}`);
       }
     }
 
