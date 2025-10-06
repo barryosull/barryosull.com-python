@@ -82,6 +82,10 @@ class CastVoteHandler:
             if game_state.is_chaos_threshold():
                 PolicyEnactmentService.enact_chaos_policy(game_state)
                 game_state.reset_election_tracker()
+                game_state.previous_chancellor_id = None
+                game_state.previous_president_id = None
+            else:
+                game_state.previous_president_id = game_state.president_id
 
             game_state.nominated_chancellor_id = None
             game_state.current_phase = GamePhase.NOMINATION
@@ -90,9 +94,6 @@ class CastVoteHandler:
             next_president = GovernmentFormationService.advance_president(
                 game_state.president_id, active_players
             )
-
-            game_state.previous_president_id = game_state.president_id
-            game_state.previous_chancellor_id = game_state.chancellor_id
 
             game_state.president_id = next_president
             game_state.chancellor_id = None

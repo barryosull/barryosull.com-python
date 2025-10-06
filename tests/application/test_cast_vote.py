@@ -180,3 +180,73 @@ def test_president_cannot_vote():
 
     with pytest.raises(ValueError, match="President cannot vote"):
         command_bus.execute(command)
+
+
+def test_failed_election_preserves_previous_chancellor():
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    president_id = uuid4()
+    last_chancellor_id = uuid4()
+    voter1_id = uuid4()
+    voter2_id = uuid4()
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.add_player(Player(last_chancellor_id, "LastChancellor"))
+    room.add_player(Player(voter1_id, "Voter1"))
+    room.add_player(Player(voter2_id, "Voter2"))
+    room.status = RoomStatus.IN_PROGRESS
+    room.game_state = GameState(
+        president_id=president_id,
+        nominated_chancellor_id=voter1_id,
+        current_phase=GamePhase.ELECTION,
+        previous_chancellor_id=last_chancellor_id,
+        chancellor_id=None,
+    )
+    room.game_state.votes = {last_chancellor_id: False, voter1_id: False}
+
+    repository.save(room)
+
+    command = CastVoteCommand(room_id=room.room_id, player_id=voter2_id, vote=False)
+    command_bus.execute(command)
+
+    updated_room = repository.find_by_id(room.room_id)
+    assert updated_room.game_state.previous_chancellor_id == last_chancellor_id
+    assert updated_room.game_state.election_tracker == 1
+
+
+def test_chaos_resets_previous_government():
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    president_id = uuid4()
+    last_president_id = uuid4()
+    last_chancellor_id = uuid4()
+    voter1_id = uuid4()
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.add_player(Player(last_president_id, "LastPresident"))
+    room.add_player(Player(last_chancellor_id, "LastChancellor"))
+    room.add_player(Player(voter1_id, "Voter1"))
+    room.status = RoomStatus.IN_PROGRESS
+    room.game_state = GameState(
+        president_id=president_id,
+        nominated_chancellor_id=voter1_id,
+        current_phase=GamePhase.ELECTION,
+        previous_president_id=last_president_id,
+        previous_chancellor_id=last_chancellor_id,
+        election_tracker=2,
+    )
+    room.game_state.votes = {last_president_id: False, last_chancellor_id: False}
+
+    repository.save(room)
+
+    command = CastVoteCommand(room_id=room.room_id, player_id=voter1_id, vote=False)
+    command_bus.execute(command)
+
+    updated_room = repository.find_by_id(room.room_id)
+    assert updated_room.game_state.previous_chancellor_id is None
+    assert updated_room.game_state.previous_president_id is None
+    assert updated_room.game_state.election_tracker == 0
