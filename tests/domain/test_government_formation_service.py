@@ -80,7 +80,7 @@ def test_cannot_nominate_previous_chancellor_when_more_than_5_alive():
     assert "previous chancellor" in msg
 
 
-def test_can_nominate_previous_chancellor_when_5_or_fewer_alive():
+def test_cannot_nominate_previous_chancellor_even_with_5_alive():
     president_id = uuid4()
     previous_chancellor = uuid4()
 
@@ -99,7 +99,31 @@ def test_can_nominate_previous_chancellor_when_5_or_fewer_alive():
         game_state, previous_chancellor, active_players
     )
 
+    assert not can_nominate
+    assert "previous chancellor" in msg
+
+
+def test_can_nominate_previous_president_when_5_or_fewer_alive():
+    current_president_id = uuid4()
+    previous_president_id = uuid4()
+
+    game_state = GameState(
+        president_id=current_president_id, previous_president_id=previous_president_id
+    )
+    active_players = [
+        Player(current_president_id, "Alice"),
+        Player(previous_president_id, "Bob"),
+        Player(uuid4(), "Charlie"),
+        Player(uuid4(), "Dave"),
+        Player(uuid4(), "Eve"),
+    ]
+
+    can_nominate, msg = GovernmentFormationService.can_nominate_chancellor(
+        game_state, previous_president_id, active_players
+    )
+
     assert can_nominate
+    assert msg == ""
 
 
 def test_can_nominate_hitler_after_3_fascist_policies():
