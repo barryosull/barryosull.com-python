@@ -296,7 +296,19 @@
     }
 
     // Initialize on load
-    initializePlayers();
+    function init() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomId = urlParams.get('roomId');
+
+      if (roomId) {
+        document.getElementById('roomId').value = roomId;
+        loadGame();
+      } else {
+        initializePlayers();
+      }
+    }
+
+    init();
   </script>
 </body>
 </html>
