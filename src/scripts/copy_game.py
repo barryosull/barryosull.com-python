@@ -5,6 +5,10 @@ import sys
 from pathlib import Path
 from uuid import uuid4
 
+# Add project root to Python path
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
 
 

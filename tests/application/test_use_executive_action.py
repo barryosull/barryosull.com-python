@@ -86,9 +86,9 @@ def test_policy_peek():
     command = UseExecutiveActionCommand(room_id=room.room_id, player_id=president_id)
     result = handler.handle(command)
 
-    assert "policies" in result
-    assert len(result["policies"]) == 3
-    assert all("type" in p for p in result["policies"])
+    updated_room = repository.find_by_id(room.room_id)
+    assert len(updated_room.game_state.peek_policies()) == 3
+    assert updated_room.game_state.current_phase == GamePhase.NOMINATION
 
 
 def test_execution_regular_player():
@@ -187,6 +187,8 @@ def test_call_special_election():
     player5_id = uuid4()
     player6_id = uuid4()
     player7_id = uuid4()
+    player8_id = uuid4()
+    player9_id = uuid4()
 
     room = GameRoom()
     room.add_player(Player(president_id, "President"))
@@ -196,6 +198,8 @@ def test_call_special_election():
     room.add_player(Player(player5_id, "Player5"))
     room.add_player(Player(player6_id, "Player6"))
     room.add_player(Player(player7_id, "Player7"))
+    room.add_player(Player(player8_id, "Player8"))
+    room.add_player(Player(player9_id, "Player9"))
     room.status = RoomStatus.IN_PROGRESS
 
     room.game_state = GameState(

@@ -95,3 +95,6 @@ class GameState:
 
     def get_role(self, player_id: UUID) -> Optional[Role]:
         return self.role_assignments.get(player_id)
+
+    def peek_policies(self) -> list:
+        return self.policy_deck.peek(3)

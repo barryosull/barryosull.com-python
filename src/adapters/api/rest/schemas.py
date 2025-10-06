@@ -77,6 +77,7 @@ class GameStateResponse(BaseModel):
     votes: dict[str, bool]
     president_policies: list[dict[str, str]]
     chancellor_policies: list[dict[str, str]]
+    peeked_policies: list[dict[str, str]] | None = None
 
 
 class RoleResponse(BaseModel):
