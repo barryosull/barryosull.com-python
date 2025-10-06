@@ -23,6 +23,8 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
   const totalPlayers = players.filter((p) => p.is_alive).length;
   const myPlayer = players.find((p) => p.player_id === myPlayerId);
   const canVote = myPlayer && myPlayer.is_alive;
+  const isPresident = myPlayerId === gameState.president_id;
+  const expectedVotes = totalPlayers - 1;
 
   return (
     <div style={styles.container}>
@@ -44,7 +46,14 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
         <div style={styles.waiting}>
           You cannot vote (dead players cannot participate)
           <div style={styles.voteCount}>
-            {votesCount} / {totalPlayers} votes cast
+            {votesCount} / {expectedVotes} votes cast
+          </div>
+        </div>
+      ) : isPresident ? (
+        <div style={styles.waiting}>
+          The President does not vote on their own nomination
+          <div style={styles.voteCount}>
+            {votesCount} / {expectedVotes} votes cast
           </div>
         </div>
       ) : !hasVoted ? (
@@ -73,7 +82,7 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
         <div style={styles.waiting}>
           Vote recorded. Waiting for other players...
           <div style={styles.voteCount}>
-            {votesCount} / {totalPlayers} votes cast
+            {votesCount} / {expectedVotes} votes cast
           </div>
         </div>
       )}

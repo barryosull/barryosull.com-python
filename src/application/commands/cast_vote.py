@@ -37,13 +37,17 @@ class CastVoteHandler:
         if not player or not player.can_participate():
             raise ValueError("Player cannot vote")
 
+        if command.player_id == game_state.president_id:
+            raise ValueError("President cannot vote on their own nomination")
+
         if command.player_id in game_state.votes:
             raise ValueError("Player has already voted")
 
         game_state.votes[command.player_id] = command.vote
 
         active_player_count = len(room.active_players())
-        if len(game_state.votes) == active_player_count:
+        expected_vote_count = active_player_count - 1
+        if len(game_state.votes) == expected_vote_count:
             self._process_election_results(room)
 
         self.repository.save(room)

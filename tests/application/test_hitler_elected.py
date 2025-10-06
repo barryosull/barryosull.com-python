@@ -30,7 +30,7 @@ def test_hitler_elected_after_3_fascist_policies_ends_game():
         fascist_policies=3,
     )
     room.game_state.role_assignments = {hitler_id: Role.hitler_role()}
-    room.game_state.votes = {president_id: True, hitler_id: True}
+    room.game_state.votes = {hitler_id: True}
 
     repository.save(room)
 
@@ -63,7 +63,7 @@ def test_hitler_elected_before_3_fascist_policies_continues_game():
         fascist_policies=2,
     )
     room.game_state.role_assignments = {hitler_id: Role.hitler_role()}
-    room.game_state.votes = {president_id: True, hitler_id: True}
+    room.game_state.votes = {hitler_id: True}
 
     repository.save(room)
 
@@ -97,7 +97,7 @@ def test_hitler_elected_exactly_3_fascist_policies_ends_game():
         fascist_policies=3,
     )
     room.game_state.role_assignments = {hitler_id: Role.hitler_role()}
-    room.game_state.votes = {president_id: True, hitler_id: True}
+    room.game_state.votes = {hitler_id: True}
 
     repository.save(room)
 

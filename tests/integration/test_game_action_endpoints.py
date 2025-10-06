@@ -110,6 +110,8 @@ def test_cast_vote_success(monkeypatch):
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     for player_id in player_ids:
+        if player_id == president_id:
+            continue
         response = client.post(
             f"/api/games/{room.room_id}/vote",
             json={"player_id": str(player_id), "vote": True},

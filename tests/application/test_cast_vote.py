@@ -60,14 +60,13 @@ def test_cast_vote_government_elected():
         current_phase=GamePhase.ELECTION,
     )
     room.game_state.votes = {
-        president_id: True,
         chancellor_id: True,
         voter1_id: True,
     }
 
     repository.save(room)
 
-    command = CastVoteCommand(room_id=room.room_id, player_id=voter2_id, vote=False)
+    command = CastVoteCommand(room_id=room.room_id, player_id=voter2_id, vote=True)
     command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
@@ -95,7 +94,7 @@ def test_cast_vote_government_rejected():
         current_phase=GamePhase.ELECTION,
         election_tracker=0,
     )
-    room.game_state.votes = {president_id: False, chancellor_id: False}
+    room.game_state.votes = {chancellor_id: False}
 
     repository.save(room)
 
@@ -127,11 +126,11 @@ def test_cast_vote_already_voted():
         nominated_chancellor_id=chancellor_id,
         current_phase=GamePhase.ELECTION,
     )
-    room.game_state.votes = {president_id: True}
+    room.game_state.votes = {chancellor_id: True}
 
     repository.save(room)
 
-    command = CastVoteCommand(room_id=room.room_id, player_id=president_id, vote=False)
+    command = CastVoteCommand(room_id=room.room_id, player_id=chancellor_id, vote=False)
 
     with pytest.raises(ValueError, match="already voted"):
         command_bus.execute(command)
@@ -155,4 +154,29 @@ def test_cast_vote_wrong_phase():
     command = CastVoteCommand(room_id=room.room_id, player_id=president_id, vote=True)
 
     with pytest.raises(ValueError, match="Cannot vote in phase"):
+        command_bus.execute(command)
+
+
+def test_president_cannot_vote():
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    president_id = uuid4()
+    chancellor_id = uuid4()
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.add_player(Player(chancellor_id, "Chancellor"))
+    room.status = RoomStatus.IN_PROGRESS
+    room.game_state = GameState(
+        president_id=president_id,
+        nominated_chancellor_id=chancellor_id,
+        current_phase=GamePhase.ELECTION,
+    )
+
+    repository.save(room)
+
+    command = CastVoteCommand(room_id=room.room_id, player_id=president_id, vote=True)
+
+    with pytest.raises(ValueError, match="President cannot vote"):
         command_bus.execute(command)
