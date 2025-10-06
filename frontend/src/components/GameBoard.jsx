@@ -198,6 +198,9 @@ export default function GameBoard() {
         return (
           <div style={styles.phaseBox}>
             <h2 style={styles.gameOver}>Game Over!</h2>
+            {gameState.game_over_reason && (
+              <p style={styles.gameOverReason}>{gameState.game_over_reason}</p>
+            )}
             <button onClick={() => navigate(preserveParams('/'))} style={styles.button}>
               Return to Home
             </button>
@@ -327,6 +330,11 @@ const styles = {
   gameOver: {
     fontSize: '36px',
     marginBottom: '20px'
+  },
+  gameOverReason: {
+    fontSize: '18px',
+    marginBottom: '30px',
+    color: '#ddd'
   },
   button: {
     padding: '12px 24px',

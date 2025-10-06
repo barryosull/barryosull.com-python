@@ -44,12 +44,13 @@ class EnactPolicyHandler:
 
         game_state.chancellor_policies = []
 
-        is_game_over, winning_team, _ = WinConditionService.check_game_over(
+        is_game_over, winning_team, reason = WinConditionService.check_game_over(
             game_state
         )
 
         if is_game_over:
             game_state.current_phase = GamePhase.GAME_OVER
+            game_state.game_over_reason = f"{winning_team}s win! {reason}"
             room.end_game()
         else:
             presidential_power = game_state.get_presidential_power(

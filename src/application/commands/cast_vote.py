@@ -63,6 +63,7 @@ class CastVoteHandler:
             chancellor_role = game_state.get_role(game_state.chancellor_id)
             if chancellor_role and chancellor_role.is_hitler and game_state.fascist_policies >= 3:
                 game_state.current_phase = GamePhase.GAME_OVER
+                game_state.game_over_reason = "Fascists win! Hitler was elected Chancellor after 3 fascist policies were enacted."
                 room.end_game()
                 return
 
