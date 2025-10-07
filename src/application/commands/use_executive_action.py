@@ -56,7 +56,7 @@ class UseExecutiveActionHandler:
                 raise ValueError("Target player not found in game")
 
             result = {}
-            
+
         elif presidential_power == PresidentialPower.POLICY_PEEK:
             result = {}
 
@@ -96,26 +96,19 @@ class UseExecutiveActionHandler:
             if not target_player.can_participate():
                 raise ValueError("Target player cannot participate")
 
-            game_state.president_id = command.target_player_id
-            game_state.current_phase = GamePhase.NOMINATION
-            game_state.chancellor_id = None
-            game_state.nominated_chancellor_id = None
+            
+            game_state.move_to_nomination_phase(command.target_player_id)
+
             self.repository.save(room)
             return result
 
-        game_state.current_phase = GamePhase.NOMINATION
-
-        active_players = room.active_players()
         next_president = GovernmentFormationService.advance_president(
-            game_state.president_id, active_players
+            game_state.president_id, room.active_players()
         )
+        game_state.move_to_nomination_phase(next_president)
 
         game_state.previous_president_id = game_state.president_id
         game_state.previous_chancellor_id = game_state.chancellor_id
-
-        game_state.president_id = next_president
-        game_state.chancellor_id = None
-        game_state.nominated_chancellor_id = None
 
         self.repository.save(room)
         return result

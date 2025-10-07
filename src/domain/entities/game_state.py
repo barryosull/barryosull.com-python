@@ -5,10 +5,8 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID
 
-from src.domain.entities.player import Player
 from src.domain.entities.policy_deck import PolicyDeck
 from src.domain.value_objects.role import Role
-
 
 class GamePhase(Enum):
     NOMINATION = "NOMINATION"
@@ -98,3 +96,10 @@ class GameState:
 
     def peek_policies(self) -> list:
         return self.policy_deck.peek(3)
+    
+    def move_to_nomination_phase(self, next_president):
+        self.current_phase = GamePhase.NOMINATION
+        self.president_id = next_president
+        self.nominated_chancellor_id = None
+        self.chancellor_id = None
+        self.votes = {}

@@ -4,6 +4,7 @@ from uuid import UUID
 from src.domain.entities.game_state import GamePhase
 from src.domain.services.government_formation_service import GovernmentFormationService
 from src.domain.services.policy_enactment_service import PolicyEnactmentService
+from src.domain.services.win_condition_service import WinConditionService
 from src.ports.repository_port import RoomRepositoryPort
 
 
@@ -76,24 +77,35 @@ class CastVoteHandler:
             policies = PolicyEnactmentService.draw_policies(game_state)
             game_state.president_policies = policies
             game_state.chancellor_policies = []
-        else:
-            game_state.increment_election_tracker()
+            return
+        
+        game_state.increment_election_tracker()
 
-            if game_state.is_chaos_threshold():
-                PolicyEnactmentService.enact_chaos_policy(game_state)
-                game_state.reset_election_tracker()
-                game_state.previous_chancellor_id = None
-                game_state.previous_president_id = None
-            else:
-                game_state.previous_president_id = game_state.president_id
+        if not game_state.is_chaos_threshold():
+            game_state.previous_president_id = game_state.president_id
 
-            game_state.nominated_chancellor_id = None
-            game_state.current_phase = GamePhase.NOMINATION
-
-            active_players = room.active_players()
             next_president = GovernmentFormationService.advance_president(
-                game_state.president_id, active_players
+                game_state.president_id, room.active_players()
             )
+            game_state.move_to_nomination_phase(next_president)
+            return
+        
+        PolicyEnactmentService.enact_chaos_policy(game_state)
+        game_state.reset_election_tracker()
+        game_state.previous_chancellor_id = None
+        game_state.previous_president_id = None
 
-            game_state.president_id = next_president
-            game_state.chancellor_id = None
+        is_game_over, winning_team, reason = WinConditionService.check_game_over(
+            game_state
+        )
+
+        if is_game_over:
+            game_state.current_phase = GamePhase.GAME_OVER
+            game_state.game_over_reason = f"{winning_team}s win! {reason}"
+            room.end_game()
+        else:
+            next_president = GovernmentFormationService.advance_president(
+                game_state.president_id, room.active_players()
+            )
+            game_state.move_to_nomination_phase(next_president)
+        

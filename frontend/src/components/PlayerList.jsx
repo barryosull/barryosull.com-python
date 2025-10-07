@@ -8,13 +8,17 @@ export default function PlayerList({ players, gameState, myPlayerId }) {
           const isNominated = gameState?.nominated_chancellor_id === player.player_id;
           const isDead = !player.is_alive;
           const isMe = player.player_id === myPlayerId;
+          const playerVote = gameState?.votes?.[player.player_id];
+          const hasVoted = playerVote !== undefined;
 
           return (
             <div
               key={player.player_id}
               style={{
                 ...styles.playerItem,
-                ...(isDead && styles.deadPlayer)
+                ...(isDead && styles.deadPlayer),
+                ...(hasVoted && playerVote && styles.votedYes),
+                ...(hasVoted && !playerVote && styles.votedNo)
               }}
             >
               <span style={styles.playerName}>
@@ -111,5 +115,11 @@ const styles = {
     borderRadius: '3px',
     backgroundColor: '#d32f2f',
     color: '#fff'
+  },
+  votedYes: {
+    backgroundColor: '#1a4d1a'
+  },
+  votedNo: {
+    backgroundColor: '#4d1a1a'
   }
 };

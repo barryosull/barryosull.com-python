@@ -200,11 +200,8 @@ export default function GameBoard() {
       </div>
 
       <div style={styles.mainContent}>
-        <div style={styles.leftColumn}>
-          <PolicyTracks gameState={gameState} />
-        </div>
-
-        <div style={styles.rightColumn}>{renderPhaseView()}</div>
+        <PolicyTracks gameState={gameState} />
+        {renderPhaseView()}
       </div>
 
       <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
@@ -240,18 +237,12 @@ const styles = {
     padding: '0 10px'
   },
   mainContent: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 2fr',
+    display: 'flex',
+    flexDirection: 'column',
     gap: '20px',
     maxWidth: '1400px',
     margin: '0 auto',
     padding: '0 10px'
-  },
-  leftColumn: {
-    minWidth: 0
-  },
-  rightColumn: {
-    minWidth: 0
   },
   phaseBox: {
     backgroundColor: '#333',

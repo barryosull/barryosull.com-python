@@ -38,7 +38,7 @@ class EnactPolicyHandler:
         if game_state.chancellor_id != command.player_id:
             raise ValueError("Only the chancellor can enact a policy")
 
-        PolicyEnactmentService.chancellor_enacts_policy(
+        enacted_policy = PolicyEnactmentService.chancellor_enacts_policy(
             game_state, game_state.chancellor_policies, command.enacted_policy
         )
 
@@ -53,25 +53,21 @@ class EnactPolicyHandler:
             game_state.game_over_reason = f"{winning_team}s win! {reason}"
             room.end_game()
         else:
+            from src.domain.value_objects.policy import PolicyType
+
             presidential_power = game_state.get_presidential_power(
                 len(room.active_players())
             )
 
-            if presidential_power:
+            if presidential_power and enacted_policy.type == PolicyType.FASCIST:
                 game_state.current_phase = GamePhase.EXECUTIVE_ACTION
             else:
-                game_state.current_phase = GamePhase.NOMINATION
-
-                active_players = room.active_players()
                 next_president = GovernmentFormationService.advance_president(
-                    game_state.president_id, active_players
+                    game_state.president_id, room.active_players()
                 )
+                game_state.move_to_nomination_phase(next_president)
 
                 game_state.previous_president_id = game_state.president_id
                 game_state.previous_chancellor_id = game_state.chancellor_id
-
-                game_state.president_id = next_president
-                game_state.chancellor_id = None
-                game_state.nominated_chancellor_id = None
 
         self.repository.save(room)

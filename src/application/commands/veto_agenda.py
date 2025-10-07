@@ -45,22 +45,18 @@ class VetoAgendaHandler:
             raise ValueError("Chancellor initiated veto, cannot reject")
 
         if is_chancellor:
-            game_state.current_phase = GamePhase.NOMINATION
+            
             game_state.chancellor_policies = []
             game_state.president_policies = []
             game_state.increment_election_tracker()
 
-            active_players = room.active_players()
             next_president = GovernmentFormationService.advance_president(
-                game_state.president_id, active_players
+                game_state.president_id, room.active_players()
             )
+            game_state.move_to_nomination_phase(next_president)
 
             game_state.previous_president_id = game_state.president_id
             game_state.previous_chancellor_id = game_state.chancellor_id
-
-            game_state.president_id = next_president
-            game_state.chancellor_id = None
-            game_state.nominated_chancellor_id = None
 
         elif is_president:
             if not command.approve_veto:
@@ -70,18 +66,13 @@ class VetoAgendaHandler:
             game_state.chancellor_policies = []
             game_state.president_policies = []
             game_state.increment_election_tracker()
-            game_state.current_phase = GamePhase.NOMINATION
 
-            active_players = room.active_players()
             next_president = GovernmentFormationService.advance_president(
-                game_state.president_id, active_players
+                game_state.president_id, room.active_players()
             )
+            game_state.move_to_nomination_phase(next_president)
 
             game_state.previous_president_id = game_state.president_id
             game_state.previous_chancellor_id = game_state.chancellor_id
-
-            game_state.president_id = next_president
-            game_state.chancellor_id = None
-            game_state.nominated_chancellor_id = None
 
         self.repository.save(room)
