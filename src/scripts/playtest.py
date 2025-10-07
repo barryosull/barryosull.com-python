@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Script to create a test game with 6 players using the command bus."""
+"""Script to create a test game using the command bus."""
 
+import argparse
 import random
 import sys
 from pathlib import Path
@@ -52,7 +53,21 @@ def start_game(selected_names, room_id, creator_id) -> list[UUID]:
     return player_ids
 
 def main():
-    selected_names = random.sample(PLAYER_NAMES, 6)
+    parser = argparse.ArgumentParser(description="Create a test game with N players")
+    parser.add_argument(
+        "player_count",
+        type=int,
+        nargs="?",
+        default=6,
+        help="Number of players (5-10, default: 6)"
+    )
+    args = parser.parse_args()
+
+    if args.player_count < 5 or args.player_count > 10:
+        print(f"Error: Player count must be between 5 and 10 (got {args.player_count})")
+        sys.exit(1)
+
+    selected_names = random.sample(PLAYER_NAMES, args.player_count)
 
     create_result = command_bus.execute(CreateRoomCommand(player_name=selected_names[0]))
     room_id = create_result.room_id

@@ -71,9 +71,8 @@ class GameState:
             }
         elif player_count <= 8:
             power_map = {
-                1: PresidentialPower.INVESTIGATE_LOYALTY,
-                2: PresidentialPower.CALL_SPECIAL_ELECTION,
-                3: PresidentialPower.POLICY_PEEK,
+                2: PresidentialPower.INVESTIGATE_LOYALTY,
+                3: PresidentialPower.CALL_SPECIAL_ELECTION,
                 4: PresidentialPower.EXECUTION,
                 5: PresidentialPower.EXECUTION,
             }
