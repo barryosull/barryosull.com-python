@@ -191,14 +191,17 @@ export default function GameBoard() {
         <div style={styles.roomId}>Room: {roomId}</div>
       </div>
 
+      <div style={styles.playersSection}>
+        <PlayerList
+          players={room.players}
+          gameState={gameState}
+          myPlayerId={myPlayerId}
+        />
+      </div>
+
       <div style={styles.mainContent}>
         <div style={styles.leftColumn}>
           <PolicyTracks gameState={gameState} />
-          <PlayerList
-            players={room.players}
-            gameState={gameState}
-            myPlayerId={myPlayerId}
-          />
         </div>
 
         <div style={styles.rightColumn}>{renderPhaseView()}</div>
@@ -227,14 +230,22 @@ const styles = {
   roomId: {
     color: '#888',
     fontSize: '14px',
-    fontFamily: 'monospace'
+    fontFamily: 'monospace',
+    marginBottom: '20px'
+  },
+  playersSection: {
+    width: '100%',
+    maxWidth: '1400px',
+    margin: '0 auto 20px',
+    padding: '0 10px'
   },
   mainContent: {
     display: 'grid',
     gridTemplateColumns: '1fr 2fr',
     gap: '20px',
     maxWidth: '1400px',
-    margin: '0 auto'
+    margin: '0 auto',
+    padding: '0 10px'
   },
   leftColumn: {
     minWidth: 0

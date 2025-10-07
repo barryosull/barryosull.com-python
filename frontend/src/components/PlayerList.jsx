@@ -1,8 +1,7 @@
 export default function PlayerList({ players, gameState, myPlayerId }) {
   return (
     <div style={styles.container}>
-      <h3 style={styles.title}>Players</h3>
-      <ul style={styles.list}>
+      <div style={styles.playerGrid}>
         {players.map((player) => {
           const isPresident = gameState?.president_id === player.player_id;
           const isChancellor = gameState?.chancellor_id === player.player_id;
@@ -11,7 +10,7 @@ export default function PlayerList({ players, gameState, myPlayerId }) {
           const isMe = player.player_id === myPlayerId;
 
           return (
-            <li
+            <div
               key={player.player_id}
               style={{
                 ...styles.playerItem,
@@ -19,56 +18,53 @@ export default function PlayerList({ players, gameState, myPlayerId }) {
               }}
             >
               <span style={styles.playerName}>
-                {player.name}
+                {player.name.length > 10 ? player.name.slice(0, 10) + '...' : player.name}
                 {isMe && <span style={styles.youBadge}>(You)</span>}
               </span>
               <div style={styles.badges}>
-                {isPresident && <span style={styles.presidentBadge}>President</span>}
-                {isChancellor && <span style={styles.chancellorBadge}>Chancellor</span>}
-                {isNominated && <span style={styles.nominatedBadge}>Nominated</span>}
-                {isDead && <span style={styles.deadBadge}>Dead</span>}
+                {isPresident && <span style={{...styles.badge, ...styles.presidentBadge}}>President</span>}
+                {isChancellor && <span style={{...styles.badge, ...styles.chancellorBadge}}>Chancellor</span>}
+                {isNominated && !isChancellor && <span style={{...styles.badge, ...styles.nominatedBadge}}>Nominated</span>}
+                {isDead && <span style={{...styles.badge, ...styles.deadBadge}}>Dead</span>}
               </div>
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }
 
 const styles = {
   container: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '20px',
+    padding: '0px',
     marginBottom: '20px'
   },
-  title: {
-    color: '#fff',
-    fontSize: '18px',
-    marginBottom: '15px',
-    marginTop: 0
-  },
-  list: {
-    listStyle: 'none',
-    padding: 0,
-    margin: 0
+  playerGrid: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '10px'
   },
   playerItem: {
     color: '#fff',
-    padding: '10px',
-    marginBottom: '8px',
+    padding: '12px',
     backgroundColor: '#2a2a2a',
     borderRadius: '4px',
     display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    flexDirection: 'column',
+    gap: '8px',
+    flex: '1 1 calc(20% - 10px)',
+    minWidth: '90px',
+    maxWidth: 'calc(20% - 10px)',
+    position: 'relative',
   },
   deadPlayer: {
     opacity: 0.5
   },
   playerName: {
-    flex: 1
+    flex: 1,
+    textAlign: 'center',
+    fontSize: '12px',
   },
   youBadge: {
     marginLeft: '8px',
@@ -76,36 +72,43 @@ const styles = {
     color: '#888'
   },
   badges: {
-    display: 'flex',
-    gap: '8px'
+    position: 'absolute',
+    top: '-10px',
+    left: '0px',
+    width: '100%',
+    textAlign: 'center',
+  },
+  badge: {
+    fontSize: '10px',
+    padding: '3px 6px',
+    margin: '0px 3px',
+    borderRadius: '3px',
+    color: '#000',
+    fontWeight: 'bold',
+    display: 'inline-block',
   },
   presidentBadge: {
-    fontSize: '12px',
-    padding: '4px 8px',
-    borderRadius: '4px',
     backgroundColor: '#ff9800',
-    color: '#000',
-    fontWeight: 'bold'
   },
   chancellorBadge: {
-    fontSize: '12px',
-    padding: '4px 8px',
-    borderRadius: '4px',
+    fontSize: '10px',
+    padding: '3px 6px',
+    borderRadius: '3px',
     backgroundColor: '#4caf50',
     color: '#000',
     fontWeight: 'bold'
   },
   nominatedBadge: {
-    fontSize: '12px',
-    padding: '4px 8px',
-    borderRadius: '4px',
+    fontSize: '10px',
+    padding: '3px 6px',
+    borderRadius: '3px',
     backgroundColor: '#2196f3',
     color: '#fff'
   },
   deadBadge: {
-    fontSize: '12px',
-    padding: '4px 8px',
-    borderRadius: '4px',
+    fontSize: '10px',
+    padding: '3px 3px',
+    borderRadius: '3px',
     backgroundColor: '#d32f2f',
     color: '#fff'
   }

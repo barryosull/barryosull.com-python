@@ -77,6 +77,7 @@ export default function HomePage() {
             onChange={(e) => setPlayerName(e.target.value)}
             style={styles.input}
             disabled={loading}
+            maxLength={10}
           />
         </div>
 
