@@ -309,6 +309,50 @@ def get_my_role(room_id: UUID, player_id: UUID) -> RoleResponse:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
+@router.get(
+    "/games/{room_id}/investigate-loyalty",
+    response_model=RoleResponse,
+    status_code=status.HTTP_200_OK,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+def investigate_loyalty(room_id: UUID, player_id: UUID, target_player_id: UUID) -> RoleResponse:
+    try:
+        room = repository.find_by_id(room_id)
+        if not room:
+            raise ValueError(f"Room {room_id} not found")
+
+        if not room.game_state:
+            raise ValueError("Game not started")
+
+        game_state = room.game_state
+
+        if game_state.current_phase != GamePhase.EXECUTIVE_ACTION:
+            raise ValueError(
+                f"Cannot investigate loyalty in phase {game_state.current_phase.value}"
+            )
+
+        if game_state.president_id != player_id:
+            raise ValueError("Only the president can investigate loyalty")
+
+        presidential_power = game_state.get_presidential_power(
+            len(room.active_players())
+        )
+
+        if presidential_power != PresidentialPower.INVESTIGATE_LOYALTY:
+            raise ValueError("Investigate loyalty power not available")
+
+        target_role = game_state.role_assignments.get(target_player_id)
+        if not target_role:
+            raise ValueError("Target player not found in game")
+
+        return RoleResponse(team=target_role.team, is_hitler=False)
+    except ValueError as e:
+        error_msg = str(e)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+
+
 @router.post(
     "/games/{room_id}/use-power",
     response_model=ExecutiveActionResponse,
