@@ -33,6 +33,7 @@
 - Use fixtures for test data and setup
 - Mock external dependencies (APIs, databases, file I/O)
 - Test both success and failure paths
+- Do not run tests after frontend changes, as there are no tests for the frontend 
 
 ## Code Quality
 - No commented-out code in commits

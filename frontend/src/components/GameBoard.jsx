@@ -9,13 +9,13 @@ import NominationView from './NominationView';
 import VotingView from './VotingView';
 import PolicySelectionView from './PolicySelectionView';
 import ExecutiveActionView from './ExecutiveActionView';
+import RoleOverlay from './RoleOverlay';
 
 export default function GameBoard() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const { gameState, room, myRole, error, loading, refresh } = useGameState(roomId);
   const myPlayerId = playerStorage.getPlayerId();
-  const [roleVisible, setRoleVisible] = useState(false);
 
   useEffect(() => {
     initializeFromUrl();
@@ -191,27 +191,6 @@ export default function GameBoard() {
         <div style={styles.roomId}>Room: {roomId}</div>
       </div>
 
-      {myRole && (
-        <div
-          style={styles.roleBox}
-          onClick={() => setRoleVisible(!roleVisible)}
-        >
-          <div style={styles.roleLabel}>Your Role: {roleVisible ? '' : '(click to reveal)'}</div>
-          {roleVisible && (
-            <div
-              style={{
-                ...styles.roleValue,
-                ...(myRole.team === 'LIBERAL'
-                  ? styles.liberal
-                  : styles.fascist)
-              }}
-            >
-              {myRole.is_hitler ? 'Hitler' : myRole.team}
-            </div>
-          )}
-        </div>
-      )}
-
       <div style={styles.mainContent}>
         <div style={styles.leftColumn}>
           <PolicyTracks gameState={gameState} />
@@ -224,6 +203,8 @@ export default function GameBoard() {
 
         <div style={styles.rightColumn}>{renderPhaseView()}</div>
       </div>
+
+      <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
     </div>
   );
 }
@@ -247,33 +228,6 @@ const styles = {
     color: '#888',
     fontSize: '14px',
     fontFamily: 'monospace'
-  },
-  roleBox: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '15px',
-    marginBottom: '20px',
-    textAlign: 'center',
-    maxWidth: '400px',
-    margin: '0 auto 20px',
-    cursor: 'pointer',
-    userSelect: 'none'
-  },
-  roleLabel: {
-    color: '#888',
-    fontSize: '12px',
-    marginBottom: '8px',
-    textTransform: 'uppercase'
-  },
-  roleValue: {
-    fontSize: '24px',
-    fontWeight: 'bold'
-  },
-  liberal: {
-    color: '#2196f3'
-  },
-  fascist: {
-    color: '#f44336'
   },
   mainContent: {
     display: 'grid',
