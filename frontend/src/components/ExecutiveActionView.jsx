@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { api } from '../services/api';
+import { useParams } from 'react-router-dom';
 
 export default function ExecutiveActionView({
   gameState,
@@ -7,10 +9,12 @@ export default function ExecutiveActionView({
   onUseAction,
   presidentialPower
 }) {
+  const { roomId } = useParams();
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [showingPolicies, setShowingPolicies] = useState(false);
+  const [showingLoyalty, setShowingLoyalty] = useState(false);
 
   const isPresident = gameState.president_id === myPlayerId;
   const hasPeekedPolicies = gameState.peeked_policies && gameState.peeked_policies.length > 0;
@@ -21,6 +25,23 @@ export default function ExecutiveActionView({
       setTimeout(async () => {
         await onUseAction(null);
       }, 3000);
+      return;
+    }
+
+    if (presidentialPower === 'INVESTIGATE_LOYALTY' && !showingLoyalty) {
+      setLoading(true);
+      try {
+        const loyaltyResult = await api.investigateLoyalty(roomId, myPlayerId, selectedPlayerId);
+        setResult(loyaltyResult);
+        setShowingLoyalty(true);
+        setLoading(false);
+        setTimeout(async () => {
+          await onUseAction(selectedPlayerId);
+        }, 3000);
+      } catch (err) {
+        alert(err.message);
+        setLoading(false);
+      }
       return;
     }
 
@@ -101,6 +122,17 @@ export default function ExecutiveActionView({
 
       {result && (
         <div style={styles.result}>
+          {result.team && (
+            <div>
+              <strong>Investigation Result:</strong> The player is a{' '}
+              <span style={{
+                color: result.team === 'LIBERAL' ? '#2196f3' : '#f44336',
+                fontWeight: 'bold'
+              }}>
+                {result.team}
+              </span>
+            </div>
+          )}
           {result.party_membership && (
             <div>
               <strong>Investigation Result:</strong> The player is a{' '}
@@ -125,7 +157,7 @@ export default function ExecutiveActionView({
         </div>
       )}
 
-      {needsTarget && !result && !showingPolicies && (
+      {needsTarget && !result && !showingPolicies && !showingLoyalty && (
         <div style={styles.playerGrid}>
           {eligiblePlayers.map((player) => (
             <button
@@ -143,7 +175,7 @@ export default function ExecutiveActionView({
         </div>
       )}
 
-      {!showingPolicies && (
+      {!showingPolicies && !showingLoyalty && (
         <button
           onClick={handleExecute}
           style={{
@@ -156,7 +188,7 @@ export default function ExecutiveActionView({
         </button>
       )}
 
-      {showingPolicies && (
+      {(showingPolicies || showingLoyalty) && (
         <div style={styles.autoAdvanceMessage}>
           Auto-advancing in 3 seconds...
         </div>

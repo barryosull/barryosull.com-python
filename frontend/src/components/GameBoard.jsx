@@ -107,38 +107,6 @@ export default function GameBoard() {
     }
   };
 
-  const getPresidentialPower = () => {
-    const playerCount = room.player_count;
-    const fascistPolicies = gameState.fascist_policies;
-
-    if (playerCount <= 6) {
-      const powerMap = {
-        3: 'POLICY_PEEK',
-        4: 'EXECUTION',
-        5: 'EXECUTION'
-      };
-      return powerMap[fascistPolicies];
-    } else if (playerCount <= 8) {
-      const powerMap = {
-        1: 'INVESTIGATE_LOYALTY',
-        2: 'CALL_SPECIAL_ELECTION',
-        3: 'POLICY_PEEK',
-        4: 'EXECUTION',
-        5: 'EXECUTION'
-      };
-      return powerMap[fascistPolicies];
-    } else {
-      const powerMap = {
-        1: 'INVESTIGATE_LOYALTY',
-        2: 'INVESTIGATE_LOYALTY',
-        3: 'CALL_SPECIAL_ELECTION',
-        4: 'EXECUTION',
-        5: 'EXECUTION'
-      };
-      return powerMap[fascistPolicies];
-    }
-  };
-
   const renderPhaseView = () => {
     switch (gameState.current_phase) {
       case 'NOMINATION':
@@ -190,7 +158,7 @@ export default function GameBoard() {
             myPlayerId={myPlayerId}
             players={room.players}
             onUseAction={handleExecutiveAction}
-            presidentialPower={getPresidentialPower()}
+            presidentialPower={gameState.presidential_power}
           />
         );
 

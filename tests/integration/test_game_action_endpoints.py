@@ -375,3 +375,67 @@ def test_investigate_loyalty_not_president(monkeypatch):
 
     assert response.status_code == 400
     assert "president" in response.json()["detail"].lower()
+
+
+def test_get_game_state_includes_presidential_power(monkeypatch):
+    from src.domain.entities.game_state import GamePhase
+
+    repository = InMemoryRoomRepository()
+
+    room = GameRoom()
+    player_ids = [uuid4() for _ in range(7)]
+
+    for i, player_id in enumerate(player_ids):
+        room.add_player(Player(player_id, f"Player{i}"))
+
+    start_game_for_room(room)
+    room.game_state.current_phase = GamePhase.EXECUTIVE_ACTION
+    room.game_state.fascist_policies = 2
+    repository.save(room)
+
+    import src.adapters.api.rest.routes as routes_module
+
+    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
+
+    response = client.get(f"/api/games/{room.room_id}/state")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["presidential_power"] == "INVESTIGATE_LOYALTY"
+    assert data["current_phase"] == "EXECUTIVE_ACTION"
+
+
+def test_investigate_loyalty_cannot_investigate_self(monkeypatch):
+    from src.domain.entities.game_state import GamePhase
+    from src.domain.value_objects.role import Role, Team
+
+    repository = InMemoryRoomRepository()
+
+    room = GameRoom()
+    player_ids = [uuid4() for _ in range(7)]
+
+    for i, player_id in enumerate(player_ids):
+        room.add_player(Player(player_id, f"Player{i}"))
+
+    start_game_for_room(room)
+    room.game_state.current_phase = GamePhase.EXECUTIVE_ACTION
+    room.game_state.fascist_policies = 2
+    room.game_state.role_assignments = {
+        player_ids[0]: Role(team=Team.FASCIST, is_hitler=False),
+    }
+    room.game_state.president_id = player_ids[0]
+    repository.save(room)
+
+    import src.adapters.api.rest.routes as routes_module
+
+    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
+
+    response = client.get(
+        f"/api/games/{room.room_id}/investigate-loyalty",
+        params={"player_id": str(player_ids[0]), "target_player_id": str(player_ids[0])},
+    )
+
+    assert response.status_code == 400
+    assert "yourself" in response.json()["detail"].lower()

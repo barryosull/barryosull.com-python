@@ -48,6 +48,9 @@ class UseExecutiveActionHandler:
             if not command.target_player_id:
                 raise ValueError("Target player required for loyalty investigation")
 
+            if command.target_player_id == command.player_id:
+                raise ValueError("Cannot investigate yourself")
+
             target_role = game_state.role_assignments.get(command.target_player_id)
             if not target_role:
                 raise ValueError("Target player not found in game")

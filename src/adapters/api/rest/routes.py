@@ -253,6 +253,12 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
                     eligible.append(player.player_id)
             eligible_chancellor_nominees = eligible
 
+        presidential_power = None
+        if game_state.current_phase == GamePhase.EXECUTIVE_ACTION:
+            power = game_state.get_presidential_power(len(room.active_players()))
+            if power:
+                presidential_power = power.value
+
         return GameStateResponse(
             round_number=game_state.round_number,
             president_id=game_state.president_id,
@@ -279,6 +285,7 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
             ),
             game_over_reason=game_state.game_over_reason,
             eligible_chancellor_nominees=eligible_chancellor_nominees,
+            presidential_power=presidential_power,
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -333,6 +340,9 @@ def investigate_loyalty(room_id: UUID, player_id: UUID, target_player_id: UUID) 
 
         if game_state.president_id != player_id:
             raise ValueError("Only the president can investigate loyalty")
+
+        if target_player_id == player_id:
+            raise ValueError("Cannot investigate yourself")
 
         presidential_power = game_state.get_presidential_power(
             len(room.active_players())

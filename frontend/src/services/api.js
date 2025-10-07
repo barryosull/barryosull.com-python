@@ -97,6 +97,13 @@ export const api = {
     return handleResponse(response);
   },
 
+  async investigateLoyalty(roomId, playerId, targetPlayerId) {
+    const response = await fetch(
+      `${API_BASE}/games/${roomId}/investigate-loyalty?player_id=${playerId}&target_player_id=${targetPlayerId}`
+    );
+    return handleResponse(response);
+  },
+
   async useExecutiveAction(roomId, playerId, targetPlayerId = null) {
     const response = await fetch(`${API_BASE}/games/${roomId}/use-power`, {
       method: 'POST',

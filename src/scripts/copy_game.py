@@ -4,6 +4,7 @@
 import sys
 from pathlib import Path
 from uuid import uuid4
+import webbrowser
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent.parent
@@ -36,12 +37,9 @@ def main():
         print(f"Successfully copied game:")
         print(f"  Source Room ID: {source_room_id}")
         print(f"  Target Room ID: {target_room_id}")
-        print(f"  Player Count: {source_room.player_count}")
-        print(f"  Status: {source_room.status.value}")
-        if source_room.game_state:
-            print(f"  Phase: {source_room.game_state.current_phase.value}")
-            print(f"  Liberal Policies: {source_room.game_state.liberal_policies}")
-            print(f"  Fascist Policies: {source_room.game_state.fascist_policies}")
+
+        # Open the game for testing
+        webbrowser.open(f"http://localhost:3000/test-multi-player.html?roomId={target_room_id}", new=2)
 
     except Exception as e:
         print(f"Error: {e}")

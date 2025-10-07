@@ -342,3 +342,44 @@ def test_execution_dead_player():
 
     with pytest.raises(ValueError, match="Target player is already dead"):
         command_bus.execute(command)
+
+
+def test_investigate_loyalty_cannot_investigate_self():
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    president_id = uuid4()
+    player2_id = uuid4()
+    player3_id = uuid4()
+    player4_id = uuid4()
+    player5_id = uuid4()
+    player6_id = uuid4()
+    player7_id = uuid4()
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.add_player(Player(player2_id, "Player2"))
+    room.add_player(Player(player3_id, "Player3"))
+    room.add_player(Player(player4_id, "Player4"))
+    room.add_player(Player(player5_id, "Player5"))
+    room.add_player(Player(player6_id, "Player6"))
+    room.add_player(Player(player7_id, "Player7"))
+    room.status = RoomStatus.IN_PROGRESS
+
+    room.game_state = GameState(
+        president_id=president_id,
+        current_phase=GamePhase.EXECUTIVE_ACTION,
+        fascist_policies=2,
+    )
+    room.game_state.role_assignments = {
+        president_id: Role(team=Team.FASCIST, is_hitler=False),
+    }
+
+    repository.save(room)
+
+    command = UseExecutiveActionCommand(
+        room_id=room.room_id, player_id=president_id, target_player_id=president_id
+    )
+
+    with pytest.raises(ValueError, match="Cannot investigate yourself"):
+        command_bus.execute(command)
