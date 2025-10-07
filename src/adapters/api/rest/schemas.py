@@ -94,7 +94,6 @@ class UseExecutiveActionRequest(BaseModel):
 
 
 class ExecutiveActionResponse(BaseModel):
-    party_membership: str | None = None
     policies: list[dict[str, str]] | None = None
     executed_player_id: str | None = None
     game_over: bool | None = None

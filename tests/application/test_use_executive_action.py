@@ -48,9 +48,8 @@ def test_investigate_loyalty():
     command = UseExecutiveActionCommand(
         room_id=room.room_id, player_id=president_id, target_player_id=target_id
     )
-    result = command_bus.execute(command)
+    command_bus.execute(command)
 
-    assert result["party_membership"] == Team.LIBERAL
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION
 
@@ -82,7 +81,7 @@ def test_policy_peek():
     repository.save(room)
 
     command = UseExecutiveActionCommand(room_id=room.room_id, player_id=president_id)
-    result = command_bus.execute(command)
+    command_bus.execute(command)
 
     updated_room = repository.find_by_id(room.room_id)
     assert len(updated_room.game_state.peek_policies()) == 3

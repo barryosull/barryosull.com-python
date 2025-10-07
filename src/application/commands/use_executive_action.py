@@ -55,8 +55,8 @@ class UseExecutiveActionHandler:
             if not target_role:
                 raise ValueError("Target player not found in game")
 
-            result = {"party_membership": target_role.team}
-
+            result = {}
+            
         elif presidential_power == PresidentialPower.POLICY_PEEK:
             result = {}
 

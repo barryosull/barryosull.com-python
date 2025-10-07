@@ -133,17 +133,6 @@ export default function ExecutiveActionView({
               </span>
             </div>
           )}
-          {result.party_membership && (
-            <div>
-              <strong>Investigation Result:</strong> The player is a{' '}
-              <span style={{
-                color: result.party_membership === 'LIBERAL' ? '#2196f3' : '#f44336',
-                fontWeight: 'bold'
-              }}>
-                {result.party_membership}
-              </span>
-            </div>
-          )}
           {result.executed_player_id && (
             <div>
               <strong>Player executed</strong>
