@@ -7,6 +7,13 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
 
   useEffect(() => {
     if (myRole && roomId && myPlayerId) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hideOverlay = urlParams.get('hide_overlay') === '1';
+
+      if (hideOverlay) {
+        return;
+      }
+
       const roleShownKey = `${roomId}_${myPlayerId}`;
       if (!shownRoles[roleShownKey]) {
         setShowOverlay(true);
