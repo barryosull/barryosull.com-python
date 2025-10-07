@@ -54,7 +54,7 @@ def test_enact_policy_triggers_executive_action():
     policies = [Policy(PolicyType.FASCIST), Policy(PolicyType.LIBERAL)]
 
     room = GameRoom()
-    for i in range(7):
+    for i in range(9):
         player_id = president_id if i == 0 else (chancellor_id if i == 1 else uuid4())
         room.add_player(Player(player_id, f"Player{i}"))
 

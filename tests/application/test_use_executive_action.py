@@ -36,7 +36,7 @@ def test_investigate_loyalty():
     room.game_state = GameState(
         president_id=president_id,
         current_phase=GamePhase.EXECUTIVE_ACTION,
-        fascist_policies=1,
+        fascist_policies=2,
     )
     room.game_state.role_assignments = {
         president_id: Role(team=Team.FASCIST, is_hitler=False),
