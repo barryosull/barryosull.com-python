@@ -18,12 +18,12 @@ export default function PlayerList({ players, gameState, myPlayerId }) {
                 ...styles.playerItem,
                 ...(isDead && styles.deadPlayer),
                 ...(hasVoted && playerVote && styles.votedYes),
-                ...(hasVoted && !playerVote && styles.votedNo)
+                ...(hasVoted && !playerVote && styles.votedNo),
+                ...(isMe && styles.you)
               }}
             >
               <span style={styles.playerName}>
                 {player.name.length > 10 ? player.name.slice(0, 10) + '...' : player.name}
-                {isMe && <span style={styles.youBadge}>(You)</span>}
               </span>
               <div style={styles.badges}>
                 {isPresident && <span style={{...styles.badge, ...styles.presidentBadge}}>President</span>}
@@ -52,7 +52,7 @@ const styles = {
   playerItem: {
     color: '#fff',
     padding: '12px',
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#F2654B',
     borderRadius: '4px',
     display: 'flex',
     flexDirection: 'column',
@@ -68,12 +68,10 @@ const styles = {
   playerName: {
     flex: 1,
     textAlign: 'center',
-    fontSize: '12px',
+    fontSize: '12px',  
   },
-  youBadge: {
-    marginLeft: '8px',
-    fontSize: '12px',
-    color: '#888'
+  you: {
+    border: '1px solid #fff',
   },
   badges: {
     position: 'absolute',
@@ -84,9 +82,9 @@ const styles = {
   },
   badge: {
     fontSize: '10px',
-    padding: '3px 6px',
-    margin: '0px 3px',
-    borderRadius: '3px',
+    padding: '2px 4px',
+    margin: '0px 2px',
+    borderRadius: '2px',
     color: '#000',
     fontWeight: 'bold',
     display: 'inline-block',
@@ -95,26 +93,13 @@ const styles = {
     backgroundColor: '#ff9800',
   },
   chancellorBadge: {
-    fontSize: '10px',
-    padding: '3px 6px',
-    borderRadius: '3px',
     backgroundColor: '#4caf50',
-    color: '#000',
-    fontWeight: 'bold'
   },
   nominatedBadge: {
-    fontSize: '10px',
-    padding: '3px 6px',
-    borderRadius: '3px',
-    backgroundColor: '#2196f3',
-    color: '#fff'
+    backgroundColor: '#0c0c0dff',
   },
   deadBadge: {
-    fontSize: '10px',
-    padding: '3px 3px',
-    borderRadius: '3px',
     backgroundColor: '#d32f2f',
-    color: '#fff'
   },
   votedYes: {
     backgroundColor: '#1a4d1a'

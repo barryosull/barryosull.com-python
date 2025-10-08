@@ -175,7 +175,6 @@ const styles = {
   roomId: {
     color: '#fff',
     fontSize: '24px',
-    fontFamily: 'monospace',
     flex: 1
   },
   copyButton: {

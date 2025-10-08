@@ -6,7 +6,9 @@ export default function PolicyTracks({ gameState }) {
   return (
     <div style={styles.container}>
       <div style={styles.track}>
+        <div style={styles.explanation}>Win at 5</div>
         <h3 style={styles.trackTitle}>Liberal Policies</h3>
+        
         <div style={styles.policyBoxes}>
           {[...Array(5)].map((_, i) => (
             <div
@@ -21,10 +23,11 @@ export default function PolicyTracks({ gameState }) {
             </div>
           ))}
         </div>
-        <div style={styles.winCondition}>Win at 5</div>
+        
       </div>
 
       <div style={styles.track}>
+        <div style={styles.explanation}>Win at 6</div>
         <h3 style={styles.trackTitle}>Fascist Policies</h3>
         <div style={styles.policyBoxes}>
           {[...Array(6)].map((_, i) => (
@@ -40,17 +43,17 @@ export default function PolicyTracks({ gameState }) {
             </div>
           ))}
         </div>
-        <div style={styles.winCondition}>Win at 6</div>
+        
       </div>
 
       <div style={styles.electionTracker}>
-        <h3 style={styles.trackTitle}>Failed Elections</h3>
-        <div style={styles.policyBoxes}>
+        <div style={styles.explanation}>Chaos at 3</div>
+        <h3 style={styles.trackTitle}>
+          Failed Elections
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
               style={{
-                ...styles.policyBox,
                 ...styles.electionBox,
                 ...(i < electionTracker && styles.enacted)
               }}
@@ -58,8 +61,11 @@ export default function PolicyTracks({ gameState }) {
               {i < electionTracker ? 'X' : ''}
             </div>
           ))}
+        </h3>
+        <div style={{}}>
+          
         </div>
-        <div style={styles.winCondition}>Chaos at 3</div>
+        
       </div>
     </div>
   );
@@ -107,8 +113,14 @@ const styles = {
     color: '#f44336'
   },
   electionBox: {
-    borderColor: '#ff9800',
-    color: '#ff9800'
+    border: '1px solid #ff9800',
+    color: '#ff9800',
+    width: '16px',
+    height: '16px',
+    borderRadius: '8px',
+    display: 'inline-block',
+    marginTop: '2px',
+    marginLeft: '10px',
   },
   enacted: {
     backgroundColor: 'currentColor',
@@ -119,8 +131,9 @@ const styles = {
     paddingTop: '20px',
     borderTop: '1px solid #444'
   },
-  winCondition: {
+  explanation: {
     color: '#888',
-    fontSize: '12px'
+    fontSize: '12px',
+    float: 'right',
   }
 };

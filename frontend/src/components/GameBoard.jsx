@@ -212,8 +212,11 @@ export default function GameBoard() {
 const styles = {
   container: {
     minHeight: '100vh',
-    backgroundColor: '#1a1a1a',
-    padding: '20px'
+    backgroundColor: '#FBB969',
+    padding: '20px',
+    fontFamily: '"Germania One", system-ui',
+    fontWeight: '400',
+    fontStyle: 'normal',
   },
   header: {
     textAlign: 'center',
@@ -222,12 +225,15 @@ const styles = {
   title: {
     color: '#fff',
     fontSize: '32px',
-    marginBottom: '10px'
+    marginBottom: '10px',
+    backgroundColor: '#F2654B',
+    display: 'inline-block',
+    padding: '6px 12px',
+    borderRadius: '12px',
   },
   roomId: {
-    color: '#888',
+    color: '#434343',
     fontSize: '14px',
-    fontFamily: 'monospace',
     marginBottom: '20px'
   },
   playersSection: {
