@@ -1,0 +1,116 @@
+/* VotingView Component Styles */
+
+.voting-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.voting-overlay-content {
+  background-color: #FBB969;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.voting-title {
+  color: #5a5a5aff;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin-top: 0;
+  text-align: center;
+}
+
+.voting-government-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #cb6849;
+  border-radius: 8px;
+}
+
+.voting-role {
+  text-align: center;
+}
+
+.voting-role-label {
+  color: #d8d8d8ff;
+  font-size: 12px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.voting-role-name {
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.voting-divider {
+  color: #d8d8d8ff;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.voting-vote-section {
+  text-align: center;
+}
+
+.voting-vote-prompt {
+  color: #2596be;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.voting-vote-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.voting-vote-button {
+  padding: 20px 30px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  min-width: 150px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+.voting-vote-button.ja {
+  background-color: #4caf50;
+}
+
+.voting-vote-button.nein {
+  background-color: #f44336;
+}
+
+.voting-waiting {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  padding: 20px;
+}
+
+.voting-vote-count {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+}

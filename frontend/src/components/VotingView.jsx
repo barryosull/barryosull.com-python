@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import '../../assets/styles.css';
 
 export default function VotingView({ gameState, players, myPlayerId, onVote }) {
   const [hasVoted, setHasVoted] = useState(false);
@@ -19,49 +20,46 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
     (p) => p.player_id === gameState.nominated_chancellor_id
   );
 
-  const votesCount = Object.keys(gameState.votes || {}).length;
-  const totalPlayers = players.filter((p) => p.is_alive).length;
   const myPlayer = players.find((p) => p.player_id === myPlayerId);
   const canVote = myPlayer && myPlayer.is_alive;
   const isPresident = myPlayerId === gameState.president_id;
-  const expectedVotes = totalPlayers - 1;
 
   if (!canVote || isPresident || hasVoted) {
     return null;
   }
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.overlayContent}>
-        <h3 style={styles.title}>Election</h3>
+    <div className="voting-overlay">
+      <div className="voting-overlay-content">
+        <h3 className="voting-title">Election</h3>
 
-        <div style={styles.governmentBox}>
-          <div style={styles.role}>
-            <div style={styles.roleLabel}>President</div>
-            <div style={styles.roleName}>{president?.name}</div>
+        <div className="voting-government-box">
+          <div className="voting-role">
+            <div className="voting-role-label">President</div>
+            <div className="voting-role-name">{president?.name}</div>
           </div>
-          <div style={styles.divider}>+</div>
-          <div style={styles.role}>
-            <div style={styles.roleLabel}>Chancellor Nominee</div>
-            <div style={styles.roleName}>{nominee?.name}</div>
+          <div className="voting-divider">+</div>
+          <div className="voting-role">
+            <div className="voting-role-label">Chancellor Nominee</div>
+            <div className="voting-role-name">{nominee?.name}</div>
           </div>
         </div>
 
-        <div style={styles.voteSection}>
-          <div style={styles.votePrompt}>
+        <div className="voting-vote-section">
+          <div className="voting-vote-prompt">
             Vote on the proposed government:
           </div>
-          <div style={styles.voteButtons}>
+          <div className="voting-vote-buttons">
             <button
               onClick={() => handleVote(true)}
-              style={{ ...styles.voteButton, ...styles.jaButton }}
+              className="voting-vote-button ja"
               disabled={loading}
             >
               Ja (Yes)
             </button>
             <button
               onClick={() => handleVote(false)}
-              style={{ ...styles.voteButton, ...styles.neinButton }}
+              className="voting-vote-button nein"
               disabled={loading}
             >
               Nein (No)
@@ -72,105 +70,3 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
     </div>
   );
 }
-
-const styles = {
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.50)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
-  },
-  overlayContent: {
-    backgroundColor: '#FBB969',
-    borderRadius: '12px',
-    padding: '40px',
-    maxWidth: '600px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflowY: 'auto',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-  },
-  title: {
-    color: '#5a5a5aff',
-    fontSize: '24px',
-    marginBottom: '20px',
-    marginTop: 0,
-    textAlign: 'center'
-  },
-  governmentBox: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '20px',
-    marginBottom: '30px',
-    padding: '20px',
-    backgroundColor: '#cb6849',
-    borderRadius: '8px'
-  },
-  role: {
-    textAlign: 'center'
-  },
-  roleLabel: {
-    color: '#d8d8d8ff',
-    fontSize: '12px',
-    marginBottom: '8px',
-    textTransform: 'uppercase'
-  },
-  roleName: {
-    color: '#fff',
-    fontSize: '18px',
-    fontWeight: 'bold'
-  },
-  divider: {
-    color: '#d8d8d8ff',
-    fontSize: '24px',
-    fontWeight: 'bold'
-  },
-  voteSection: {
-    textAlign: 'center'
-  },
-  votePrompt: {
-    color: '#2596be',
-    fontSize: '16px',
-    marginBottom: '20px'
-  },
-  voteButtons: {
-    display: 'flex',
-    gap: '20px',
-    justifyContent: 'center'
-  },
-  voteButton: {
-    padding: '20px 30px',
-    fontSize: '18px',
-    borderRadius: '8px',
-    border: 'none',
-    color: '#fff',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    minWidth: '150px',
-    boxShadow: '4px 4px 4px rgba(0, 0, 0, 0.5)',
-  },
-  jaButton: {
-    backgroundColor: '#4caf50'
-  },
-  neinButton: {
-    backgroundColor: '#f44336'
-  },
-  waiting: {
-    textAlign: 'center',
-    color: '#888',
-    fontSize: '16px',
-    padding: '20px'
-  },
-  voteCount: {
-    marginTop: '10px',
-    fontSize: '14px',
-    color: '#666'
-  }
-};
