@@ -1,6 +1,6 @@
-/* VotingView Component Styles */
+/* Shared Overlay Styles */
 
-.voting-overlay {
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
   z-index: 1000;
 }
 
-.voting-overlay-content {
+.overlay-content {
   background-color: #FBB969;
   border-radius: 12px;
   padding: 40px;
@@ -24,13 +24,42 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-.voting-title {
+.overlay-title {
   color: #83110a;
   font-size: 24px;
   margin-bottom: 20px;
   margin-top: 0;
   text-align: center;
 }
+
+.overlay-subtitle {
+  color: #2a4e6c;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.overlay-waiting {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  padding: 20px;
+}
+
+.close-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  background-color: #666;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* VotingView Component Styles */
 
 .voting-government-box {
   display: flex;
@@ -113,4 +142,47 @@
   margin-top: 10px;
   font-size: 14px;
   color: #666;
+}
+
+/* NominationView Component Styles */
+
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.player-button {
+  padding: 15px;
+  font-size: 14px;
+  border: 0px;
+  border-radius: 4px;
+  background-color: #cb6849;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
+}
+
+.player-button.selected {
+  background-color: #83110a;
+}
+
+.confirm-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: none;
+  background-color: #2a4e6c;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.confirm-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
 }

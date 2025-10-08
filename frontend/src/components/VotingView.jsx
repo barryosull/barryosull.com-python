@@ -29,9 +29,9 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
   }
 
   return (
-    <div className="voting-overlay">
-      <div className="voting-overlay-content">
-        <h3 className="voting-title">Election</h3>
+    <div className="overlay">
+      <div className="overlay-content">
+        <h3 className="overlay-title">Election</h3>
 
         <div className="voting-government-box">
           <div className="voting-role">
