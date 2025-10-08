@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { useParams } from 'react-router-dom';
+import '../../assets/styles.css';
 
 export default function ExecutiveActionView({
   gameState,
@@ -62,15 +63,15 @@ export default function ExecutiveActionView({
     }
 
     return (
-      <div style={styles.overlay}>
-        <div style={styles.overlayContent}>
-          <h3 style={styles.title}>Executive Action</h3>
-          <div style={styles.waiting}>
+      <div className="overlay">
+        <div className="overlay-content">
+          <h3 className="overlay-title">Executive Action</h3>
+          <div className="overlay-waiting">
             Waiting for President to use their executive power...
           </div>
           <button
             onClick={() => setShowWaitingOverlay(false)}
-            style={styles.closeButton}
+            className="close-button"
           >
             Close
           </button>
@@ -108,23 +109,20 @@ export default function ExecutiveActionView({
   };
 
   return (
-    <div style={styles.overlay}>
-      <div style={styles.overlayContent}>
-        <h3 style={styles.title}>Executive Action</h3>
-        <div style={styles.subtitle}>{getPowerDescription()}</div>
+    <div className="overlay">
+      <div className="overlay-content">
+        <h3 className="overlay-title">Executive Action</h3>
+        <div className="overlay-subtitle">{getPowerDescription()}</div>
 
         {showingPolicies && hasPeekedPolicies && (
-          <div style={styles.result}>
+          <div className="executive-result">
             <div>
               <strong>Policy Peek:</strong>
-              <div style={styles.policyPeek}>
+              <div className="policy-peek">
                 {gameState.peeked_policies.map((policy, idx) => (
                   <div
                     key={idx}
-                    style={{
-                      ...styles.peekedPolicy,
-                      ...(policy.type === 'LIBERAL' ? styles.liberalPeek : styles.fascistPeek)
-                    }}
+                    className={`peeked-policy ${policy.type === 'LIBERAL' ? 'liberal' : 'fascist'}`}
                   >
                     {policy.type === 'LIBERAL' ? 'L' : 'F'}
                   </div>
@@ -135,14 +133,11 @@ export default function ExecutiveActionView({
         )}
 
         {result && (
-          <div style={styles.result}>
+          <div className="executive-result">
             {result.team && (
               <div>
                 <strong>Investigation Result:</strong> The player is a{' '}
-                <span style={{
-                  color: result.team === 'LIBERAL' ? '#2196f3' : '#f44336',
-                  fontWeight: 'bold'
-                }}>
+                <span className={`investigation-result ${result.team === 'LIBERAL' ? 'liberal' : 'fascist'}`}>
                   {result.team}
                 </span>
               </div>
@@ -151,7 +146,7 @@ export default function ExecutiveActionView({
               <div>
                 <strong>Player executed</strong>
                 {result.game_over && (
-                  <div style={styles.gameOver}>
+                  <div className="game-over">
                     Game Over! {result.winning_team}s win!
                   </div>
                 )}
@@ -161,15 +156,12 @@ export default function ExecutiveActionView({
         )}
 
         {needsTarget && !result && !showingPolicies && !showingLoyalty && (
-          <div style={styles.playerGrid}>
+          <div className="executive-player-grid">
             {eligiblePlayers.map((player) => (
               <button
                 key={player.player_id}
                 onClick={() => setSelectedPlayerId(player.player_id)}
-                style={{
-                  ...styles.playerCard,
-                  ...(selectedPlayerId === player.player_id && styles.selectedCard)
-                }}
+                className={`player-button ${selectedPlayerId === player.player_id ? 'selected' : ''}`}
                 disabled={loading}
               >
                 {player.name}
@@ -181,10 +173,7 @@ export default function ExecutiveActionView({
         {!showingPolicies && !showingLoyalty && (
           <button
             onClick={handleExecute}
-            style={{
-              ...styles.confirmButton,
-              ...((needsTarget && !selectedPlayerId && !result) && styles.buttonDisabled)
-            }}
+            className="confirm-button"
             disabled={(needsTarget && !selectedPlayerId && !result) || loading}
           >
             {loading ? 'Using Power...' : result ? 'Continue' : hasPeekedPolicies && presidentialPower === 'POLICY_PEEK' ? 'View Policies' : 'Use Power'}
@@ -192,7 +181,7 @@ export default function ExecutiveActionView({
         )}
 
         {(showingPolicies || showingLoyalty) && (
-          <div style={styles.autoAdvanceMessage}>
+          <div className="auto-advance-message">
             Auto-advancing in 3 seconds...
           </div>
         )}
@@ -200,142 +189,3 @@ export default function ExecutiveActionView({
     </div>
   );
 }
-
-const styles = {
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.50)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
-  },
-  overlayContent: {
-    backgroundColor: '#FBB969',
-    borderRadius: '12px',
-    padding: '40px',
-    maxWidth: '600px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflowY: 'auto',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-
-  },
-  title: {
-    color: '#83110a',
-    fontSize: '24px',
-    marginBottom: '10px',
-    marginTop: 0,
-    textAlign: 'center'
-  },
-  subtitle: {
-    color: '#aaa',
-    fontSize: '14px',
-    marginBottom: '20px',
-    textAlign: 'center'
-  },
-  waiting: {
-    color: '#888',
-    fontSize: '16px',
-    textAlign: 'center',
-    padding: '20px'
-  },
-  result: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px',
-    color: '#fff'
-  },
-  policyPeek: {
-    display: 'flex',
-    gap: '10px',
-    marginTop: '10px'
-  },
-  peekedPolicy: {
-    width: '60px',
-    height: '80px',
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '32px',
-    fontWeight: 'bold',
-    border: '2px solid'
-  },
-  liberalPeek: {
-    borderColor: '#2196f3',
-    backgroundColor: '#1a1a2e',
-    color: '#2196f3'
-  },
-  fascistPeek: {
-    borderColor: '#f44336',
-    backgroundColor: '#2e1a1a',
-    color: '#f44336'
-  },
-  gameOver: {
-    marginTop: '10px',
-    padding: '10px',
-    backgroundColor: '#4caf50',
-    borderRadius: '4px',
-    fontWeight: 'bold'
-  },
-  playerGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-    gap: '10px',
-    marginBottom: '20px'
-  },
-  playerCard: {
-    padding: '15px',
-    borderRadius: '4px',
-    border: '2px solid #555',
-    backgroundColor: '#333',
-    color: '#fff',
-    cursor: 'pointer',
-    transition: 'all 0.2s'
-  },
-  selectedCard: {
-    borderColor: '#4caf50',
-    backgroundColor: '#1a2e1a',
-    transform: 'scale(1.05)'
-  },
-  confirmButton: {
-    width: '100%',
-    padding: '15px',
-    fontSize: '16px',
-    borderRadius: '4px',
-    border: 'none',
-    backgroundColor: '#4caf50',
-    color: '#fff',
-    cursor: 'pointer',
-    fontWeight: 'bold'
-  },
-  buttonDisabled: {
-    backgroundColor: '#555',
-    cursor: 'not-allowed'
-  },
-  autoAdvanceMessage: {
-    color: '#aaa',
-    fontSize: '16px',
-    textAlign: 'center',
-    padding: '20px',
-    fontStyle: 'italic'
-  },
-  closeButton: {
-    width: '100%',
-    padding: '12px',
-    fontSize: '14px',
-    borderRadius: '4px',
-    border: 'none',
-    backgroundColor: '#666',
-    color: '#fff',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    marginTop: '10px'
-  }
-};

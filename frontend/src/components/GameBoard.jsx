@@ -164,13 +164,13 @@ export default function GameBoard() {
 
       case 'GAME_OVER':
         return (
-          <div style={styles.overlay}>
-            <div style={styles.overlayContent}>
-              <h2 style={styles.gameOver}>Game Over!</h2>
+          <div className="overlay">
+            <div className = "overlay-content">
+              <h2 className="overlay-title">Game Over!</h2>
               {gameState.game_over_reason && (
-                <p style={styles.gameOverReason}>{gameState.game_over_reason}</p>
+                <p className="overlay-subtitle">{gameState.game_over_reason}</p>
               )}
-              <button onClick={() => navigate(preserveParams('/'))} style={styles.button}>
+              <button onClick={() => navigate(preserveParams('/'))} className="confirm-button">
                 Return to Home
               </button>
             </div>

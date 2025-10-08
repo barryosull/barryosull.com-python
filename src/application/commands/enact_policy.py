@@ -50,7 +50,7 @@ class EnactPolicyHandler:
 
         if is_game_over:
             game_state.current_phase = GamePhase.GAME_OVER
-            game_state.game_over_reason = f"{winning_team}s win! {reason}"
+            game_state.game_over_reason = f"{winning_team.value}s win! {reason}"
             room.end_game()
         else:
             from src.domain.value_objects.policy import PolicyType
