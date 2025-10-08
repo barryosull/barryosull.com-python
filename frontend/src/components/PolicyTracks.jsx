@@ -3,137 +3,127 @@ export default function PolicyTracks({ gameState }) {
   const fascistPolicies = gameState?.fascist_policies || 0;
   const electionTracker = gameState?.election_tracker || 0;
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.track}>
-        <div style={styles.explanation}>Win at 5</div>
-        <h3 style={styles.trackTitle}>Liberal Policies</h3>
-        
-        <div style={styles.policyBoxes}>
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              style={{
-                ...styles.policyBox,
-                ...styles.liberalBox,
-                ...(i < liberalPolicies && styles.enacted)
-              }}
-            >
-              {i < liberalPolicies ? 'L' : ''}
-            </div>
-          ))}
-        </div>
-        
+  return (<>
+    <div style={{...styles.board, ...styles.liberal}}>
+      <div style={styles.liberalPolicyBoxes}>
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={i}
+            style={styles.liberalPolicyCardSlot}
+          >
+            {i < liberalPolicies && <div style={{...styles.policyCard, ...styles.policyCardLiberal}}></div>}
+          </div>
+        ))}
       </div>
-
-      <div style={styles.track}>
-        <div style={styles.explanation}>Win at 6</div>
-        <h3 style={styles.trackTitle}>Fascist Policies</h3>
-        <div style={styles.policyBoxes}>
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              style={{
-                ...styles.policyBox,
-                ...styles.fascistBox,
-                ...(i < fascistPolicies && styles.enacted)
-              }}
-            >
-              {i < fascistPolicies ? 'F' : ''}
-            </div>
-          ))}
-        </div>
-        
-      </div>
-
       <div style={styles.electionTracker}>
-        <div style={styles.explanation}>Chaos at 3</div>
-        <h3 style={styles.trackTitle}>
-          Failed Elections
-          {[...Array(3)].map((_, i) => (
+        <div style={styles.electionBox}>
+          <div style={styles.electionCheck}></div>
+        </div>
+        {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              style={{
-                ...styles.electionBox,
-                ...(i < electionTracker && styles.enacted)
-              }}
+              style={styles.electionBox}
             >
-              {i < electionTracker ? 'X' : ''}
+              {i < electionTracker && <div style={styles.electionCheck}></div>}
             </div>
           ))}
-        </h3>
-        <div style={{}}>
-          
-        </div>
-        
       </div>
     </div>
-  );
+
+    <div style={{...styles.board, ...styles.fascist5To6}}>
+      <div style={styles.fascistPolicyBoxes}>
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            style={styles.fascistPolicyCardSlot}
+          >
+            {i < fascistPolicies && <div style={{...styles.policyCard, ...styles.policyCardFascist}}></div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  </>);
 }
 
 const styles = {
-  container: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px'
-  },
-  track: {
-    marginBottom: '20px'
-  },
-  trackTitle: {
-    color: '#fff',
-    fontSize: '16px',
-    marginBottom: '10px',
-    marginTop: 0
-  },
-  policyBoxes: {
-    display: 'flex',
-    gap: '10px',
-    marginBottom: '8px'
-  },
-  policyBox: {
-    width: '50px',
-    height: '50px',
-    border: '2px solid',
-    borderRadius: '4px',
+  board: {
+    backgroundSize: 'cover',
+    backgroundRepeat: 'none',
+    width: '100%',
+    aspectRatio: '2921/1025',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '24px',
-    fontWeight: 'bold',
-    transition: 'all 0.3s'
+    position: 'relative',
   },
-  liberalBox: {
-    borderColor: '#2196f3',
-    color: '#2196f3'
+  liberal: {
+    backgroundImage: 'url("/assets/images/liberal-board.png"',
   },
-  fascistBox: {
-    borderColor: '#f44336',
-    color: '#f44336'
+  fascist5To6: {
+     backgroundImage: 'url("/assets/images/fascist-board-5-to-6-players.png"',
   },
-  electionBox: {
-    border: '1px solid #ff9800',
-    color: '#ff9800',
-    width: '16px',
-    height: '16px',
-    borderRadius: '8px',
+  fascist7To8: {
+     backgroundImage: 'url("/assets/images/fascist-board-7-to-8-players.png"',
+  },
+  fascist9To10: {
+     backgroundImage: 'url("/assets/images/fascist-board-9-to-10-players.png"',
+  },
+  liberalPolicyBoxes: {
+    width: '70%',
+    height: '55%',
+    margin: 'auto'
+  },
+  fascistPolicyBoxes: {
+    width: '85%',
+    height: '55%',
+    margin: 'auto',
+  },
+  liberalPolicyCardSlot: {
+    marginTop: "0.5%",
+    width: '20%',
+    height: '100%',
     display: 'inline-block',
-    marginTop: '2px',
-    marginLeft: '10px',
   },
-  enacted: {
-    backgroundColor: 'currentColor',
-    color: '#000'
+  fascistPolicyCardSlot: {
+    marginTop: "1%",
+    width: '16.6%',
+    height: '100%',
+    display: 'inline-block',
+  },
+  policyCard: {
+    margin: '5% 10%',
+    height: '90%',
+    width: '80%',
+  },
+  policyCardLiberal: {
+    backgroundImage: 'url("/assets/images/policy-liberal.png"',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'none',
+  },
+  policyCardFascist: {
+    backgroundImage: 'url("/assets/images/policy-fascist.png"',
+    backgroundSize: 'cover',
+    backgroundRepeat: 'none',
   },
   electionTracker: {
-    marginTop: '20px',
-    paddingTop: '20px',
-    borderTop: '1px solid #444'
+    position: 'absolute',
+    bottom: '10%',
+    height: '11%',
+    width: '38%',
+    margin: '0px auto',
   },
-  explanation: {
-    color: '#888',
-    fontSize: '12px',
-    float: 'right',
-  }
+  electionBox: {
+    width: '25%',
+    height: '100%',
+    float: 'left',
+    position: 'relative',
+    left: "-1%",
+  },
+  electionCheck: {
+    width: '37%',
+    height: '90%',
+    margin: '5% auto',
+    backgroundColor: '#000',
+    borderRadius: '50%',
+  },
 };
