@@ -190,50 +190,23 @@
 /* PolicySelectionView Component Styles */
 
 .policy-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .policy-card {
-  padding: 30px 20px;
-  border-radius: 8px;
-  border: 3px solid;
+  width: 29%;
+  margin: 2%;
+  aspect-ratio: 280 / 434;
+  display: inline-block;
   cursor: pointer;
   transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.policy-card.liberal {
-  border-color: #2196f3;
-  background-color: #1a1a2e;
-  color: #2196f3;
-}
-
-.policy-card.fascist {
-  border-color: #f44336;
-  background-color: #2e1a1a;
-  color: #f44336;
+  border: 0px;
 }
 
 .policy-card.selected {
   transform: scale(1.05);
   box-shadow: 0 0 20px currentColor;
-}
-
-.policy-type {
-  font-size: 14px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.policy-icon {
-  font-size: 48px;
-  font-weight: bold;
 }
 
 .veto-request-button {
@@ -272,4 +245,101 @@
 
 .veto-button.reject {
   background-color: #f44336;
+}
+
+/* PolicyTracks Component Styles */
+
+.policy-board {
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  aspect-ratio: 2921/1025;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.policy-board.liberal {
+  background-image: url("/assets/images/liberal-board.png");
+}
+
+.policy-board.fascist-5-to-6 {
+  background-image: url("/assets/images/fascist-board-5-to-6-players.png");
+}
+
+.policy-board.fascist-7-to-8 {
+  background-image: url("/assets/images/fascist-board-7-to-8-players.png");
+}
+
+.policy-board.fascist-9-to-10 {
+  background-image: url("/assets/images/fascist-board-9-to-10-players.png");
+}
+
+.liberal-policy-boxes {
+  width: 70%;
+  height: 55%;
+  margin: auto;
+}
+
+.fascist-policy-boxes {
+  width: 85%;
+  height: 55%;
+  margin: auto;
+}
+
+.liberal-policy-card-slot {
+  margin-top: 0.5%;
+  width: 20%;
+  height: 100%;
+  display: inline-block;
+}
+
+.fascist-policy-card-slot {
+  margin-top: 1%;
+  width: 16.6%;
+  height: 100%;
+  display: inline-block;
+}
+
+.policy-card-display {
+  margin: 5% 10%;
+  height: 90%;
+  width: 80%;
+}
+
+.liberal-card {
+  background-image: url("/assets/images/policy-liberal.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.fascist-card {
+  background-image: url("/assets/images/policy-fascist.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.election-tracker {
+  position: absolute;
+  bottom: 10%;
+  height: 11%;
+  width: 38%;
+  margin: 0px auto;
+}
+
+.election-box {
+  width: 25%;
+  height: 100%;
+  float: left;
+  position: relative;
+  left: -1%;
+}
+
+.election-check {
+  width: 37%;
+  height: 90%;
+  margin: 5% auto;
+  background-color: #000;
+  border-radius: 50%;
 }

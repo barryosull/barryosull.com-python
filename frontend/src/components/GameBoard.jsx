@@ -228,7 +228,7 @@ const styles = {
     color: '#fff',
     fontSize: '32px',
     marginBottom: '10px',
-    backgroundColor: '#cb6849',
+    backgroundColor: '#83110a',
     display: 'inline-block',
     padding: '6px 12px',
     borderRadius: '12px',

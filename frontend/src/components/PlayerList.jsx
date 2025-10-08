@@ -93,10 +93,10 @@ const styles = {
     backgroundColor: '#ff9800',
   },
   chancellorBadge: {
-    backgroundColor: '#4caf50',
+    backgroundColor: '#ff9800',
   },
   nominatedBadge: {
-    backgroundColor: '#9aff5cff',
+    backgroundColor: '#ff9800',
   },
   deadBadge: {
     backgroundColor: '#d32f2f',

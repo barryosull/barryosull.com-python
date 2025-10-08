@@ -117,16 +117,9 @@ export default function PolicySelectionView({
             <button
               key={index}
               onClick={() => setSelectedPolicyIndex(index)}
-              className={`policy-card ${policy.type === 'LIBERAL' ? 'liberal' : 'fascist'} ${selectedPolicyIndex === index ? 'selected' : ''}`}
+              className={`policy-card ${policy.type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'} ${selectedPolicyIndex === index ? 'selected' : ''}`}
               disabled={loading}
-            >
-              <div className="policy-type">
-                {policy.type === 'LIBERAL' ? 'Liberal' : 'Fascist'}
-              </div>
-              <div className="policy-icon">
-                {policy.type === 'LIBERAL' ? 'L' : 'F'}
-              </div>
-            </button>
+            ></button>
           ))}
         </div>
 
