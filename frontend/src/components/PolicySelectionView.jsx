@@ -51,10 +51,12 @@ export default function PolicySelectionView({
 
   if (!isMyTurn) {
     return (
-      <div style={styles.container}>
-        <h3 style={styles.title}>Legislative Session</h3>
-        <div style={styles.waiting}>
-          Waiting for {roleText} to {actionText.toLowerCase()} a policy...
+      <div style={styles.overlay}>
+        <div style={styles.overlayContent}>
+          <h3 style={styles.title}>Legislative Session</h3>
+          <div style={styles.waiting}>
+            Waiting for {roleText} to {actionText.toLowerCase()} a policy...
+          </div>
         </div>
       </div>
     );
@@ -62,104 +64,127 @@ export default function PolicySelectionView({
 
   if (vetoRequested && isPresident) {
     return (
-      <div style={styles.container}>
-        <h3 style={styles.title}>Veto Request</h3>
-        <div style={styles.subtitle}>
-          The Chancellor has requested to veto the agenda. Do you approve?
-        </div>
+      <div style={styles.overlay}>
+        <div style={styles.overlayContent}>
+          <h3 style={styles.title}>Veto Request</h3>
+          <div style={styles.subtitle}>
+            The Chancellor has requested to veto the agenda. Do you approve?
+          </div>
 
-        <div style={styles.vetoButtons}>
-          <button
-            onClick={() => handleVeto(true)}
-            style={{ ...styles.vetoButton, ...styles.approveButton }}
-            disabled={loading}
-          >
-            Approve Veto
-          </button>
-          <button
-            onClick={() => handleVeto(false)}
-            style={{ ...styles.vetoButton, ...styles.rejectButton }}
-            disabled={loading}
-          >
-            Reject Veto
-          </button>
+          <div style={styles.vetoButtons}>
+            <button
+              onClick={() => handleVeto(true)}
+              style={{ ...styles.vetoButton, ...styles.approveButton }}
+              disabled={loading}
+            >
+              Approve Veto
+            </button>
+            <button
+              onClick={() => handleVeto(false)}
+              style={{ ...styles.vetoButton, ...styles.rejectButton }}
+              disabled={loading}
+            >
+              Reject Veto
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Legislative Session</h3>
-      <div style={styles.subtitle}>
-        You are the {roleText}. {actionText} one policy.
-      </div>
+    <div style={styles.overlay}>
+      <div style={styles.overlayContent}>
+        <h3 style={styles.title}>Legislative Session</h3>
+        <div style={styles.subtitle}>
+          You are the {roleText}. {actionText} one policy.
+        </div>
 
-      <div style={styles.policyGrid}>
-        {policies?.map((policy, index) => (
+        <div style={styles.policyGrid}>
+          {policies?.map((policy, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedPolicyIndex(index)}
+              style={{
+                ...styles.policyCard,
+                ...(policy.type === 'LIBERAL'
+                  ? styles.liberalCard
+                  : styles.fascistCard),
+                ...(selectedPolicyIndex === index && styles.selectedCard)
+              }}
+              disabled={loading}
+            >
+              <div style={styles.policyType}>
+                {policy.type === 'LIBERAL' ? 'Liberal' : 'Fascist'}
+              </div>
+              <div style={styles.policyIcon}>
+                {policy.type === 'LIBERAL' ? 'L' : 'F'}
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <button
+          onClick={handleSelect}
+          style={{
+            ...styles.confirmButton,
+            ...(selectedPolicyIndex === null && styles.buttonDisabled)
+          }}
+          disabled={selectedPolicyIndex === null || loading}
+        >
+          {loading ? `${actionText}ing...` : `${actionText} Policy`}
+        </button>
+
+        {vetoAvailable && !isPresident && (
           <button
-            key={index}
-            onClick={() => setSelectedPolicyIndex(index)}
-            style={{
-              ...styles.policyCard,
-              ...(policy.type === 'LIBERAL'
-                ? styles.liberalCard
-                : styles.fascistCard),
-              ...(selectedPolicyIndex === index && styles.selectedCard)
-            }}
+            onClick={() => setVetoRequested(true)}
+            style={styles.vetoRequestButton}
             disabled={loading}
           >
-            <div style={styles.policyType}>
-              {policy.type === 'LIBERAL' ? 'Liberal' : 'Fascist'}
-            </div>
-            <div style={styles.policyIcon}>
-              {policy.type === 'LIBERAL' ? 'L' : 'F'}
-            </div>
+            Request Veto
           </button>
-        ))}
+        )}
       </div>
-
-      <button
-        onClick={handleSelect}
-        style={{
-          ...styles.confirmButton,
-          ...(selectedPolicyIndex === null && styles.buttonDisabled)
-        }}
-        disabled={selectedPolicyIndex === null || loading}
-      >
-        {loading ? `${actionText}ing...` : `${actionText} Policy`}
-      </button>
-
-      {vetoAvailable && !isPresident && (
-        <button
-          onClick={() => setVetoRequested(true)}
-          style={styles.vetoRequestButton}
-          disabled={loading}
-        >
-          Request Veto
-        </button>
-      )}
     </div>
   );
 }
 
 const styles = {
-  container: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px'
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
+  },
+  overlayContent: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: '12px',
+    padding: '40px',
+    maxWidth: '600px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+    border: '2px solid #444'
   },
   title: {
     color: '#fff',
-    fontSize: '20px',
+    fontSize: '24px',
     marginBottom: '10px',
-    marginTop: 0
+    marginTop: 0,
+    textAlign: 'center'
   },
   subtitle: {
     color: '#aaa',
     fontSize: '14px',
-    marginBottom: '20px'
+    marginBottom: '20px',
+    textAlign: 'center'
   },
   waiting: {
     color: '#888',

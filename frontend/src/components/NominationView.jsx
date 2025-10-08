@@ -3,6 +3,7 @@ import { useState } from 'react';
 export default function NominationView({ players, gameState, myPlayerId, onNominate }) {
   const [selectedChancellor, setSelectedChancellor] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
 
   const isPresident = gameState.president_id === myPlayerId;
 
@@ -23,70 +24,103 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
   );
 
   if (!isPresident) {
+    if (!showWaitingOverlay) {
+      return null;
+    }
+
     return (
-      <div style={styles.container}>
-        <h3 style={styles.title}>Nomination Phase</h3>
-        <div style={styles.waiting}>
-          Waiting for President to nominate a Chancellor...
+      <div style={styles.overlay}>
+        <div style={styles.overlayContent}>
+          <h3 style={styles.title}>Nomination Phase</h3>
+          <div style={styles.waiting}>
+            Waiting for President to nominate a Chancellor...
+          </div>
+          <button
+            onClick={() => setShowWaitingOverlay(false)}
+            style={styles.closeButton}
+          >
+            Close
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Nominate a Chancellor</h3>
-      <div style={styles.subtitle}>
-        You are the President. Choose a player to nominate as Chancellor.
-      </div>
+    <div style={styles.overlay}>
+      <div style={styles.overlayContent}>
+        <h3 style={styles.title}>Nominate a Chancellor</h3>
+        <div style={styles.subtitle}>
+          You are the President. Choose a player to nominate as Chancellor.
+        </div>
 
-      <div style={styles.playerGrid}>
-        {eligiblePlayers.map((player) => (
-          <button
-            key={player.player_id}
-            onClick={() => setSelectedChancellor(player.player_id)}
-            style={{
-              ...styles.playerButton,
-              ...(selectedChancellor === player.player_id && styles.selectedPlayer)
-            }}
-            disabled={loading}
-          >
-            {player.name}
-          </button>
-        ))}
-      </div>
+        <div style={styles.playerGrid}>
+          {eligiblePlayers.map((player) => (
+            <button
+              key={player.player_id}
+              onClick={() => setSelectedChancellor(player.player_id)}
+              style={{
+                ...styles.playerButton,
+                ...(selectedChancellor === player.player_id && styles.selectedPlayer)
+              }}
+              disabled={loading}
+            >
+              {player.name}
+            </button>
+          ))}
+        </div>
 
-      <button
-        onClick={handleNominate}
-        style={{
-          ...styles.confirmButton,
-          ...(!selectedChancellor && styles.buttonDisabled)
-        }}
-        disabled={!selectedChancellor || loading}
-      >
-        {loading ? 'Nominating...' : 'Confirm Nomination'}
-      </button>
+        <button
+          onClick={handleNominate}
+          style={{
+            ...styles.confirmButton,
+            ...(!selectedChancellor && styles.buttonDisabled)
+          }}
+          disabled={!selectedChancellor || loading}
+        >
+          {loading ? 'Nominating...' : 'Confirm Nomination'}
+        </button>
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px'
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
+  },
+  overlayContent: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: '12px',
+    padding: '40px',
+    maxWidth: '600px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+    border: '2px solid #444'
   },
   title: {
     color: '#fff',
-    fontSize: '20px',
+    fontSize: '24px',
     marginBottom: '10px',
-    marginTop: 0
+    marginTop: 0,
+    textAlign: 'center'
   },
   subtitle: {
     color: '#aaa',
     fontSize: '14px',
-    marginBottom: '20px'
+    marginBottom: '20px',
+    textAlign: 'center'
   },
   waiting: {
     color: '#888',
@@ -128,5 +162,17 @@ const styles = {
   buttonDisabled: {
     backgroundColor: '#555',
     cursor: 'not-allowed'
+  },
+  closeButton: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    border: 'none',
+    backgroundColor: '#666',
+    color: '#fff',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: '10px'
   }
 };

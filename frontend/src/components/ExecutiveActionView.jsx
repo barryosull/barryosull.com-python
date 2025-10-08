@@ -57,10 +57,12 @@ export default function ExecutiveActionView({
 
   if (!isPresident) {
     return (
-      <div style={styles.container}>
-        <h3 style={styles.title}>Executive Action</h3>
-        <div style={styles.waiting}>
-          Waiting for President to use their executive power...
+      <div style={styles.overlay}>
+        <div style={styles.overlayContent}>
+          <h3 style={styles.title}>Executive Action</h3>
+          <div style={styles.waiting}>
+            Waiting for President to use their executive power...
+          </div>
         </div>
       </div>
     );
@@ -95,114 +97,135 @@ export default function ExecutiveActionView({
   };
 
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Executive Action</h3>
-      <div style={styles.subtitle}>{getPowerDescription()}</div>
+    <div style={styles.overlay}>
+      <div style={styles.overlayContent}>
+        <h3 style={styles.title}>Executive Action</h3>
+        <div style={styles.subtitle}>{getPowerDescription()}</div>
 
-      {showingPolicies && hasPeekedPolicies && (
-        <div style={styles.result}>
-          <div>
-            <strong>Policy Peek:</strong>
-            <div style={styles.policyPeek}>
-              {gameState.peeked_policies.map((policy, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    ...styles.peekedPolicy,
-                    ...(policy.type === 'LIBERAL' ? styles.liberalPeek : styles.fascistPeek)
-                  }}
-                >
-                  {policy.type === 'LIBERAL' ? 'L' : 'F'}
-                </div>
-              ))}
+        {showingPolicies && hasPeekedPolicies && (
+          <div style={styles.result}>
+            <div>
+              <strong>Policy Peek:</strong>
+              <div style={styles.policyPeek}>
+                {gameState.peeked_policies.map((policy, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      ...styles.peekedPolicy,
+                      ...(policy.type === 'LIBERAL' ? styles.liberalPeek : styles.fascistPeek)
+                    }}
+                  >
+                    {policy.type === 'LIBERAL' ? 'L' : 'F'}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {result && (
-        <div style={styles.result}>
-          {result.team && (
-            <div>
-              <strong>Investigation Result:</strong> The player is a{' '}
-              <span style={{
-                color: result.team === 'LIBERAL' ? '#2196f3' : '#f44336',
-                fontWeight: 'bold'
-              }}>
-                {result.team}
-              </span>
-            </div>
-          )}
-          {result.executed_player_id && (
-            <div>
-              <strong>Player executed</strong>
-              {result.game_over && (
-                <div style={styles.gameOver}>
-                  Game Over! {result.winning_team}s win!
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+        {result && (
+          <div style={styles.result}>
+            {result.team && (
+              <div>
+                <strong>Investigation Result:</strong> The player is a{' '}
+                <span style={{
+                  color: result.team === 'LIBERAL' ? '#2196f3' : '#f44336',
+                  fontWeight: 'bold'
+                }}>
+                  {result.team}
+                </span>
+              </div>
+            )}
+            {result.executed_player_id && (
+              <div>
+                <strong>Player executed</strong>
+                {result.game_over && (
+                  <div style={styles.gameOver}>
+                    Game Over! {result.winning_team}s win!
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
-      {needsTarget && !result && !showingPolicies && !showingLoyalty && (
-        <div style={styles.playerGrid}>
-          {eligiblePlayers.map((player) => (
-            <button
-              key={player.player_id}
-              onClick={() => setSelectedPlayerId(player.player_id)}
-              style={{
-                ...styles.playerCard,
-                ...(selectedPlayerId === player.player_id && styles.selectedCard)
-              }}
-              disabled={loading}
-            >
-              {player.name}
-            </button>
-          ))}
-        </div>
-      )}
+        {needsTarget && !result && !showingPolicies && !showingLoyalty && (
+          <div style={styles.playerGrid}>
+            {eligiblePlayers.map((player) => (
+              <button
+                key={player.player_id}
+                onClick={() => setSelectedPlayerId(player.player_id)}
+                style={{
+                  ...styles.playerCard,
+                  ...(selectedPlayerId === player.player_id && styles.selectedCard)
+                }}
+                disabled={loading}
+              >
+                {player.name}
+              </button>
+            ))}
+          </div>
+        )}
 
-      {!showingPolicies && !showingLoyalty && (
-        <button
-          onClick={handleExecute}
-          style={{
-            ...styles.confirmButton,
-            ...((needsTarget && !selectedPlayerId && !result) && styles.buttonDisabled)
-          }}
-          disabled={(needsTarget && !selectedPlayerId && !result) || loading}
-        >
-          {loading ? 'Using Power...' : result ? 'Continue' : hasPeekedPolicies && presidentialPower === 'POLICY_PEEK' ? 'View Policies' : 'Use Power'}
-        </button>
-      )}
+        {!showingPolicies && !showingLoyalty && (
+          <button
+            onClick={handleExecute}
+            style={{
+              ...styles.confirmButton,
+              ...((needsTarget && !selectedPlayerId && !result) && styles.buttonDisabled)
+            }}
+            disabled={(needsTarget && !selectedPlayerId && !result) || loading}
+          >
+            {loading ? 'Using Power...' : result ? 'Continue' : hasPeekedPolicies && presidentialPower === 'POLICY_PEEK' ? 'View Policies' : 'Use Power'}
+          </button>
+        )}
 
-      {(showingPolicies || showingLoyalty) && (
-        <div style={styles.autoAdvanceMessage}>
-          Auto-advancing in 3 seconds...
-        </div>
-      )}
+        {(showingPolicies || showingLoyalty) && (
+          <div style={styles.autoAdvanceMessage}>
+            Auto-advancing in 3 seconds...
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px'
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
+  },
+  overlayContent: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: '12px',
+    padding: '40px',
+    maxWidth: '600px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+    border: '2px solid #444'
   },
   title: {
     color: '#fff',
-    fontSize: '20px',
+    fontSize: '24px',
     marginBottom: '10px',
-    marginTop: 0
+    marginTop: 0,
+    textAlign: 'center'
   },
   subtitle: {
     color: '#aaa',
     fontSize: '14px',
-    marginBottom: '20px'
+    marginBottom: '20px',
+    textAlign: 'center'
   },
   waiting: {
     color: '#888',
@@ -211,7 +234,7 @@ const styles = {
     padding: '20px'
   },
   result: {
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#333',
     borderRadius: '8px',
     padding: '20px',
     marginBottom: '20px',
@@ -260,7 +283,7 @@ const styles = {
     padding: '15px',
     borderRadius: '4px',
     border: '2px solid #555',
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#333',
     color: '#fff',
     cursor: 'pointer',
     transition: 'all 0.2s'

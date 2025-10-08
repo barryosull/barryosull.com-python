@@ -26,37 +26,27 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
   const isPresident = myPlayerId === gameState.president_id;
   const expectedVotes = totalPlayers - 1;
 
+  if (!canVote || isPresident || hasVoted) {
+    return null;
+  }
+
   return (
-    <div style={styles.container}>
-      <h3 style={styles.title}>Election</h3>
+    <div style={styles.overlay}>
+      <div style={styles.overlayContent}>
+        <h3 style={styles.title}>Election</h3>
 
-      <div style={styles.governmentBox}>
-        <div style={styles.role}>
-          <div style={styles.roleLabel}>President</div>
-          <div style={styles.roleName}>{president?.name}</div>
-        </div>
-        <div style={styles.divider}>+</div>
-        <div style={styles.role}>
-          <div style={styles.roleLabel}>Chancellor Nominee</div>
-          <div style={styles.roleName}>{nominee?.name}</div>
-        </div>
-      </div>
-
-      {!canVote ? (
-        <div style={styles.waiting}>
-          You cannot vote (dead players cannot participate)
-          <div style={styles.voteCount}>
-            {votesCount} / {expectedVotes} votes cast
+        <div style={styles.governmentBox}>
+          <div style={styles.role}>
+            <div style={styles.roleLabel}>President</div>
+            <div style={styles.roleName}>{president?.name}</div>
+          </div>
+          <div style={styles.divider}>+</div>
+          <div style={styles.role}>
+            <div style={styles.roleLabel}>Chancellor Nominee</div>
+            <div style={styles.roleName}>{nominee?.name}</div>
           </div>
         </div>
-      ) : isPresident ? (
-        <div style={styles.waiting}>
-          The President does not vote on their own nomination
-          <div style={styles.voteCount}>
-            {votesCount} / {expectedVotes} votes cast
-          </div>
-        </div>
-      ) : !hasVoted ? (
+
         <div style={styles.voteSection}>
           <div style={styles.votePrompt}>
             Vote on the proposed government:
@@ -78,30 +68,41 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
             </button>
           </div>
         </div>
-      ) : (
-        <div style={styles.waiting}>
-          Vote recorded. Waiting for other players...
-          <div style={styles.voteCount}>
-            {votesCount} / {expectedVotes} votes cast
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '20px'
+  overlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
+  },
+  overlayContent: {
+    backgroundColor: '#2a2a2a',
+    borderRadius: '12px',
+    padding: '40px',
+    maxWidth: '600px',
+    width: '90%',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+    border: '2px solid #444'
   },
   title: {
     color: '#fff',
-    fontSize: '20px',
+    fontSize: '24px',
     marginBottom: '20px',
-    marginTop: 0
+    marginTop: 0,
+    textAlign: 'center'
   },
   governmentBox: {
     display: 'flex',
@@ -110,7 +111,7 @@ const styles = {
     gap: '20px',
     marginBottom: '30px',
     padding: '20px',
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#333',
     borderRadius: '8px'
   },
   role: {
