@@ -41,7 +41,7 @@
 
 .overlay-waiting {
   text-align: center;
-  color: #888;
+  color: #2a4e6c;
   font-size: 16px;
   padding: 20px;
 }
@@ -52,7 +52,7 @@
   font-size: 14px;
   border-radius: 4px;
   border: none;
-  background-color: #666;
+  background-color: #2a4e6c;
   color: #fff;
   cursor: pointer;
   font-weight: bold;
@@ -183,6 +183,93 @@
 }
 
 .confirm-button:disabled {
-  background-color: #555;
+  background-color: #6b7d8c;
   cursor: not-allowed;
+}
+
+/* PolicySelectionView Component Styles */
+
+.policy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.policy-card {
+  padding: 30px 20px;
+  border-radius: 8px;
+  border: 3px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.policy-card.liberal {
+  border-color: #2196f3;
+  background-color: #1a1a2e;
+  color: #2196f3;
+}
+
+.policy-card.fascist {
+  border-color: #f44336;
+  background-color: #2e1a1a;
+  color: #f44336;
+}
+
+.policy-card.selected {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px currentColor;
+}
+
+.policy-type {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.policy-icon {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.veto-request-button {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  background-color: #ff9800;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.veto-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.veto-button {
+  flex: 1;
+  padding: 15px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.veto-button.approve {
+  background-color: #4caf50;
+}
+
+.veto-button.reject {
+  background-color: #f44336;
 }
