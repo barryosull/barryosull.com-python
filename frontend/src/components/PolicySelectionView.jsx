@@ -10,6 +10,7 @@ export default function PolicySelectionView({
   const [selectedPolicyIndex, setSelectedPolicyIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [vetoRequested, setVetoRequested] = useState(false);
+  const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
 
   const handleSelect = async () => {
     if (selectedPolicyIndex === null) return;
@@ -50,6 +51,10 @@ export default function PolicySelectionView({
     : gameState.chancellor_id === myPlayerId;
 
   if (!isMyTurn) {
+    if (!showWaitingOverlay) {
+      return null;
+    }
+
     return (
       <div style={styles.overlay}>
         <div style={styles.overlayContent}>
@@ -57,6 +62,12 @@ export default function PolicySelectionView({
           <div style={styles.waiting}>
             Waiting for {roleText} to {actionText.toLowerCase()} a policy...
           </div>
+          <button
+            onClick={() => setShowWaitingOverlay(false)}
+            style={styles.closeButton}
+          >
+            Close
+          </button>
         </div>
       </div>
     );
@@ -278,5 +289,17 @@ const styles = {
   },
   rejectButton: {
     backgroundColor: '#f44336'
+  },
+  closeButton: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    border: 'none',
+    backgroundColor: '#666',
+    color: '#fff',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: '10px'
   }
 };

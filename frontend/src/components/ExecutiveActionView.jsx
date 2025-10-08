@@ -15,6 +15,7 @@ export default function ExecutiveActionView({
   const [result, setResult] = useState(null);
   const [showingPolicies, setShowingPolicies] = useState(false);
   const [showingLoyalty, setShowingLoyalty] = useState(false);
+  const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
 
   const isPresident = gameState.president_id === myPlayerId;
   const hasPeekedPolicies = gameState.peeked_policies && gameState.peeked_policies.length > 0;
@@ -56,6 +57,10 @@ export default function ExecutiveActionView({
   };
 
   if (!isPresident) {
+    if (!showWaitingOverlay) {
+      return null;
+    }
+
     return (
       <div style={styles.overlay}>
         <div style={styles.overlayContent}>
@@ -63,6 +68,12 @@ export default function ExecutiveActionView({
           <div style={styles.waiting}>
             Waiting for President to use their executive power...
           </div>
+          <button
+            onClick={() => setShowWaitingOverlay(false)}
+            style={styles.closeButton}
+          >
+            Close
+          </button>
         </div>
       </div>
     );
@@ -215,7 +226,7 @@ const styles = {
 
   },
   title: {
-    color: '#fff',
+    color: '#83110a',
     fontSize: '24px',
     marginBottom: '10px',
     marginTop: 0,
@@ -314,5 +325,17 @@ const styles = {
     textAlign: 'center',
     padding: '20px',
     fontStyle: 'italic'
+  },
+  closeButton: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    border: 'none',
+    backgroundColor: '#666',
+    color: '#fff',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    marginTop: '10px'
   }
 };
