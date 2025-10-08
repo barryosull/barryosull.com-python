@@ -127,7 +127,7 @@ const styles = {
     padding: '20px'
   },
   card: {
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#FBB969',
     borderRadius: '8px',
     padding: '40px',
     maxWidth: '500px',

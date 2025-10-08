@@ -52,7 +52,7 @@ const styles = {
   playerItem: {
     color: '#fff',
     padding: '12px',
-    backgroundColor: '#F2654B',
+    backgroundColor: '#cb6849',
     borderRadius: '4px',
     display: 'flex',
     flexDirection: 'column',
@@ -96,15 +96,15 @@ const styles = {
     backgroundColor: '#4caf50',
   },
   nominatedBadge: {
-    backgroundColor: '#0c0c0dff',
+    backgroundColor: '#9aff5cff',
   },
   deadBadge: {
     backgroundColor: '#d32f2f',
   },
   votedYes: {
-    backgroundColor: '#1a4d1a'
+    backgroundColor: '#4caf50'
   },
   votedNo: {
-    backgroundColor: '#4d1a1a'
+    backgroundColor: '#df3c30ff'
   }
 };

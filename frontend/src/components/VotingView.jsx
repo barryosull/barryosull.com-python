@@ -80,14 +80,14 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: 'rgba(0, 0, 0, 0.50)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000
   },
   overlayContent: {
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#FBB969',
     borderRadius: '12px',
     padding: '40px',
     maxWidth: '600px',
@@ -95,10 +95,9 @@ const styles = {
     maxHeight: '80vh',
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-    border: '2px solid #444'
   },
   title: {
-    color: '#fff',
+    color: '#5a5a5aff',
     fontSize: '24px',
     marginBottom: '20px',
     marginTop: 0,
@@ -111,14 +110,14 @@ const styles = {
     gap: '20px',
     marginBottom: '30px',
     padding: '20px',
-    backgroundColor: '#333',
+    backgroundColor: '#cb6849',
     borderRadius: '8px'
   },
   role: {
     textAlign: 'center'
   },
   roleLabel: {
-    color: '#888',
+    color: '#d8d8d8ff',
     fontSize: '12px',
     marginBottom: '8px',
     textTransform: 'uppercase'
@@ -129,7 +128,7 @@ const styles = {
     fontWeight: 'bold'
   },
   divider: {
-    color: '#666',
+    color: '#d8d8d8ff',
     fontSize: '24px',
     fontWeight: 'bold'
   },
@@ -137,7 +136,7 @@ const styles = {
     textAlign: 'center'
   },
   votePrompt: {
-    color: '#aaa',
+    color: '#2596be',
     fontSize: '16px',
     marginBottom: '20px'
   },
@@ -147,14 +146,15 @@ const styles = {
     justifyContent: 'center'
   },
   voteButton: {
-    padding: '20px 40px',
+    padding: '20px 30px',
     fontSize: '18px',
     borderRadius: '8px',
     border: 'none',
     color: '#fff',
     cursor: 'pointer',
     fontWeight: 'bold',
-    minWidth: '150px'
+    minWidth: '150px',
+    boxShadow: '4px 4px 4px rgba(0, 0, 0, 0.5)',
   },
   jaButton: {
     backgroundColor: '#4caf50'

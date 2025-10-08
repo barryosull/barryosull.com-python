@@ -197,14 +197,14 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: 'rgba(0, 0, 0, 0.50)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000
   },
   overlayContent: {
-    backgroundColor: '#2a2a2a',
+    backgroundColor: '#FBB969',
     borderRadius: '12px',
     padding: '40px',
     maxWidth: '600px',
@@ -212,7 +212,7 @@ const styles = {
     maxHeight: '80vh',
     overflowY: 'auto',
     boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-    border: '2px solid #444'
+
   },
   title: {
     color: '#fff',
