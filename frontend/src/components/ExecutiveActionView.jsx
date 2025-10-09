@@ -125,26 +125,10 @@ export default function ExecutiveActionView({
           </div>
         )}
 
-        {result && (
-          <div className="executive-result">
-            {result.team && (
-              <div>
-                <strong>Investigation Result:</strong> The player is a{' '}
-                <span className={`investigation-result ${result.team === 'LIBERAL' ? 'liberal' : 'fascist'}`}>
-                  {result.team}
-                </span>
-              </div>
-            )}
-            {result.executed_player_id && (
-              <div>
-                <strong>Player executed</strong>
-                {result.game_over && (
-                  <div className="game-over">
-                    Game Over! {result.winning_team}s win!
-                  </div>
-                )}
-              </div>
-            )}
+        {result && result.team && (
+          <div
+            className={`team-display ${result.team === 'LIBERAL' ? 'liberal' : 'fascist'}`}
+          >
           </div>
         )}
 

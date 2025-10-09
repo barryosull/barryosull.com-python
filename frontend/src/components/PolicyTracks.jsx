@@ -1,9 +1,16 @@
 import '../../assets/styles.css';
 
-export default function PolicyTracks({ gameState }) {
+export default function PolicyTracks({ gameState, players }) {
   const liberalPolicies = gameState?.liberal_policies || 0;
   const fascistPolicies = gameState?.fascist_policies || 0;
   const electionTracker = gameState?.election_tracker || 0;
+  let board = 'fascist-5-to-6';
+  if (players.length >= 7) {
+    board = 'fascist-7-to-8';
+  }
+  if (players.length >= 9) {
+    board = 'fascist-9-to-10';
+  }
 
   return (<>
     <div className="policy-board liberal">
@@ -32,7 +39,7 @@ export default function PolicyTracks({ gameState }) {
       </div>
     </div>
 
-    <div className="policy-board fascist-5-to-6">
+    <div className={`policy-board ${board}`}>
       <div className="fascist-policy-boxes">
         {[...Array(6)].map((_, i) => (
           <div

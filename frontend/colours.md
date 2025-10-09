@@ -1,6 +1,7 @@
 # Colours to use in the UI
 
 Background: #FBB969
-Blue: #2596be
+Light Blue: #2596be
+Dark Blue: #2a4e6c
 Light Red: #cb6849
 Dark Red: #83110a

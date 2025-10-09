@@ -202,7 +202,7 @@ export default function GameBoard() {
       </div>
 
       <div style={styles.mainContent}>
-        <PolicyTracks gameState={gameState} />
+        <PolicyTracks gameState={gameState} players={room.players} />
         {renderPhaseView()}
       </div>
 

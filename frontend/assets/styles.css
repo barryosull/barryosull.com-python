@@ -346,26 +346,6 @@
 
 /* ExecutiveActionView Component Styles */
 
-.executive-result {
-  background-color: #333;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  color: #fff;
-}
-
-.investigation-result {
-  font-weight: bold;
-}
-
-.investigation-result.liberal {
-  color: #2196f3;
-}
-
-.investigation-result.fascist {
-  color: #f44336;
-}
-
 .game-over {
   margin-top: 10px;
   padding: 10px;
@@ -397,6 +377,24 @@
   transform: scale(1.05);
 }
 
+.team-display {
+  aspect-ratio: 481 / 675;
+  margin: 0px 20px 15px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 4%;
+}
+
+.team-display.liberal {
+  background-image: url("/assets/images/team-liberal.png");
+  border: 3px solid #2a4e6c;
+}
+
+.team-display.fascist {
+  background-image: url("/assets/images/team-fascist.png");
+  border: 3px solid #83110a;
+}
+
 
 /* RoleOverlay Component Styles */
 
@@ -425,3 +423,4 @@
   line-height: 1.6;
   margin-bottom: 15px;
 }
+
