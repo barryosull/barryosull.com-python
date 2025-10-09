@@ -115,20 +115,13 @@ export default function ExecutiveActionView({
         <div className="overlay-subtitle">{getPowerDescription()}</div>
 
         {showingPolicies && hasPeekedPolicies && (
-          <div className="executive-result">
-            <div>
-              <strong>Policy Peek:</strong>
-              <div className="policy-peek">
-                {gameState.peeked_policies.map((policy, idx) => (
-                  <div
-                    key={idx}
-                    className={`peeked-policy ${policy.type === 'LIBERAL' ? 'liberal' : 'fascist'}`}
-                  >
-                    {policy.type === 'LIBERAL' ? 'L' : 'F'}
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="policy-grid">
+            {gameState.peeked_policies?.map((policy, index) => (
+              <span
+                key={index}
+                className={`policy-card ${policy.type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
+              ></span>
+            ))}
           </div>
         )}
 
@@ -181,7 +174,7 @@ export default function ExecutiveActionView({
         )}
 
         {(showingPolicies || showingLoyalty) && (
-          <div className="auto-advance-message">
+          <div className="overlay-subtitle">
             Auto-advancing in 3 seconds...
           </div>
         )}

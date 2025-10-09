@@ -19,7 +19,7 @@
   padding: 40px;
   max-width: 600px;
   width: 90%;
-  max-height: 80vh;
+  max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
@@ -354,36 +354,6 @@
   color: #fff;
 }
 
-.policy-peek {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.peeked-policy {
-  width: 60px;
-  height: 80px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: bold;
-  border: 2px solid;
-}
-
-.peeked-policy.liberal {
-  border-color: #2196f3;
-  background-color: #1a1a2e;
-  color: #2196f3;
-}
-
-.peeked-policy.fascist {
-  border-color: #f44336;
-  background-color: #2e1a1a;
-  color: #f44336;
-}
-
 .investigation-result {
   font-weight: bold;
 }
@@ -427,10 +397,31 @@
   transform: scale(1.05);
 }
 
-.auto-advance-message {
-  color: #aaa;
+
+/* RoleOverlay Component Styles */
+
+.role-display {
+  aspect-ratio: 481 / 675;
+  margin: 0px 20px 15px;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.role-display.liberal {
+  background-image: url("/assets/images/role-liberal.png");
+}
+
+.role-display.fascist {
+  background-image: url("/assets/images/role-fascist.png");
+}
+
+.role-display.hitler {
+  background-image: url("/assets/images/role-hitler.png");
+}
+
+.role-description {
+  color: #2a4e6c;
   font-size: 16px;
-  text-align: center;
-  padding: 20px;
-  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 15px;
 }

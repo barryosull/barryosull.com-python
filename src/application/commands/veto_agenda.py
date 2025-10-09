@@ -55,9 +55,6 @@ class VetoAgendaHandler:
             )
             game_state.move_to_nomination_phase(next_president)
 
-            game_state.previous_president_id = game_state.president_id
-            game_state.previous_chancellor_id = game_state.chancellor_id
-
         elif is_president:
             if not command.approve_veto:
                 raise ValueError("President rejected veto - chancellor must enact policy")
@@ -71,8 +68,5 @@ class VetoAgendaHandler:
                 game_state.president_id, room.active_players()
             )
             game_state.move_to_nomination_phase(next_president)
-
-            game_state.previous_president_id = game_state.president_id
-            game_state.previous_chancellor_id = game_state.chancellor_id
 
         self.repository.save(room)

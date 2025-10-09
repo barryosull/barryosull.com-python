@@ -71,7 +71,7 @@ const styles = {
     fontSize: '12px',  
   },
   you: {
-    border: '1px solid #fff',
+    border: '2px solid #83110a',
   },
   badges: {
     position: 'absolute',

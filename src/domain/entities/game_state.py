@@ -99,6 +99,8 @@ class GameState:
     
     def move_to_nomination_phase(self, next_president):
         self.current_phase = GamePhase.NOMINATION
+        self.previous_president_id = self.president_id
+        self.previous_chancellor_id = self.chancellor_id
         self.president_id = next_president
         self.nominated_chancellor_id = None
         self.chancellor_id = None
