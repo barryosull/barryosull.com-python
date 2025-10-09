@@ -97,10 +97,12 @@ class GameState:
     def peek_policies(self) -> list:
         return self.policy_deck.peek(3)
     
-    def move_to_nomination_phase(self, next_president):
-        self.current_phase = GamePhase.NOMINATION
+    def record_previous_president_and_chancellor(self):
         self.previous_president_id = self.president_id
         self.previous_chancellor_id = self.chancellor_id
+    
+    def move_to_nomination_phase(self, next_president):
+        self.current_phase = GamePhase.NOMINATION
         self.president_id = next_president
         self.nominated_chancellor_id = None
         self.chancellor_id = None

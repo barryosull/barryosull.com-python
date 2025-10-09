@@ -53,6 +53,7 @@ class VetoAgendaHandler:
             next_president = GovernmentFormationService.advance_president(
                 game_state.president_id, room.active_players()
             )
+            game_state.record_previous_president_and_chancellor()
             game_state.move_to_nomination_phase(next_president)
 
         elif is_president:
@@ -67,6 +68,7 @@ class VetoAgendaHandler:
             next_president = GovernmentFormationService.advance_president(
                 game_state.president_id, room.active_players()
             )
+            game_state.record_previous_president_and_chancellor()
             game_state.move_to_nomination_phase(next_president)
 
         self.repository.save(room)
