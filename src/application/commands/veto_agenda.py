@@ -41,34 +41,33 @@ class VetoAgendaHandler:
         if not (is_chancellor or is_president):
             raise ValueError("Only the president or chancellor can respond to veto")
 
-        if is_chancellor and not command.approve_veto:
-            raise ValueError("Chancellor initiated veto, cannot reject")
-
         if is_chancellor:
-            
-            game_state.chancellor_policies = []
-            game_state.president_policies = []
-            game_state.increment_election_tracker()
+            if not command.approve_veto:
+                raise ValueError("Chancellor cannot reject their own veto request")
 
-            next_president = GovernmentFormationService.advance_president(
-                game_state.president_id, room.active_players()
-            )
-            game_state.record_previous_president_and_chancellor()
-            game_state.move_to_nomination_phase(next_president)
+            game_state.veto_requested = True
 
         elif is_president:
-            if not command.approve_veto:
-                raise ValueError("President rejected veto - chancellor must enact policy")
+            if not game_state.veto_requested:
+                raise ValueError("No veto request to respond to")
 
-            game_state.policy_deck.discard(game_state.chancellor_policies)
-            game_state.chancellor_policies = []
-            game_state.president_policies = []
-            game_state.increment_election_tracker()
+            if command.approve_veto:
+                game_state.policy_deck.discard(game_state.chancellor_policies)
+                game_state.chancellor_policies = []
+                game_state.president_policies = []
+                game_state.veto_requested = False
+                game_state.increment_election_tracker()
 
-            next_president = GovernmentFormationService.advance_president(
-                game_state.president_id, room.active_players()
-            )
-            game_state.record_previous_president_and_chancellor()
-            game_state.move_to_nomination_phase(next_president)
+                if game_state.next_regular_president_id:
+                    next_president = game_state.next_regular_president_id
+                    game_state.next_regular_president_id = None
+                else:
+                    next_president = GovernmentFormationService.advance_president(
+                        game_state.president_id, room.active_players()
+                    )
+                game_state.record_previous_president_and_chancellor()
+                game_state.move_to_nomination_phase(next_president)
+            else:
+                game_state.veto_requested = False
 
         self.repository.save(room)

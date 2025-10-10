@@ -10,7 +10,6 @@ export default function PolicySelectionView({
 }) {
   const [selectedPolicyIndex, setSelectedPolicyIndex] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [vetoRequested, setVetoRequested] = useState(false);
   const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
 
   const handleSelect = async () => {
@@ -51,6 +50,74 @@ export default function PolicySelectionView({
     ? gameState.president_id === myPlayerId
     : gameState.chancellor_id === myPlayerId;
 
+  // Check for veto state first, before isMyTurn check
+  if (gameState.veto_requested) {
+    const isPresidentPlayer = gameState.president_id === myPlayerId;
+    const isChancellorPlayer = gameState.chancellor_id === myPlayerId;
+
+    if (isPresidentPlayer) {
+      return (
+        <div className="overlay">
+          <div className="overlay-content">
+            <h3 className="overlay-title">Veto Request</h3>
+            <div className="overlay-subtitle">
+              The Chancellor has requested to veto the agenda. Do you approve?
+            </div>
+
+            <div className="veto-buttons">
+              <button
+                onClick={() => handleVeto(true)}
+                className="veto-button approve"
+                disabled={loading}
+              >
+                Approve Veto
+              </button>
+              <button
+                onClick={() => handleVeto(false)}
+                className="veto-button reject"
+                disabled={loading}
+              >
+                Reject Veto
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    } else if (isChancellorPlayer) {
+      return (
+        <div className="overlay">
+          <div className="overlay-content">
+            <h3 className="overlay-title">Veto Requested</h3>
+            <div className="overlay-waiting">
+              Waiting for President to respond to veto request...
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      // Other players
+      if (!showWaitingOverlay) {
+        return null;
+      }
+      return (
+        <div className="overlay">
+          <div className="overlay-content">
+            <h3 className="overlay-title">Legislative Session</h3>
+            <div className="overlay-waiting">
+              Veto requested, waiting for President to respond...
+            </div>
+            <button
+              onClick={() => setShowWaitingOverlay(false)}
+              className="close-button"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      );
+    }
+  }
+
   if (!isMyTurn) {
     if (!showWaitingOverlay) {
       return null;
@@ -69,36 +136,6 @@ export default function PolicySelectionView({
           >
             Close
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (vetoRequested && isPresident) {
-    return (
-      <div className="overlay">
-        <div className="overlay-content">
-          <h3 className="overlay-title">Veto Request</h3>
-          <div className="overlay-subtitle">
-            The Chancellor has requested to veto the agenda. Do you approve?
-          </div>
-
-          <div className="veto-buttons">
-            <button
-              onClick={() => handleVeto(true)}
-              className="veto-button approve"
-              disabled={loading}
-            >
-              Approve Veto
-            </button>
-            <button
-              onClick={() => handleVeto(false)}
-              className="veto-button reject"
-              disabled={loading}
-            >
-              Reject Veto
-            </button>
-          </div>
         </div>
       </div>
     );
@@ -133,7 +170,7 @@ export default function PolicySelectionView({
 
         {vetoAvailable && !isPresident && (
           <button
-            onClick={() => setVetoRequested(true)}
+            onClick={() => handleVeto(true)}
             className="veto-request-button"
             disabled={loading}
           >

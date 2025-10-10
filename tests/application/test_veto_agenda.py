@@ -39,17 +39,28 @@ def test_chancellor_initiates_veto():
 
     repository.save(room)
 
-    command = VetoAgendaCommand(
+    chancellor_command = VetoAgendaCommand(
         room_id=room.room_id, player_id=chancellor_id, approve_veto=True
     )
-    command_bus.execute(command)
+    command_bus.execute(chancellor_command)
 
     updated_room = repository.find_by_id(room.room_id)
-    assert updated_room.game_state.current_phase == GamePhase.NOMINATION
-    assert updated_room.game_state.election_tracker == 1
-    assert updated_room.game_state.chancellor_policies == []
-    assert updated_room.game_state.president_policies == []
-    assert updated_room.game_state.president_id == chancellor_id
+    assert updated_room.game_state.veto_requested is True
+    assert updated_room.game_state.current_phase == GamePhase.LEGISLATIVE_CHANCELLOR
+    assert updated_room.game_state.election_tracker == 0
+
+    president_command = VetoAgendaCommand(
+        room_id=room.room_id, player_id=president_id, approve_veto=True
+    )
+    command_bus.execute(president_command)
+
+    final_room = repository.find_by_id(room.room_id)
+    assert final_room.game_state.veto_requested is False
+    assert final_room.game_state.current_phase == GamePhase.NOMINATION
+    assert final_room.game_state.election_tracker == 1
+    assert final_room.game_state.chancellor_policies == []
+    assert final_room.game_state.president_policies == []
+    assert final_room.game_state.president_id == chancellor_id
 
 
 def test_president_approves_veto():
@@ -80,12 +91,18 @@ def test_president_approves_veto():
 
     repository.save(room)
 
-    command = VetoAgendaCommand(
+    chancellor_command = VetoAgendaCommand(
+        room_id=room.room_id, player_id=chancellor_id, approve_veto=True
+    )
+    command_bus.execute(chancellor_command)
+
+    president_command = VetoAgendaCommand(
         room_id=room.room_id, player_id=president_id, approve_veto=True
     )
-    command_bus.execute(command)
+    command_bus.execute(president_command)
 
     updated_room = repository.find_by_id(room.room_id)
+    assert updated_room.game_state.veto_requested is False
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION
     assert updated_room.game_state.election_tracker == 1
     assert updated_room.game_state.chancellor_policies == []
@@ -111,15 +128,30 @@ def test_president_rejects_veto():
         current_phase=GamePhase.LEGISLATIVE_CHANCELLOR,
         fascist_policies=5,
     )
+    room.game_state.chancellor_policies = [
+        Policy(PolicyType.FASCIST),
+        Policy(PolicyType.FASCIST),
+    ]
 
     repository.save(room)
 
-    command = VetoAgendaCommand(
+    chancellor_command = VetoAgendaCommand(
+        room_id=room.room_id, player_id=chancellor_id, approve_veto=True
+    )
+    command_bus.execute(chancellor_command)
+
+    updated_room = repository.find_by_id(room.room_id)
+    assert updated_room.game_state.veto_requested is True
+
+    president_command = VetoAgendaCommand(
         room_id=room.room_id, player_id=president_id, approve_veto=False
     )
+    command_bus.execute(president_command)
 
-    with pytest.raises(ValueError, match="President rejected veto"):
-        command_bus.execute(command)
+    final_room = repository.find_by_id(room.room_id)
+    assert final_room.game_state.veto_requested is False
+    assert final_room.game_state.current_phase == GamePhase.LEGISLATIVE_CHANCELLOR
+    assert len(final_room.game_state.chancellor_policies) == 2
 
 
 def test_chancellor_cannot_reject_veto():
@@ -147,7 +179,7 @@ def test_chancellor_cannot_reject_veto():
         room_id=room.room_id, player_id=chancellor_id, approve_veto=False
     )
 
-    with pytest.raises(ValueError, match="Chancellor initiated veto, cannot reject"):
+    with pytest.raises(ValueError, match="Chancellor cannot reject their own veto request"):
         command_bus.execute(command)
 
 
@@ -272,4 +304,34 @@ def test_game_not_started():
     )
 
     with pytest.raises(ValueError, match="Game not started"):
+        command_bus.execute(command)
+
+
+def test_president_cannot_respond_without_veto_request():
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    president_id = uuid4()
+    chancellor_id = uuid4()
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.add_player(Player(chancellor_id, "Chancellor"))
+    room.status = RoomStatus.IN_PROGRESS
+
+    room.game_state = GameState(
+        president_id=president_id,
+        chancellor_id=chancellor_id,
+        current_phase=GamePhase.LEGISLATIVE_CHANCELLOR,
+        fascist_policies=5,
+        veto_requested=False,
+    )
+
+    repository.save(room)
+
+    command = VetoAgendaCommand(
+        room_id=room.room_id, player_id=president_id, approve_veto=True
+    )
+
+    with pytest.raises(ValueError, match="No veto request to respond to"):
         command_bus.execute(command)

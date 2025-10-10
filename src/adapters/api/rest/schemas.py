@@ -70,6 +70,7 @@ class GameStateResponse(BaseModel):
     nominated_chancellor_id: UUID | None
     previous_president_id: UUID | None
     previous_chancellor_id: UUID | None
+    veto_requested: bool
     liberal_policies: int
     fascist_policies: int
     election_tracker: int

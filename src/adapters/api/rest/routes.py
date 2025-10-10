@@ -253,6 +253,7 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
             nominated_chancellor_id=game_state.nominated_chancellor_id,
             previous_president_id=game_state.previous_president_id,
             previous_chancellor_id=game_state.previous_chancellor_id,
+            veto_requested=game_state.veto_requested,
             liberal_policies=game_state.liberal_policies,
             fascist_policies=game_state.fascist_policies,
             election_tracker=game_state.election_tracker,

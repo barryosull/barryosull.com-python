@@ -33,6 +33,7 @@ class GameState:
     previous_president_id: Optional[UUID] = None
     previous_chancellor_id: Optional[UUID] = None
     next_regular_president_id: Optional[UUID] = None
+    veto_requested: bool = False
     policy_deck: PolicyDeck = field(default_factory=PolicyDeck.create_initial_deck)
     liberal_policies: int = 0
     fascist_policies: int = 0
