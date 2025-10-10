@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import { playerStorage } from '../services/storage';
 
@@ -8,21 +8,33 @@ export function useGameState(roomId) {
   const [myRole, setMyRole] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const roleFetchedRef = useRef(false);
 
   const fetchGameState = async () => {
-    
+
     const playerId = playerStorage.getPlayerId();
-    
+
     try {
-      const [roomData, gameData, roleData] = await Promise.all([
+      const promises = [
         api.getRoomState(roomId),
-        api.getGameState(roomId).catch(() => null),
-        playerId ? api.getMyRole(roomId, playerId).catch(() => null) : null
-      ]);
+        api.getGameState(roomId).catch(() => null)
+      ];
+
+      if (playerId && !roleFetchedRef.current) {
+        promises.push(api.getMyRole(roomId, playerId).catch(() => null));
+      }
+
+      const results = await Promise.all(promises);
+      const roomData = results[0];
+      const gameData = results[1];
+      const roleData = results[2];
 
       setRoom(roomData);
       setGameState(gameData);
-      setMyRole(roleData);
+      if (roleData) {
+        setMyRole(roleData);
+        roleFetchedRef.current = true;
+      }
       setError(null);
     } catch (err) {
       setError(err.message);
@@ -34,6 +46,7 @@ export function useGameState(roomId) {
   useEffect(() => {
     if (!roomId) return;
 
+    roleFetchedRef.current = false;
     fetchGameState();
     const interval = setInterval(fetchGameState, 2000);
 
