@@ -85,9 +85,16 @@ class GameStateResponse(BaseModel):
     investigated_players: list[UUID] = []
 
 
+class TeammateInfo(BaseModel):
+    player_id: UUID
+    name: str
+    is_hitler: bool
+
+
 class RoleResponse(BaseModel):
     team: str
     is_hitler: bool
+    teammates: list[TeammateInfo] = []
 
 
 class UseExecutiveActionRequest(BaseModel):

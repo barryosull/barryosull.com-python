@@ -20,6 +20,7 @@ from src.adapters.api.rest.schemas import (
     RoleResponse,
     RoomStateResponse,
     StartGameRequest,
+    TeammateInfo,
     UseExecutiveActionRequest,
     VetoAgendaRequest,
 )
@@ -43,6 +44,7 @@ from src.domain.services.government_formation_service import (
     GovernmentFormationService,
 )
 from src.domain.value_objects.policy import PolicyType
+from src.domain.value_objects.role import Team
 
 repository = FileSystemRoomRepository()
 command_bus = CommandBus(repository)
@@ -300,7 +302,36 @@ def get_my_role(room_id: UUID, player_id: UUID) -> RoleResponse:
         if not role:
             raise ValueError(f"Player {player_id} not found in game")
 
-        return RoleResponse(team=role.team, is_hitler=role.is_hitler)
+        teammates = []
+        player_count = len(room.players)
+
+        if role.team == Team.FASCIST:
+            if 5 <= player_count <= 6:
+                for other_player_id, other_role in game_state.role_assignments.items():
+                    if other_player_id != player_id and other_role.team == Team.FASCIST:
+                        teammate_player = room.get_player(other_player_id)
+                        if teammate_player:
+                            teammates.append(
+                                TeammateInfo(
+                                    player_id=other_player_id,
+                                    name=teammate_player.name,
+                                    is_hitler=other_role.is_hitler,
+                                )
+                            )
+            elif player_count >= 7 and not role.is_hitler:
+                for other_player_id, other_role in game_state.role_assignments.items():
+                    if other_player_id != player_id and other_role.team == Team.FASCIST:
+                        teammate_player = room.get_player(other_player_id)
+                        if teammate_player:
+                            teammates.append(
+                                TeammateInfo(
+                                    player_id=other_player_id,
+                                    name=teammate_player.name,
+                                    is_hitler=other_role.is_hitler,
+                                )
+                            )
+
+        return RoleResponse(team=role.team, is_hitler=role.is_hitler, teammates=teammates)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
@@ -344,7 +375,7 @@ def investigate_loyalty(room_id: UUID, player_id: UUID, target_player_id: UUID) 
         if not target_role:
             raise ValueError("Target player not found in game")
 
-        return RoleResponse(team=target_role.team, is_hitler=False)
+        return RoleResponse(team=target_role.team, is_hitler=False, teammates=[])
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():

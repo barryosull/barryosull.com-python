@@ -303,6 +303,119 @@ def test_get_my_role_not_started(monkeypatch):
     assert "not started" in response.json()["detail"].lower()
 
 
+def test_get_my_role_includes_teammate_for_small_games(monkeypatch):
+    from src.domain.value_objects.role import Role, Team
+
+    repository = InMemoryRoomRepository()
+
+    room = GameRoom()
+    player_ids = [uuid4() for _ in range(5)]
+
+    for i, player_id in enumerate(player_ids):
+        room.add_player(Player(player_id, f"Player{i}"))
+
+    start_game_for_room(room)
+
+    hitler_id = None
+    fascist_id = None
+    for player_id, role in room.game_state.role_assignments.items():
+        if role.team == Team.FASCIST and role.is_hitler:
+            hitler_id = player_id
+        elif role.team == Team.FASCIST and not role.is_hitler:
+            fascist_id = player_id
+
+    assert hitler_id is not None, f"Hitler not found in role assignments"
+    assert fascist_id is not None, f"Fascist not found in role assignments"
+
+    repository.save(room)
+
+    import src.adapters.api.rest.routes as routes_module
+
+    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
+
+    fascist_response = client.get(
+        f"/api/games/{room.room_id}/my-role", params={"player_id": str(fascist_id)}
+    )
+    assert fascist_response.status_code == 200
+    fascist_data = fascist_response.json()
+    assert fascist_data["team"] == "FASCIST"
+    assert fascist_data["is_hitler"] is False
+    assert len(fascist_data["teammates"]) == 1
+    assert fascist_data["teammates"][0]["player_id"] == str(hitler_id)
+    assert fascist_data["teammates"][0]["name"] is not None
+    assert fascist_data["teammates"][0]["is_hitler"] is True
+
+    hitler_response = client.get(
+        f"/api/games/{room.room_id}/my-role", params={"player_id": str(hitler_id)}
+    )
+    assert hitler_response.status_code == 200
+    hitler_data = hitler_response.json()
+    assert hitler_data["team"] == "FASCIST"
+    assert hitler_data["is_hitler"] is True
+    assert len(hitler_data["teammates"]) == 1
+    assert hitler_data["teammates"][0]["player_id"] == str(fascist_id)
+    assert hitler_data["teammates"][0]["name"] is not None
+    assert hitler_data["teammates"][0]["is_hitler"] is False
+
+
+def test_get_my_role_fascists_see_teammates_in_large_games(monkeypatch):
+    from src.domain.value_objects.role import Role, Team
+
+    repository = InMemoryRoomRepository()
+
+    room = GameRoom()
+    player_ids = [uuid4() for _ in range(7)]
+
+    for i, player_id in enumerate(player_ids):
+        room.add_player(Player(player_id, f"Player{i}"))
+
+    start_game_for_room(room)
+
+    hitler_id = None
+    fascist_ids = []
+    for player_id, role in room.game_state.role_assignments.items():
+        if role.team == Team.FASCIST:
+            if role.is_hitler:
+                hitler_id = player_id
+            else:
+                fascist_ids.append(player_id)
+
+    repository.save(room)
+
+    import src.adapters.api.rest.routes as routes_module
+
+    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
+
+    fascist_response = client.get(
+        f"/api/games/{room.room_id}/my-role", params={"player_id": str(fascist_ids[0])}
+    )
+    assert fascist_response.status_code == 200
+    fascist_data = fascist_response.json()
+    assert fascist_data["team"] == "FASCIST"
+    assert fascist_data["is_hitler"] is False
+    assert len(fascist_data["teammates"]) == 2
+    teammate_ids = [t["player_id"] for t in fascist_data["teammates"]]
+    assert str(hitler_id) in teammate_ids
+    assert str(fascist_ids[1]) in teammate_ids
+
+    hitler_teammate = next(t for t in fascist_data["teammates"] if t["player_id"] == str(hitler_id))
+    assert hitler_teammate["is_hitler"] is True
+
+    other_fascist_teammate = next(t for t in fascist_data["teammates"] if t["player_id"] == str(fascist_ids[1]))
+    assert other_fascist_teammate["is_hitler"] is False
+
+    hitler_response = client.get(
+        f"/api/games/{room.room_id}/my-role", params={"player_id": str(hitler_id)}
+    )
+    assert hitler_response.status_code == 200
+    hitler_data = hitler_response.json()
+    assert hitler_data["team"] == "FASCIST"
+    assert hitler_data["is_hitler"] is True
+    assert len(hitler_data["teammates"]) == 0
+
+
 def test_investigate_loyalty_success(monkeypatch):
     from src.domain.entities.game_state import GamePhase
     from src.domain.value_objects.role import Role, Team

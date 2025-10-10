@@ -40,21 +40,35 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
           className={`role-display ${myRole.is_hitler ? 'hitler' : myRole.team === 'LIBERAL' ? 'liberal' : 'fascist'}`}
         >
         </div>
-        {myRole.is_hitler && (
-          <div className="role-description">
-            You are Hitler! Work with the Fascists to get elected as Chancellor after 3 Fascist policies are enacted.
-          </div>
-        )}
-        {!myRole.is_hitler && myRole.team === 'FASCIST' && (
-          <div className="role-description">
-            You are a Fascist! Work to enact Fascist policies and get Hitler elected as Chancellor.
-          </div>
-        )}
-        {myRole.team === 'LIBERAL' && (
-          <div className="role-description">
-            You are a Liberal! Work to enact Liberal policies and prevent Hitler from being elected.
-          </div>
-        )}
+        <div className="role-description">
+          {myRole.is_hitler && (
+            <span>
+              You are Hitler! Work with the Fascists to get elected as Chancellor after 3 Fascist policies are enacted. 
+            </span>
+          )}
+          {!myRole.is_hitler && myRole.team === 'FASCIST' && (
+            <span>
+              You are a Fascist! Work to enact Fascist policies and get Hitler elected as Chancellor. 
+            </span>
+          )}
+          {myRole.team === 'LIBERAL' && (
+            <span>
+              You are a Liberal! Work to enact Liberal policies and prevent Hitler from being elected. 
+            </span>
+          )}
+          {myRole.teammates && myRole.teammates.length > 0 && (
+            <span>
+              {myRole.teammates.length === 1 ? 'Your Teammate:' : 'Your Teammates:'}
+              <ul>
+              {myRole.teammates.map((teammate) => (
+                <li key={teammate.player_id} className="teammate-name">
+                  {teammate.name} {teammate.is_hitler && '(Hitler)'}
+                </li>
+              ))}
+              </ul>
+            </span>
+          )}
+        </div>
         <button onClick={handleClose} className="close-button">
           OK
         </button>
