@@ -1,3 +1,29 @@
+/* Overall Styles */
+
+.container {
+  min-height: 100vh;
+  background-color: #FBB969;
+  padding: 20px;
+  font-family: "Germania One", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1.title {
+  color: #fff;
+  font-size: 32px;
+  margin-bottom: 10px;
+  background-color: #83110a;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
 /* Shared Overlay Styles */
 
 .overlay {

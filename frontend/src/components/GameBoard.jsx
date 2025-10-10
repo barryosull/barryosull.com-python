@@ -10,6 +10,7 @@ import VotingView from './VotingView';
 import PolicySelectionView from './PolicySelectionView';
 import ExecutiveActionView from './ExecutiveActionView';
 import RoleOverlay from './RoleOverlay';
+import '../../assets/styles.css';
 
 export default function GameBoard() {
   const { roomId } = useParams();
@@ -187,9 +188,9 @@ export default function GameBoard() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Secret Hitler</h1>
+    <div className="container">
+      <div className="header">
+        <h1 className="title">Secret Hitler</h1>
         <div style={styles.roomId}>Room: {roomId}</div>
       </div>
 
@@ -212,27 +213,6 @@ export default function GameBoard() {
 }
 
 const styles = {
-  container: {
-    minHeight: '100vh',
-    backgroundColor: '#FBB969',
-    padding: '20px',
-    fontFamily: '"Germania One", system-ui',
-    fontWeight: '400',
-    fontStyle: 'normal',
-  },
-  header: {
-    textAlign: 'center',
-    marginBottom: '20px'
-  },
-  title: {
-    color: '#fff',
-    fontSize: '32px',
-    marginBottom: '10px',
-    backgroundColor: '#83110a',
-    display: 'inline-block',
-    padding: '6px 12px',
-    borderRadius: '12px',
-  },
   roomId: {
     color: '#434343',
     fontSize: '14px',
