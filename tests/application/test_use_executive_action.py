@@ -384,6 +384,61 @@ def test_investigate_loyalty_cannot_investigate_self():
         command_bus.execute(command)
 
 
+def test_investigate_loyalty_cannot_investigate_same_player_twice():
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    president_id = uuid4()
+    target_id = uuid4()
+    player3_id = uuid4()
+    player4_id = uuid4()
+    player5_id = uuid4()
+    player6_id = uuid4()
+    player7_id = uuid4()
+    player8_id = uuid4()
+    player9_id = uuid4()
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.add_player(Player(target_id, "Target"))
+    room.add_player(Player(player3_id, "Player3"))
+    room.add_player(Player(player4_id, "Player4"))
+    room.add_player(Player(player5_id, "Player5"))
+    room.add_player(Player(player6_id, "Player6"))
+    room.add_player(Player(player7_id, "Player7"))
+    room.add_player(Player(player8_id, "Player8"))
+    room.add_player(Player(player9_id, "Player9"))
+    room.status = RoomStatus.IN_PROGRESS
+
+    room.game_state = GameState(
+        president_id=president_id,
+        current_phase=GamePhase.EXECUTIVE_ACTION,
+        fascist_policies=1,
+    )
+    room.game_state.role_assignments = {
+        president_id: Role(team=Team.FASCIST, is_hitler=False),
+        target_id: Role(team=Team.LIBERAL, is_hitler=False),
+    }
+
+    repository.save(room)
+
+    command = UseExecutiveActionCommand(
+        room_id=room.room_id, player_id=president_id, target_player_id=target_id
+    )
+    command_bus.execute(command)
+
+    updated_room = repository.find_by_id(room.room_id)
+    assert target_id in updated_room.game_state.investigated_players
+
+    updated_room.game_state.current_phase = GamePhase.EXECUTIVE_ACTION
+    updated_room.game_state.president_id = president_id
+    updated_room.game_state.fascist_policies = 2
+    repository.save(updated_room)
+
+    with pytest.raises(ValueError, match="This player has already been investigated"):
+        command_bus.execute(command)
+
+
 def test_special_election_returns_to_normal_rotation():
     from src.application.commands.enact_policy import EnactPolicyCommand
     from src.domain.value_objects.policy import Policy, PolicyType

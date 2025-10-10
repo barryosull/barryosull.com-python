@@ -51,10 +51,14 @@ class UseExecutiveActionHandler:
             if command.target_player_id == command.player_id:
                 raise ValueError("Cannot investigate yourself")
 
+            if command.target_player_id in game_state.investigated_players:
+                raise ValueError("This player has already been investigated")
+
             target_role = game_state.role_assignments.get(command.target_player_id)
             if not target_role:
                 raise ValueError("Target player not found in game")
 
+            game_state.investigated_players.add(command.target_player_id)
             result = {}
 
         elif presidential_power == PresidentialPower.POLICY_PEEK:

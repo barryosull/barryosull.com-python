@@ -82,6 +82,7 @@ class GameStateResponse(BaseModel):
     game_over_reason: str | None = None
     eligible_chancellor_nominees: list[UUID] | None = None
     presidential_power: str | None = None
+    investigated_players: list[UUID] = []
 
 
 class RoleResponse(BaseModel):

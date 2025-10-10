@@ -89,6 +89,7 @@ export default function ExecutiveActionView({
         if (p.player_id === myPlayerId) return false;
         if (presidentialPower === 'EXECUTION' && !p.is_alive) return false;
         if (presidentialPower === 'CALL_SPECIAL_ELECTION' && !p.is_alive) return false;
+        if (presidentialPower === 'INVESTIGATE_LOYALTY' && gameState.investigated_players?.includes(p.player_id)) return false;
         return true;
       })
     : [];

@@ -274,6 +274,7 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
             game_over_reason=game_state.game_over_reason,
             eligible_chancellor_nominees=eligible_chancellor_nominees,
             presidential_power=presidential_power,
+            investigated_players=list(game_state.investigated_players),
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
