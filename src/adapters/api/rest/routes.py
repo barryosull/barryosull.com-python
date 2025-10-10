@@ -200,24 +200,10 @@ def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
 )
 def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
     try:
-        room = repository.find_by_id(room_id)
-        if not room:
-            raise ValueError(f"Room {room_id} not found")
-
-        if not room.game_state:
-            raise ValueError("Game not started")
-
-        policy = next(
-            (p for p in room.game_state.chancellor_policies if p.type.value == request.policy_type),
-            None
-        )
-        if not policy:
-            raise ValueError(f"Policy {request.policy_type} not found in chancellor policies")
-
         command = EnactPolicyCommand(
             room_id=room_id,
             player_id=request.player_id,
-            enacted_policy=policy,
+            policy_type=PolicyType(request.policy_type),
         )
         command_bus.execute(command)
     except ValueError as e:

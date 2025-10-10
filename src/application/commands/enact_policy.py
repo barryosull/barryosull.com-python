@@ -5,7 +5,7 @@ from src.domain.entities.game_state import GamePhase
 from src.domain.services.government_formation_service import GovernmentFormationService
 from src.domain.services.policy_enactment_service import PolicyEnactmentService
 from src.domain.services.win_condition_service import WinConditionService
-from src.domain.value_objects.policy import Policy
+from src.domain.value_objects.policy import PolicyType
 from src.ports.repository_port import RoomRepositoryPort
 
 
@@ -13,7 +13,7 @@ from src.ports.repository_port import RoomRepositoryPort
 class EnactPolicyCommand:
     room_id: UUID
     player_id: UUID
-    enacted_policy: Policy
+    policy_type: PolicyType
 
 
 class EnactPolicyHandler:
@@ -38,8 +38,17 @@ class EnactPolicyHandler:
         if game_state.chancellor_id != command.player_id:
             raise ValueError("Only the chancellor can enact a policy")
 
+        policy = next(
+            (p for p in game_state.chancellor_policies if p.type == command.policy_type),
+            None,
+        )
+        if not policy:
+            raise ValueError(
+                f"Policy {command.policy_type.value} not found in chancellor policies"
+            )
+
         enacted_policy = PolicyEnactmentService.chancellor_enacts_policy(
-            game_state, game_state.chancellor_policies, command.enacted_policy
+            game_state, game_state.chancellor_policies, policy
         )
 
         game_state.chancellor_policies = []

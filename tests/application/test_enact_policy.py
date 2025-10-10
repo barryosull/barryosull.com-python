@@ -34,7 +34,7 @@ def test_enact_policy_success():
     repository.save(room)
 
     command = EnactPolicyCommand(
-        room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
+        room_id=room.room_id, player_id=chancellor_id, policy_type=PolicyType.LIBERAL
     )
     command_bus.execute(command)
 
@@ -70,7 +70,7 @@ def test_enact_policy_triggers_executive_action():
     repository.save(room)
 
     command = EnactPolicyCommand(
-        room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
+        room_id=room.room_id, player_id=chancellor_id, policy_type=PolicyType.FASCIST
     )
     command_bus.execute(command)
 
@@ -103,7 +103,7 @@ def test_enact_policy_liberal_victory():
     repository.save(room)
 
     command = EnactPolicyCommand(
-        room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
+        room_id=room.room_id, player_id=chancellor_id, policy_type=PolicyType.LIBERAL
     )
     command_bus.execute(command)
 
@@ -137,7 +137,7 @@ def test_enact_policy_fascist_victory():
     repository.save(room)
 
     command = EnactPolicyCommand(
-        room_id=room.room_id, player_id=chancellor_id, enacted_policy=policies[0]
+        room_id=room.room_id, player_id=chancellor_id, policy_type=PolicyType.FASCIST
     )
     command_bus.execute(command)
 
@@ -152,7 +152,6 @@ def test_enact_policy_wrong_phase():
     command_bus = CommandBus(repository)
 
     chancellor_id = uuid4()
-    policy = Policy(PolicyType.LIBERAL)
 
     room = GameRoom()
     room.add_player(Player(chancellor_id, "Chancellor"))
@@ -164,7 +163,7 @@ def test_enact_policy_wrong_phase():
     repository.save(room)
 
     command = EnactPolicyCommand(
-        room_id=room.room_id, player_id=chancellor_id, enacted_policy=policy
+        room_id=room.room_id, player_id=chancellor_id, policy_type=PolicyType.LIBERAL
     )
 
     with pytest.raises(ValueError, match="Cannot enact policy in phase"):
@@ -177,7 +176,7 @@ def test_enact_policy_not_chancellor():
 
     chancellor_id = uuid4()
     other_player_id = uuid4()
-    policy = Policy(PolicyType.LIBERAL)
+    policies = [Policy(PolicyType.LIBERAL)]
 
     room = GameRoom()
     room.add_player(Player(chancellor_id, "Chancellor"))
@@ -186,13 +185,38 @@ def test_enact_policy_not_chancellor():
     room.game_state = GameState(
         chancellor_id=chancellor_id, current_phase=GamePhase.LEGISLATIVE_CHANCELLOR
     )
-    room.game_state.chancellor_policies = [policy]
+    room.game_state.chancellor_policies = policies
 
     repository.save(room)
 
     command = EnactPolicyCommand(
-        room_id=room.room_id, player_id=other_player_id, enacted_policy=policy
+        room_id=room.room_id, player_id=other_player_id, policy_type=PolicyType.LIBERAL
     )
 
     with pytest.raises(ValueError, match="Only the chancellor"):
+        command_bus.execute(command)
+
+
+def test_enact_policy_not_in_chancellor_policies():
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    chancellor_id = uuid4()
+    policies = [Policy(PolicyType.FASCIST), Policy(PolicyType.FASCIST)]
+
+    room = GameRoom()
+    room.add_player(Player(chancellor_id, "Chancellor"))
+    room.status = RoomStatus.IN_PROGRESS
+    room.game_state = GameState(
+        chancellor_id=chancellor_id, current_phase=GamePhase.LEGISLATIVE_CHANCELLOR
+    )
+    room.game_state.chancellor_policies = policies
+
+    repository.save(room)
+
+    command = EnactPolicyCommand(
+        room_id=room.room_id, player_id=chancellor_id, policy_type=PolicyType.LIBERAL
+    )
+
+    with pytest.raises(ValueError, match="not found in chancellor policies"):
         command_bus.execute(command)
