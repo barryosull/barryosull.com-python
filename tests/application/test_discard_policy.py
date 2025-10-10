@@ -38,7 +38,7 @@ def test_discard_policy_success():
     repository.save(room)
 
     command = DiscardPolicyCommand(
-        room_id=room.room_id, player_id=president_id, policy_type="FASCIST"
+        room_id=room.room_id, player_id=president_id, policy_type=PolicyType.FASCIST
     )
     command_bus.execute(command)
 
@@ -65,7 +65,7 @@ def test_discard_policy_wrong_phase():
     repository.save(room)
 
     command = DiscardPolicyCommand(
-        room_id=room.room_id, player_id=president_id, policy_type="LIBERAL"
+        room_id=room.room_id, player_id=president_id, policy_type=PolicyType.LIBERAL
     )
 
     with pytest.raises(ValueError, match="Cannot discard policy in phase"):
@@ -92,7 +92,7 @@ def test_discard_policy_not_president():
     repository.save(room)
 
     command = DiscardPolicyCommand(
-        room_id=room.room_id, player_id=other_player_id, policy_type="LIBERAL"
+        room_id=room.room_id, player_id=other_player_id, policy_type=PolicyType.LIBERAL
     )
 
     with pytest.raises(ValueError, match="Only the president"):
@@ -121,7 +121,7 @@ def test_discard_policy_not_found():
     repository.save(room)
 
     command = DiscardPolicyCommand(
-        room_id=room.room_id, player_id=president_id, policy_type="FASCIST"
+        room_id=room.room_id, player_id=president_id, policy_type=PolicyType.FASCIST
     )
 
     with pytest.raises(ValueError, match="Policy FASCIST not found in president policies"):

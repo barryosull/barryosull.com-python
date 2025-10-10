@@ -24,12 +24,9 @@ class RoleAssignmentService:
         liberal_count, fascist_count = role_distribution[player_count]
 
         roles = (
-            [Role.liberal() for _ in range(liberal_count)]
+            [Role.hitler_role()]
             + [Role.fascist() for _ in range(fascist_count)]
-            + [Role.hitler_role()]
+            + [Role.liberal() for _ in range(liberal_count)]
         )
 
-        shuffled_players = player_ids.copy()
-        random.shuffle(shuffled_players)
-
-        return dict(zip(shuffled_players, roles))
+        return dict(zip(player_ids, roles))

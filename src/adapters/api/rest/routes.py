@@ -42,6 +42,7 @@ from src.domain.entities.game_state import GamePhase, PresidentialPower
 from src.domain.services.government_formation_service import (
     GovernmentFormationService,
 )
+from src.domain.value_objects.policy import PolicyType
 
 repository = FileSystemRoomRepository()
 command_bus = CommandBus(repository)
@@ -182,7 +183,7 @@ def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
         command = DiscardPolicyCommand(
             room_id=room_id,
             player_id=request.player_id,
-            policy_type=request.policy_type,
+            policy_type=PolicyType(request.policy_type),
         )
         command_bus.execute(command)
     except ValueError as e:

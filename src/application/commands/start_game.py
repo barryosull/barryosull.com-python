@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from src.domain.entities.game_state import GamePhase, GameState
+from src.domain.entities.policy_deck import PolicyDeck
 from src.domain.services.role_assignment_service import RoleAssignmentService
 from src.ports.repository_port import RoomRepositoryPort
 
@@ -12,6 +13,8 @@ class StartGameCommand:
     room_id: UUID
     requester_id: UUID
     first_president_id: UUID | None = None
+    policy_deck: PolicyDeck | None = None
+    shuffle_players: bool = True
 
 
 class StartGameHandler:
@@ -31,7 +34,10 @@ class StartGameHandler:
 
         player_ids = [p.player_id for p in room.players]
 
-        role_assignments = RoleAssignmentService.assign_roles(player_ids)
+        players_for_roles = player_ids.copy()
+        if command.shuffle_players:
+            random.shuffle(players_for_roles)
+        role_assignments = RoleAssignmentService.assign_roles(players_for_roles)
 
         if command.first_president_id:
             if command.first_president_id not in player_ids:
@@ -40,12 +46,20 @@ class StartGameHandler:
         else:
             first_president_id = random.choice(player_ids)
 
-        game_state = GameState(
-            round_number=1,
-            president_id=first_president_id,
-            current_phase=GamePhase.NOMINATION,
-            role_assignments=role_assignments,
-        )
+        game_state_kwargs = {
+            "round_number": 1,
+            "president_id": first_president_id,
+            "current_phase": GamePhase.NOMINATION,
+            "role_assignments": role_assignments,
+        }
+
+        if command.policy_deck:
+            game_state_kwargs["policy_deck"] = command.policy_deck
+
+        game_state = GameState(**game_state_kwargs)
+
+        #print(game_state.policy_deck) 
+        #exit
 
         room.start_game(game_state)
         self.repository.save(room)
