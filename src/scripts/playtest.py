@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Script to create a test game using the command bus."""
 
-import argparse
-import random
 import sys
 from pathlib import Path
-import webbrowser
-from uuid import UUID
-
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+import argparse
+import webbrowser
+from uuid import UUID
+
+from src.application.commands.use_executive_action import UseExecutiveActionCommand
+from src.domain.entities.game_state import GamePhase, PresidentialPower
 from src.application.commands.cast_vote import CastVoteCommand
 from src.application.commands.discard_policy import DiscardPolicyCommand
 from src.application.commands.enact_policy import EnactPolicyCommand
@@ -72,12 +73,12 @@ def make_diverse_deck() -> PolicyDeck:
         discard_pile=[],
     )
 
-def play_3_rounds_enact_fascist_policies(room_id, player_ids):
+def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_ids: list[UUID]):
 
     president_id = player_ids[0]
 
-    # 3 rounds
-    for i in range(0, 3):
+    # Rounds of play
+    for i in range(0, rounds):
         # Chancellor is player after president
         president_index = player_ids.index(president_id)
         chancellor_id = player_ids[(president_index + 1) % len(player_ids)]
@@ -110,6 +111,31 @@ def play_3_rounds_enact_fascist_policies(room_id, player_ids):
             policy_type=PolicyType.FASCIST
         ))
 
+        room = repository.find_by_id(room_id)
+        print(f"Game phase: {room.game_state.current_phase}")
+
+        # Executive action
+        if room.game_state.current_phase == GamePhase.EXECUTIVE_ACTION:
+            power = room.game_state.get_presidential_power(len(room.active_players()))
+            print(f"Executive action: {power}")
+            if power == PresidentialPower.INVESTIGATE_LOYALTY:
+                command_bus.execute(UseExecutiveActionCommand(
+                    room_id=room_id,
+                    player_id=president_id,
+                    target_player_id=chancellor_id
+                )) 
+            if power == PresidentialPower.POLICY_PEEK:
+                command_bus.execute(UseExecutiveActionCommand(
+                    room_id=room_id,
+                    player_id=president_id,
+                ))  
+            if power == PresidentialPower.EXECUTION:
+                command_bus.execute(UseExecutiveActionCommand(
+                    room_id=room_id,
+                    player_id=president_id,
+                    target_player_id=chancellor_id
+                ))  
+              
         president_id = chancellor_id
 
 def main():
@@ -121,10 +147,22 @@ def main():
         default=6,
         help="Number of players (5-10, default: 6)"
     )
+    parser.add_argument(
+        "rounds",
+        type=int,
+        nargs="?",
+        default=0,
+        help="Number of rounds to play until (1-6, default: 0)"
+    )
+
     args = parser.parse_args()
 
     if args.player_count < 5 or args.player_count > 10:
         print(f"Error: Player count must be between 5 and 10 (got {args.player_count})")
+        sys.exit(1)
+
+    if args.rounds < 0 or args.rounds > 6:
+        print(f"Error: Rounds must be between 0 and 6 (got {args.rounds})")
         sys.exit(1)
 
     selected_names = PLAYER_NAMES[0:args.player_count]
@@ -138,9 +176,7 @@ def main():
 
     player_ids = start_game(selected_names, room_id, creator_id)
 
-    print("Player IDs" + ", ".join([str(id) for id in player_ids]))
-
-    play_3_rounds_enact_fascist_policies(room_id, player_ids);
+    play_rounds_and_enact_fascist_policies(args.rounds, room_id, player_ids);
 
     room = repository.find_by_id(room_id)
     if room and room.game_state:
