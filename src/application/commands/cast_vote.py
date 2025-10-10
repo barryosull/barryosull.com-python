@@ -84,9 +84,13 @@ class CastVoteHandler:
         if not game_state.is_chaos_threshold():
             game_state.previous_president_id = game_state.president_id
 
-            next_president = GovernmentFormationService.advance_president(
-                game_state.president_id, room.active_players()
-            )
+            if game_state.next_regular_president_id:
+                next_president = game_state.next_regular_president_id
+                game_state.next_regular_president_id = None
+            else:
+                next_president = GovernmentFormationService.advance_president(
+                    game_state.president_id, room.active_players()
+                )
             game_state.move_to_nomination_phase(next_president)
             return
         
@@ -104,8 +108,12 @@ class CastVoteHandler:
             game_state.game_over_reason = f"{winning_team}s win! {reason}"
             room.end_game()
         else:
-            next_president = GovernmentFormationService.advance_president(
-                game_state.president_id, room.active_players()
-            )
+            if game_state.next_regular_president_id:
+                next_president = game_state.next_regular_president_id
+                game_state.next_regular_president_id = None
+            else:
+                next_president = GovernmentFormationService.advance_president(
+                    game_state.president_id, room.active_players()
+                )
             game_state.move_to_nomination_phase(next_president)
         

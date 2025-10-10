@@ -382,3 +382,73 @@ def test_investigate_loyalty_cannot_investigate_self():
 
     with pytest.raises(ValueError, match="Cannot investigate yourself"):
         command_bus.execute(command)
+
+
+def test_special_election_returns_to_normal_rotation():
+    from src.application.commands.enact_policy import EnactPolicyCommand
+    from src.domain.value_objects.policy import Policy, PolicyType
+
+    repository = InMemoryRoomRepository()
+    command_bus = CommandBus(repository)
+
+    president_id = uuid4()
+    player2_id = uuid4()
+    special_president_id = uuid4()
+    player4_id = uuid4()
+    player5_id = uuid4()
+    player6_id = uuid4()
+    player7_id = uuid4()
+    player8_id = uuid4()
+    player9_id = uuid4()
+
+    room = GameRoom()
+    room.add_player(Player(president_id, "President"))
+    room.add_player(Player(player2_id, "Player2"))
+    room.add_player(Player(special_president_id, "SpecialPres"))
+    room.add_player(Player(player4_id, "Player4"))
+    room.add_player(Player(player5_id, "Player5"))
+    room.add_player(Player(player6_id, "Player6"))
+    room.add_player(Player(player7_id, "Player7"))
+    room.add_player(Player(player8_id, "Player8"))
+    room.add_player(Player(player9_id, "Player9"))
+    room.status = RoomStatus.IN_PROGRESS
+
+    room.game_state = GameState(
+        president_id=president_id,
+        current_phase=GamePhase.EXECUTIVE_ACTION,
+        fascist_policies=3,
+    )
+
+    repository.save(room)
+
+    command = UseExecutiveActionCommand(
+        room_id=room.room_id,
+        player_id=president_id,
+        target_player_id=special_president_id,
+    )
+    command_bus.execute(command)
+
+    updated_room = repository.find_by_id(room.room_id)
+    assert updated_room.game_state.president_id == special_president_id
+    assert updated_room.game_state.next_regular_president_id == player2_id
+
+    updated_room.game_state.nominated_chancellor_id = player4_id
+    updated_room.game_state.current_phase = GamePhase.LEGISLATIVE_CHANCELLOR
+    updated_room.game_state.chancellor_id = player4_id
+    updated_room.game_state.chancellor_policies = [
+        Policy(PolicyType.LIBERAL),
+        Policy(PolicyType.FASCIST),
+    ]
+    repository.save(updated_room)
+
+    enact_command = EnactPolicyCommand(
+        room_id=room.room_id,
+        player_id=player4_id,
+        policy_type=PolicyType.LIBERAL,
+    )
+    command_bus.execute(enact_command)
+
+    final_room = repository.find_by_id(room.room_id)
+    assert final_room.game_state.president_id == player2_id
+    assert final_room.game_state.next_regular_president_id is None
+    assert final_room.game_state.current_phase == GamePhase.NOMINATION

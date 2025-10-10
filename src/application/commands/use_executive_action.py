@@ -96,15 +96,22 @@ class UseExecutiveActionHandler:
             if not target_player.can_participate():
                 raise ValueError("Target player cannot participate")
 
-            
+            next_regular_president = GovernmentFormationService.advance_president(
+                game_state.president_id, room.active_players()
+            )
+            game_state.next_regular_president_id = next_regular_president
             game_state.move_to_nomination_phase(command.target_player_id)
 
             self.repository.save(room)
             return result
 
-        next_president = GovernmentFormationService.advance_president(
-            game_state.president_id, room.active_players()
-        )
+        if game_state.next_regular_president_id:
+            next_president = game_state.next_regular_president_id
+            game_state.next_regular_president_id = None
+        else:
+            next_president = GovernmentFormationService.advance_president(
+                game_state.president_id, room.active_players()
+            )
         game_state.record_previous_president_and_chancellor()
         game_state.move_to_nomination_phase(next_president)
 
