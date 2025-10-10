@@ -40,24 +40,28 @@ PLAYER_NAMES = [
 repository = FileSystemRoomRepository()
 command_bus = CommandBus(repository)
 
+
+def execute(command):
+    print(f"Executing: {command.__class__.__name__}")
+    return command_bus.execute(command) 
+
+
 def start_game(selected_names, room_id, creator_id) -> list[UUID]:
     
     player_ids = [creator_id]
 
     for name in selected_names[1:]:
         command = JoinRoomCommand(room_id=room_id, player_name=name)
-        result = command_bus.execute(command)
+        result = execute(command)
         player_ids.append(result.player_id)
-        print(f"Player {command.player_name} joined: {result.player_id}")
 
-    command_bus.execute(StartGameCommand(
+    execute(StartGameCommand(
         room_id=room_id, 
         requester_id=creator_id, 
         first_president_id=creator_id, # First player is always president
         policy_deck=make_diverse_deck(),
         shuffle_players=False # We want roles to be deterministic, first player is always Hitler
     ))
-    print(f"\nGame started successfully!")
     print(f"Room ID: {room_id}")
         
     return player_ids
@@ -76,6 +80,7 @@ def make_diverse_deck() -> PolicyDeck:
 def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_ids: list[UUID]):
 
     president_id = player_ids[0]
+    executed_id = None
 
     # Rounds of play
     for i in range(0, rounds):
@@ -83,7 +88,7 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
         president_index = player_ids.index(president_id)
         chancellor_id = player_ids[(president_index + 1) % len(player_ids)]
 
-        command_bus.execute(NominateChancellorCommand(
+        execute(NominateChancellorCommand(
             room_id=room_id,
             nominating_player_id=president_id,
             chancellor_id=chancellor_id
@@ -91,21 +96,20 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
 
         # Elect chancellor
         for player_id in player_ids:
-            if player_id != president_id:
-                command_bus.execute(CastVoteCommand(
+            if player_id != president_id and player_id != executed_id:
+                execute(CastVoteCommand(
                     room_id,
                     player_id,
                     True
                 ))
 
         # Enact fascist policy
-        command_bus.execute(DiscardPolicyCommand(
+        execute(DiscardPolicyCommand(
             room_id=room_id,
             player_id=president_id,
             policy_type=PolicyType.LIBERAL
         ))
-
-        command_bus.execute(EnactPolicyCommand(
+        execute(EnactPolicyCommand(
             room_id=room_id,
             player_id=chancellor_id,
             policy_type=PolicyType.FASCIST
@@ -115,25 +119,27 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
         print(f"Game phase: {room.game_state.current_phase}")
 
         # Executive action
+        executed_id = None
         if room.game_state.current_phase == GamePhase.EXECUTIVE_ACTION:
             power = room.game_state.get_presidential_power(len(room.active_players()))
             print(f"Executive action: {power}")
             if power == PresidentialPower.INVESTIGATE_LOYALTY:
-                command_bus.execute(UseExecutiveActionCommand(
+                execute(UseExecutiveActionCommand(
                     room_id=room_id,
                     player_id=president_id,
                     target_player_id=chancellor_id
                 )) 
             if power == PresidentialPower.POLICY_PEEK:
-                command_bus.execute(UseExecutiveActionCommand(
+                execute(UseExecutiveActionCommand(
                     room_id=room_id,
                     player_id=president_id,
                 ))  
             if power == PresidentialPower.EXECUTION:
-                command_bus.execute(UseExecutiveActionCommand(
+                executed_id = player_ids[(president_index - 1) % len(player_ids)]
+                execute(UseExecutiveActionCommand(
                     room_id=room_id,
                     player_id=president_id,
-                    target_player_id=chancellor_id
+                    target_player_id=executed_id
                 ))  
               
         president_id = chancellor_id
@@ -167,7 +173,7 @@ def main():
 
     selected_names = PLAYER_NAMES[0:args.player_count]
 
-    create_result = command_bus.execute(CreateRoomCommand(player_name=selected_names[0]))
+    create_result = execute(CreateRoomCommand(player_name=selected_names[0]))
     room_id = create_result.room_id
     creator_id = create_result.player_id
 
