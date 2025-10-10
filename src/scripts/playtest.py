@@ -101,14 +101,16 @@ def play_3_rounds_enact_fascist_policies(room_id, player_ids):
         command_bus.execute(DiscardPolicyCommand(
             room_id=room_id,
             player_id=president_id,
-            policy_type=PolicyType.LIBERAL.value
+            policy_type=PolicyType.LIBERAL
         ))
 
         command_bus.execute(EnactPolicyCommand(
             room_id=room_id,
             player_id=chancellor_id,
-            policy_type=PolicyType.FASCIST.value
+            policy_type=PolicyType.FASCIST
         ))
+
+        president_id = chancellor_id
 
 def main():
     parser = argparse.ArgumentParser(description="Create a test game with N players")
