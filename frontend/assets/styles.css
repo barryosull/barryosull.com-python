@@ -424,3 +424,19 @@
   margin-bottom: 15px;
 }
 
+ul.team-mates {
+  margin: 0;
+}
+
+ul.team-mates li {
+  font-size: 16px;
+}
+
+ul.team-mates li.fascist {
+  color: #83110a;
+}
+
+ul.team-mates li.hitler {
+  color: #000000;
+}
+

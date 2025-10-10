@@ -221,7 +221,7 @@
 
       if (players) {
         players.forEach((player, index) => {
-          const playerUrl = `${baseUrl}/game/${roomId}?storage=local&name=${player.name}&playerId=${player.player_id}&hide_overlay=0`;
+          const playerUrl = `${baseUrl}/game/${roomId}?storage=local&name=${player.name}&playerId=${player.player_id}&hide_overlay=1`;
           grid.appendChild(createPlayerFrame(index + 1, player.name, playerUrl));
         });
       } else {
