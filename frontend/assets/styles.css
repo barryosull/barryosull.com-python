@@ -20,7 +20,7 @@
 .players-section {
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto 20px;
+  margin: 130px auto 20px;
   padding: 0 10px;
 }
 
@@ -162,7 +162,12 @@
 
 .header {
   text-align: center;
-  margin-bottom: 20px;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  border-bottom: 3px solid #83110a;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 h1.title {
@@ -739,3 +744,37 @@ ul.team-mates li.hitler {
   color: #000000;
 }
 
+.toast {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.toast-content {
+  background-color: #FBB969;
+  border-top: 3px solid #83110a;
+  padding: 10px 20px 20px;
+}
+
+.toast-title {
+  color: #83110a;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin-top: 0;
+  text-align: center;
+}
+
+.toast-subtitle {
+  color: #2a4e6c;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.toast-waiting {
+  text-align: center;
+  color: #2a4e6c;
+  font-size: 16px;
+}

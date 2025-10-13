@@ -187,13 +187,13 @@ export default function GameBoard() {
     }
   };
 
-  return (
+  return (<>
     <div className="container">
       <div className="header">
         <h1 className="title">Secret Hitler</h1>
         <div className="room-id">Room: {roomId}</div>
       </div>
-
+      
       <div className="players-section">
         <PlayerList
           players={room.players}
@@ -209,5 +209,5 @@ export default function GameBoard() {
 
       <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
     </div>
-  );
+  </>);
 }

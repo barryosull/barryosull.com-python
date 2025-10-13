@@ -30,18 +30,12 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
     }
 
     return (
-      <div className="overlay">
-        <div className="overlay-content">
-          <h3 className="overlay-title">Nomination Phase</h3>
-          <div className="overlay-waiting">
+      <div className="toast">
+        <div className="toast-content">
+          <h3 className="toast-title">Nomination Phase</h3>
+          <div className="toast-waiting">
             Waiting for President to nominate a Chancellor...
           </div>
-          <button
-            onClick={() => setShowWaitingOverlay(false)}
-            className="close-button"
-          >
-            Close
-          </button>
         </div>
       </div>
     );
