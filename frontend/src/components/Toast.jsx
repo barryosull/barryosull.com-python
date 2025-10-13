@@ -1,11 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../../assets/styles.css';
 
 export default function Toast({ phase, message }) {
   const [current, setCurrent] = useState({ phase, message, key: 0 });
   const [previous, setPrevious] = useState(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     setPrevious(current);
     setCurrent({ phase, message, key: current.key + 1 });
 
@@ -28,7 +34,7 @@ export default function Toast({ phase, message }) {
           </div>
         </div>
       )}
-      <div key={current.key} className="toast slide-in">
+      <div key={current.key} className={`toast ${!isFirstRender.current ? 'slide-in' : ''}`}>
         <div className="toast-content">
           <h3 className="toast-title">{current.phase}</h3>
           <div className="toast-waiting">
