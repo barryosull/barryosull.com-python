@@ -133,3 +133,36 @@ class ResponseFactory:
                             )
 
         return RoleResponse(team=role.team, is_hitler=role.is_hitler, teammates=teammates)
+
+    @staticmethod
+    def make_loyalty_response(
+        room: GameRoom, player_id: UUID, target_player_id: UUID
+    ) -> RoleResponse:
+        if not room.game_state:
+            raise ValueError("Game not started")
+
+        game_state = room.game_state
+
+        if game_state.current_phase != GamePhase.EXECUTIVE_ACTION:
+            raise ValueError(
+                f"Cannot investigate loyalty in phase {game_state.current_phase.value}"
+            )
+
+        if game_state.president_id != player_id:
+            raise ValueError("Only the president can investigate loyalty")
+
+        if target_player_id == player_id:
+            raise ValueError("Cannot investigate yourself")
+
+        presidential_power = game_state.get_presidential_power(
+            len(room.active_players())
+        )
+
+        if presidential_power != PresidentialPower.INVESTIGATE_LOYALTY:
+            raise ValueError("Investigate loyalty power not available")
+
+        target_role = game_state.role_assignments.get(target_player_id)
+        if not target_role:
+            raise ValueError("Target player not found in game")
+
+        return RoleResponse(team=target_role.team, is_hitler=False, teammates=[])

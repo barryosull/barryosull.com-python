@@ -1,6 +1,5 @@
 """REST API routes for game room management."""
 
-import asyncio
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
@@ -19,11 +18,9 @@ from src.adapters.api.rest.schemas import (
     JoinRoomRequest,
     JoinRoomResponse,
     NominateChancellorRequest,
-    PlayerResponse,
     RoleResponse,
     RoomStateResponse,
     StartGameRequest,
-    TeammateInfo,
     UseExecutiveActionRequest,
     VetoAgendaRequest,
 )
@@ -42,12 +39,8 @@ from src.application.queries.get_room_state import (
     GetRoomStateHandler,
     GetRoomStateQuery,
 )
-from src.domain.entities.game_state import GamePhase, PresidentialPower
-from src.domain.services.government_formation_service import (
-    GovernmentFormationService,
-)
 from src.domain.value_objects.policy import PolicyType
-from src.domain.value_objects.role import Team
+
 
 repository = FileSystemRoomRepository()
 command_bus = CommandBus(repository)
@@ -273,34 +266,7 @@ def investigate_loyalty(room_id: UUID, player_id: UUID, target_player_id: UUID) 
         if not room:
             raise ValueError(f"Room {room_id} not found")
 
-        if not room.game_state:
-            raise ValueError("Game not started")
-
-        game_state = room.game_state
-
-        if game_state.current_phase != GamePhase.EXECUTIVE_ACTION:
-            raise ValueError(
-                f"Cannot investigate loyalty in phase {game_state.current_phase.value}"
-            )
-
-        if game_state.president_id != player_id:
-            raise ValueError("Only the president can investigate loyalty")
-
-        if target_player_id == player_id:
-            raise ValueError("Cannot investigate yourself")
-
-        presidential_power = game_state.get_presidential_power(
-            len(room.active_players())
-        )
-
-        if presidential_power != PresidentialPower.INVESTIGATE_LOYALTY:
-            raise ValueError("Investigate loyalty power not available")
-
-        target_role = game_state.role_assignments.get(target_player_id)
-        if not target_role:
-            raise ValueError("Target player not found in game")
-
-        return RoleResponse(team=target_role.team, is_hitler=False, teammates=[])
+        return ResponseFactory.make_loyalty_response(room, player_id, target_player_id)
     except ValueError as e:
         handle_value_error(e)
 
