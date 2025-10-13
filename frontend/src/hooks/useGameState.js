@@ -9,6 +9,7 @@ export function useGameState(roomId) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const roleFetchedRef = useRef(false);
+  const socketRef = useRef(null);
 
   const fetchGameState = async () => {
 
@@ -48,9 +49,19 @@ export function useGameState(roomId) {
 
     roleFetchedRef.current = false;
     fetchGameState();
-    const interval = setInterval(fetchGameState, 2000);
 
-    return () => clearInterval(interval);
+    // Connect to Websocket
+    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomId);
+    socketRef.current = socket;
+    console.log("WebSocket connected");
+
+    socket.onmessage = function(event) {
+      if (event.data === 'game_state_updated') {
+        fetchGameState();
+      }
+    }
+
+    return () => {};
   }, [roomId]);
 
   const refresh = () => {

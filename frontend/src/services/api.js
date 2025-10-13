@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'http://127.0.0.1:8000/api';
 
 class ApiError extends Error {
   constructor(message, status) {

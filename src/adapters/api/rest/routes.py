@@ -1,9 +1,11 @@
 """REST API routes for game room management."""
 
+import asyncio
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
 
+from src.adapters.api.rest.room_manager import RoomManager
 from src.adapters.api.rest.schemas import (
     CastVoteRequest,
     CreateRoomRequest,
@@ -49,8 +51,32 @@ from src.domain.value_objects.role import Team
 repository = FileSystemRoomRepository()
 command_bus = CommandBus(repository)
 
+# Update messages
+GAME_STATE_UPDATED = 'game_state_updated'
+
 # Create router
 router = APIRouter(prefix="/api", tags=["rooms"])
+
+room_manager = RoomManager()
+
+@router.websocket("/ws/{room_id}")
+async def websocket_endpoint(websocket: WebSocket, room_id: UUID):
+    await room_manager.connect(websocket, room_id)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        room_manager.disconnect(websocket, room_id)
+
+
+@router.get("/")
+def root() -> dict[str, str]:
+    return {"name": "Secret Hitler API", "version": "0.1.0"}
+
+
+@router.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
 
 
 @router.post(
@@ -63,7 +89,6 @@ def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
     try:
         command = CreateRoomCommand(player_name=request.player_name)
         result = command_bus.execute(command)
-
         return CreateRoomResponse(room_id=result.room_id, player_id=result.player_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -80,6 +105,8 @@ def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse:
         command = JoinRoomCommand(room_id=room_id, player_name=request.player_name)
         result = command_bus.execute(command)
 
+        room_manager.broadcast(room_id, GAME_STATE_UPDATED)
+        
         return JoinRoomResponse(player_id=result.player_id)
     except ValueError as e:
         error_msg = str(e)
@@ -126,10 +153,12 @@ def get_room_state(room_id: UUID) -> RoomStateResponse:
     status_code=status.HTTP_204_NO_CONTENT,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def start_game(room_id: UUID, request: StartGameRequest) -> None:
+async def start_game(room_id: UUID, request: StartGameRequest) -> None:
     try:
         command = StartGameCommand(room_id=room_id, requester_id=request.player_id)
         command_bus.execute(command)
+
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -142,7 +171,7 @@ def start_game(room_id: UUID, request: StartGameRequest) -> None:
     status_code=status.HTTP_204_NO_CONTENT,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest) -> None:
+async def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest) -> None:
     try:
         command = NominateChancellorCommand(
             room_id=room_id,
@@ -150,6 +179,8 @@ def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest) -> No
             chancellor_id=request.chancellor_id,
         )
         command_bus.execute(command)
+
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -162,12 +193,14 @@ def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest) -> No
     status_code=status.HTTP_204_NO_CONTENT,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
+async def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
     try:
         command = CastVoteCommand(
             room_id=room_id, player_id=request.player_id, vote=request.vote
         )
         command_bus.execute(command)
+
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -180,7 +213,7 @@ def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
     status_code=status.HTTP_204_NO_CONTENT,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
+async def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
     try:
         command = DiscardPolicyCommand(
             room_id=room_id,
@@ -188,6 +221,8 @@ def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
             policy_type=PolicyType(request.policy_type),
         )
         command_bus.execute(command)
+
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -200,7 +235,7 @@ def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
     status_code=status.HTTP_204_NO_CONTENT,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
+async def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
     try:
         command = EnactPolicyCommand(
             room_id=room_id,
@@ -208,6 +243,8 @@ def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
             policy_type=PolicyType(request.policy_type),
         )
         command_bus.execute(command)
+
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
@@ -389,7 +426,7 @@ def investigate_loyalty(room_id: UUID, player_id: UUID, target_player_id: UUID) 
     status_code=status.HTTP_200_OK,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest) -> ExecutiveActionResponse:
+async def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest) -> ExecutiveActionResponse:
     try:
         command = UseExecutiveActionCommand(
             room_id=room_id,
@@ -397,6 +434,9 @@ def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest) -> Ex
             target_player_id=request.target_player_id,
         )
         result = command_bus.execute(command)
+
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
+
         return ExecutiveActionResponse(**result)
     except ValueError as e:
         error_msg = str(e)
@@ -410,7 +450,7 @@ def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest) -> Ex
     status_code=status.HTTP_204_NO_CONTENT,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
+async def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
     try:
         command = VetoAgendaCommand(
             room_id=room_id,
@@ -418,9 +458,10 @@ def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
             approve_veto=request.approve_veto,
         )
         command_bus.execute(command)
+
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         error_msg = str(e)
         if "not found" in error_msg.lower():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
-

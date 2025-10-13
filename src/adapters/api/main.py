@@ -1,5 +1,7 @@
 """Main FastAPI application."""
 
+import socketio
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
@@ -32,25 +34,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routes
+# Include HTTP routes
 app.include_router(router)
-
-
-@app.get("/")
-def root() -> dict[str, str]:
-    return {"name": "Secret Hitler API", "version": "0.1.0"}
-
-
-@app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
-
-
-def run() -> None:
-    import uvicorn
-
-    uvicorn.run("src.adapters.api.main:app", host="0.0.0.0", port=8000, reload=True)
-
-
-if __name__ == "__main__":
-    run()
