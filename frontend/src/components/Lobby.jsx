@@ -13,8 +13,16 @@ export default function Lobby() {
 
   useEffect(() => {
     fetchRoomState();
-    const interval = setInterval(fetchRoomState, 2000);
-    return () => clearInterval(interval);
+    
+    // Connect to Websocket
+    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomId);
+
+    socket.onmessage = function(event) {
+      if (event.data === 'game_state_updated') {
+        fetchRoomState();
+      }
+    }
+
   }, [roomId]);
 
   const fetchRoomState = async () => {
@@ -69,12 +77,10 @@ export default function Lobby() {
 
         <div className="room-id-section">
           <div className="label">Room ID:</div>
-          <div className="room-id-box">
-            <span className="room-id">{roomId}</span>
-            <button onClick={copyRoomId} className="copy-button">
-              Copy
-            </button>
-          </div>
+          <div className="room-id">{roomId}</div>
+          <button onClick={copyRoomId} className="copy-button">
+            Copy
+          </button>
           <div className="hint">Share this ID with your friends</div>
         </div>
 

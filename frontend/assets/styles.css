@@ -99,26 +99,20 @@ h1.title {
 .lobby .room-id-section {
   margin-bottom: 30px;
   padding: 20px;
-  background-color: #8e693b;
+  background-color: #fff;
   border-radius: 8px;
 }
 
 .lobby .label {
-  color: #ffffff;
+  color: #2a4e6c;
   font-size: 14px;
   margin-bottom: 8px;
 }
 
-.lobby .room-id-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 .lobby .room-id {
-  color: #fff;
+  color: #2596be;
   font-size: 24px;
-  flex: 1;
+  margin-bottom: 20px;
 }
 
 .lobby .copy-button {
@@ -133,7 +127,7 @@ h1.title {
 }
 
 .lobby .hint {
-  color: #ffffff;
+  color: #2a4e6c;
   font-size: 14px;
   margin-top: 8px;
 }

@@ -87,7 +87,7 @@ def health() -> dict[str, str]:
     status_code=status.HTTP_201_CREATED,
     responses={400: {"model": ErrorResponse}},
 )
-def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
+async def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
     try:
         command = CreateRoomCommand(player_name=request.player_name)
         result = command_bus.execute(command)
@@ -102,12 +102,12 @@ def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
     status_code=status.HTTP_200_OK,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse:
+async def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse:
     try:
         command = JoinRoomCommand(room_id=room_id, player_name=request.player_name)
         result = command_bus.execute(command)
 
-        room_manager.broadcast(room_id, GAME_STATE_UPDATED)
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
         return JoinRoomResponse(player_id=result.player_id)
     except ValueError as e:

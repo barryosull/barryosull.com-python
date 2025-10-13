@@ -14,9 +14,10 @@ class RoomManager:
         await websocket.accept()
         self.rooms[room_id] = self.rooms[room_id] if room_id in self.rooms else []
         self.rooms[room_id].append(websocket)
+        print(f"WebSocket Connected to room {room_id}")
 
     def disconnect(self, websocket: WebSocket, room_id: UUID):
-        print(f"Web socket disconnected for room {room_id}")
+        print(f"WebSocket disconnected for room {room_id}")
         self.rooms[room_id].remove(websocket)
         if len(self.rooms[room_id]) == 0:
             del self.rooms[room_id]
