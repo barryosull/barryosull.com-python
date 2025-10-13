@@ -9,6 +9,138 @@
   font-style: normal;
 }
 
+/* GameBoard Styles */
+
+.room-id {
+  color: #434343;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.players-section {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 20px;
+  padding: 0 10px;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.phase-box {
+  background-color: #cb6849;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  color: #fff;
+}
+
+.loading {
+  color: #2a4e6c;
+  font-size: 20px;
+  text-align: center;
+  padding: 40px;
+}
+
+.error {
+  background-color: #d32f2f;
+  color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.button {
+  padding: 12px 24px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: none;
+  background-color: #2a4e6c;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* PlayerList Component Styles */
+
+.player-list-container {
+  padding: 0px;
+  margin-bottom: 20px;
+}
+
+.player-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.player-item {
+  color: #fff;
+  padding: 12px;
+  background-color: #cb6849;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 calc(20% - 10px);
+  min-width: 90px;
+  max-width: calc(20% - 10px);
+  position: relative;
+}
+
+.player-item.dead {
+  opacity: 0.5;
+}
+
+.player-item.voted-yes {
+  background-color: #4caf50;
+}
+
+.player-item.voted-no {
+  background-color: #df3c30ff;
+}
+
+.player-item.you {
+  border: 2px solid #83110a;
+}
+
+.player-name {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+}
+
+.player-badges {
+  position: absolute;
+  top: -10px;
+  left: 0px;
+  width: 100%;
+  text-align: center;
+}
+
+.player-badge {
+  font-size: 10px;
+  padding: 2px 4px;
+  margin: 0px 2px;
+  border-radius: 2px;
+  color: #000;
+  font-weight: bold;
+  display: inline-block;
+  background-color: #ff9800;
+}
+
+.player-badge.dead {
+  background-color: #d32f2f;
+}
+
 /* Lobby Styles */
 
 .container.lobby {

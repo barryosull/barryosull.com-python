@@ -58,7 +58,7 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
           )}
         </div>
         {myRole.teammates && myRole.teammates.length > 0 && (
-          <div class="role-description">
+          <div className="role-description">
             <span>
               {myRole.teammates.length === 1 ? 'Your Teammate:' : 'Your Teammates:'}
             </span>

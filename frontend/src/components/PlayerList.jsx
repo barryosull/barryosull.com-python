@@ -1,7 +1,7 @@
 export default function PlayerList({ players, gameState, myPlayerId }) {
   return (
-    <div style={styles.container}>
-      <div style={styles.playerGrid}>
+    <div className="player-list-container">
+      <div className="player-grid">
         {players.map((player) => {
           const isPresident = gameState?.president_id === player.player_id;
           const isChancellor = gameState?.chancellor_id === player.player_id;
@@ -11,25 +11,24 @@ export default function PlayerList({ players, gameState, myPlayerId }) {
           const playerVote = gameState?.votes?.[player.player_id];
           const hasVoted = playerVote !== undefined;
 
+          const playerClasses = [
+            'player-item',
+            isDead && 'dead',
+            hasVoted && playerVote && 'voted-yes',
+            hasVoted && !playerVote && 'voted-no',
+            isMe && 'you'
+          ].filter(Boolean).join(' ');
+
           return (
-            <div
-              key={player.player_id}
-              style={{
-                ...styles.playerItem,
-                ...(isDead && styles.deadPlayer),
-                ...(hasVoted && playerVote && styles.votedYes),
-                ...(hasVoted && !playerVote && styles.votedNo),
-                ...(isMe && styles.you)
-              }}
-            >
-              <span style={styles.playerName}>
+            <div key={player.player_id} className={playerClasses}>
+              <span className="player-name">
                 {player.name.length > 10 ? player.name.slice(0, 10) + '...' : player.name}
               </span>
-              <div style={styles.badges}>
-                {isPresident && <span style={{...styles.badge, ...styles.presidentBadge}}>President</span>}
-                {isChancellor && <span style={{...styles.badge, ...styles.chancellorBadge}}>Chancellor</span>}
-                {isNominated && !isChancellor && <span style={{...styles.badge, ...styles.nominatedBadge}}>Nominated</span>}
-                {isDead && <span style={{...styles.badge, ...styles.deadBadge}}>Dead</span>}
+              <div className="player-badges">
+                {isPresident && <span className="player-badge president-badge">President</span>}
+                {isChancellor && <span className="player-badge chancellor-badge">Chancellor</span>}
+                {isNominated && !isChancellor && <span className="player-badge nominated-badge">Nominated</span>}
+                {isDead && <span className="player-badge dead-badge">Dead</span>}
               </div>
             </div>
           );
@@ -38,73 +37,3 @@ export default function PlayerList({ players, gameState, myPlayerId }) {
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: '0px',
-    marginBottom: '20px'
-  },
-  playerGrid: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '10px'
-  },
-  playerItem: {
-    color: '#fff',
-    padding: '12px',
-    backgroundColor: '#cb6849',
-    borderRadius: '4px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    flex: '1 1 calc(20% - 10px)',
-    minWidth: '90px',
-    maxWidth: 'calc(20% - 10px)',
-    position: 'relative',
-  },
-  deadPlayer: {
-    opacity: 0.5
-  },
-  playerName: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: '12px',  
-  },
-  you: {
-    border: '2px solid #83110a',
-  },
-  badges: {
-    position: 'absolute',
-    top: '-10px',
-    left: '0px',
-    width: '100%',
-    textAlign: 'center',
-  },
-  badge: {
-    fontSize: '10px',
-    padding: '2px 4px',
-    margin: '0px 2px',
-    borderRadius: '2px',
-    color: '#000',
-    fontWeight: 'bold',
-    display: 'inline-block',
-  },
-  presidentBadge: {
-    backgroundColor: '#ff9800',
-  },
-  chancellorBadge: {
-    backgroundColor: '#ff9800',
-  },
-  nominatedBadge: {
-    backgroundColor: '#ff9800',
-  },
-  deadBadge: {
-    backgroundColor: '#d32f2f',
-  },
-  votedYes: {
-    backgroundColor: '#4caf50'
-  },
-  votedNo: {
-    backgroundColor: '#df3c30ff'
-  }
-};

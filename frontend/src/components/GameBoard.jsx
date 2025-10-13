@@ -24,17 +24,17 @@ export default function GameBoard() {
 
   if (loading) {
     return (
-      <div style={styles.container}>
-        <div style={styles.loading}>Loading game...</div>
+      <div className="container">
+        <div className="loading">Loading game...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>{error}</div>
-        <button onClick={() => navigate(preserveParams('/'))} style={styles.button}>
+      <div className="container">
+        <div className="error">{error}</div>
+        <button onClick={() => navigate(preserveParams('/'))} className="button">
           Return Home
         </button>
       </div>
@@ -43,9 +43,9 @@ export default function GameBoard() {
 
   if (!gameState || !room) {
     return (
-      <div style={styles.container}>
-        <div style={styles.error}>Game not found</div>
-        <button onClick={() => navigate(preserveParams('/'))} style={styles.button}>
+      <div className="container">
+        <div className="error">Game not found</div>
+        <button onClick={() => navigate(preserveParams('/'))} className="button">
           Return Home
         </button>
       </div>
@@ -180,7 +180,7 @@ export default function GameBoard() {
 
       default:
         return (
-          <div style={styles.phaseBox}>
+          <div className="phase-box">
             <p>Unknown phase: {gameState.current_phase}</p>
           </div>
         );
@@ -191,10 +191,10 @@ export default function GameBoard() {
     <div className="container">
       <div className="header">
         <h1 className="title">Secret Hitler</h1>
-        <div style={styles.roomId}>Room: {roomId}</div>
+        <div className="room-id">Room: {roomId}</div>
       </div>
 
-      <div style={styles.playersSection}>
+      <div className="players-section">
         <PlayerList
           players={room.players}
           gameState={gameState}
@@ -202,7 +202,7 @@ export default function GameBoard() {
         />
       </div>
 
-      <div style={styles.mainContent}>
+      <div className="main-content">
         <PolicyTracks gameState={gameState} players={room.players} />
         {renderPhaseView()}
       </div>
@@ -211,90 +211,3 @@ export default function GameBoard() {
     </div>
   );
 }
-
-const styles = {
-  roomId: {
-    color: '#434343',
-    fontSize: '14px',
-    marginBottom: '20px'
-  },
-  playersSection: {
-    width: '100%',
-    maxWidth: '1400px',
-    margin: '0 auto 20px',
-    padding: '0 10px'
-  },
-  mainContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-    maxWidth: '1400px',
-    margin: '0 auto',
-    padding: '0 10px'
-  },
-  overlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.50)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1000
-  },
-  overlayContent: {
-    backgroundColor: '#FBB969',
-    borderRadius: '12px',
-    padding: '40px',
-    maxWidth: '600px',
-    width: '90%',
-    maxHeight: '80vh',
-    overflowY: 'auto',
-    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
-    textAlign: 'center'
-  },
-  phaseBox: {
-    backgroundColor: '#333',
-    borderRadius: '8px',
-    padding: '40px',
-    textAlign: 'center',
-    color: '#fff'
-  },
-  gameOver: {
-    color: '#fff',
-    fontSize: '36px',
-    marginTop: 0,
-    marginBottom: '20px'
-  },
-  gameOverReason: {
-    fontSize: '18px',
-    marginBottom: '30px',
-    color: '#ddd'
-  },
-  button: {
-    padding: '12px 24px',
-    fontSize: '16px',
-    borderRadius: '4px',
-    border: 'none',
-    backgroundColor: '#0066cc',
-    color: '#fff',
-    cursor: 'pointer',
-    fontWeight: 'bold'
-  },
-  loading: {
-    color: '#fff',
-    fontSize: '20px',
-    textAlign: 'center',
-    padding: '40px'
-  },
-  error: {
-    backgroundColor: '#d32f2f',
-    color: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    marginBottom: '20px',
-    textAlign: 'center'
-  }
-};

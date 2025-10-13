@@ -71,7 +71,7 @@ export default function HomePage() {
 
         {error && <div className="error">{error}</div>}
 
-        <div style={styles.section}>
+        <div>
           <input
             type="text"
             placeholder="Your Name"
@@ -82,7 +82,7 @@ export default function HomePage() {
           />
         </div>
 
-        <div style={styles.section}>
+        <div>
           <h2 className="subtitle">Create New Game</h2>
           <button
             onClick={handleCreateRoom}
@@ -94,7 +94,7 @@ export default function HomePage() {
 
         <div className="divider">OR</div>
 
-        <div style={styles.section}>
+        <div>
           <h2 className="subtitle">Join Existing Game</h2>
           <input
             type="text"
@@ -114,13 +114,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-const styles = {
-  error: {
-    backgroundColor: '#d32f2f',
-    color: '#fff',
-    padding: '12px',
-    borderRadius: '4px',
-    marginBottom: '20px'
-  }
-};
