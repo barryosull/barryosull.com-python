@@ -23,12 +23,10 @@ class RoomManager:
             del self.rooms[room_id]
     
 
-    async def broadcast(self, room_id: UUID, message: str):
+    async def broadcast(self, room_id: UUID, payload: dict):
         connections = self.rooms.get(room_id)
         if (connections is None):
-            print(f"Room {room_id} is empty")
             return
         
-        print(f"Sending message `{message}` to {len(connections)} players in room {room_id}")
         for connection in connections:
-            await connection.send_text(message)
+            await connection.send_json(payload)

@@ -18,7 +18,8 @@ export default function Lobby() {
     const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomId);
 
     socket.onmessage = function(event) {
-      if (event.data === 'game_state_updated') {
+      const message = JSON.parse(event.data);
+      if (message.type === 'game_state_updated') {
         fetchRoomState();
       }
     }

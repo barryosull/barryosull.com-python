@@ -46,7 +46,9 @@ repository = FileSystemRoomRepository()
 command_bus = CommandBus(repository)
 
 # Update messages
-GAME_STATE_UPDATED = 'game_state_updated'
+GAME_STATE_UPDATED = {
+    'type': 'game_state_updated'
+}
 
 # Create router
 router = APIRouter(prefix="/api", tags=["rooms"])

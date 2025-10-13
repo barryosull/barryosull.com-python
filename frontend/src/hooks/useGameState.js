@@ -55,7 +55,8 @@ export function useGameState(roomId) {
     socketRef.current = socket;
 
     socket.onmessage = function(event) {
-      if (event.data === 'game_state_updated') {
+      const message = JSON.parse(event.data);
+      if (message.type === 'game_state_updated') {
         fetchGameState();
       }
     }
