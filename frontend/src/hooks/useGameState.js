@@ -8,6 +8,7 @@ export function useGameState(roomId) {
   const [myRole, setMyRole] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState(null);
   const roleFetchedRef = useRef(false);
   const socketRef = useRef(null);
 
@@ -44,6 +45,8 @@ export function useGameState(roomId) {
     }
   };
 
+  const notifications = ['elected', 'executed', 'policy_placed', 'vetoed'];
+
   useEffect(() => {
     if (!roomId) return;
 
@@ -56,8 +59,12 @@ export function useGameState(roomId) {
 
     socket.onmessage = function(event) {
       const message = JSON.parse(event.data);
+
       if (message.type === 'game_state_updated') {
         fetchGameState();
+      } 
+      if (notifications.includes(message.type)) {
+        setNotification(message);
       }
     }
 
@@ -78,6 +85,8 @@ export function useGameState(roomId) {
     myRole,
     error,
     loading,
-    refresh
+    refresh,
+    notification,
+    clearNotification: () => setNotification(null)
   };
 }

@@ -1,19 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../assets/styles.css';
 
 export default function VotingView({ gameState, players, myPlayerId, onVote }) {
   const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
 
   const handleVote = async (vote) => {
     setLoading(true);
     try {
       await onVote(vote);
-      setHasVoted(true);
+      setIsFadingOut(true);
+      setTimeout(() => {
+        setHasVoted(true);
+        setShouldRender(false);
+      }, 300);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setShouldRender(true);
+    setIsFadingOut(false);
+  }, []);
 
   const president = players.find((p) => p.player_id === gameState.president_id);
   const nominee = players.find(
@@ -24,12 +35,12 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
   const canVote = myPlayer && myPlayer.is_alive;
   const isPresident = myPlayerId === gameState.president_id;
 
-  if (!canVote || isPresident || hasVoted) {
+  if (!canVote || isPresident || !shouldRender) {
     return null;
   }
 
   return (
-    <div className="overlay">
+    <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
       <div className="overlay-content">
         <h3 className="overlay-title">Election</h3>
 

@@ -39,6 +39,7 @@ from src.application.queries.get_room_state import (
     GetRoomStateHandler,
     GetRoomStateQuery,
 )
+from src.domain.entities.game_state import GamePhase
 from src.domain.value_objects.policy import PolicyType
 
 
@@ -178,6 +179,15 @@ async def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
             room_id=room_id, player_id=request.player_id, vote=request.vote
         )
         command_bus.execute(command)
+
+        room = repository.find_by_id(room_id)
+        if room.game_state.current_phase == GamePhase.LEGISLATIVE_PRESIDENT:
+            elected_message = {
+                'type': 'elected',
+                'president_id': str(room.game_state.president_id),
+                'chancellor_id': str(room.game_state.chancellor_id)
+            }
+            await room_manager.broadcast(room_id, elected_message)
 
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../assets/styles.css';
 import Toast from './Toast';
 
@@ -6,8 +6,13 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
   const [selectedChancellor, setSelectedChancellor] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
+  const [isFadingIn, setIsFadingIn] = useState(true);
 
   const isPresident = gameState.president_id === myPlayerId;
+
+  useEffect(() => {
+    setIsFadingIn(true);
+  }, []);
 
   const handleNominate = async () => {
     if (!selectedChancellor) return;
@@ -40,7 +45,7 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
   }
 
   return (
-    <div className="overlay">
+    <div className="overlay fade-in">
       <div className="overlay-content">
         <h3 className="overlay-title">Nominate a Chancellor</h3>
         <div className="overlay-subtitle">

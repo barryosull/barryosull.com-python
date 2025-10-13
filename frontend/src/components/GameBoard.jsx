@@ -10,13 +10,14 @@ import VotingView from './VotingView';
 import PolicySelectionView from './PolicySelectionView';
 import ExecutiveActionView from './ExecutiveActionView';
 import RoleOverlay from './RoleOverlay';
+import NotificationOverlay from './NotificationOverlay';
 import '../../assets/styles.css';
 import Toast from './Toast';
 
 export default function GameBoard() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const { gameState, room, myRole, error, loading, refresh } = useGameState(roomId);
+  const { gameState, room, myRole, error, loading, refresh, notification, clearNotification } = useGameState(roomId);
   const myPlayerId = playerStorage.getPlayerId();
 
   useEffect(() => {
@@ -208,7 +209,7 @@ export default function GameBoard() {
 
       case 'GAME_OVER':
         return (
-          <div className="overlay">
+          <div className="overlay fade-in">
             <div className = "overlay-content">
               <h2 className="overlay-title">Game Over!</h2>
               {gameState.game_over_reason && (
@@ -247,11 +248,17 @@ export default function GameBoard() {
 
       <div className="main-content">
         <PolicyTracks gameState={gameState} players={room.players} />
-        {renderPhaseView()}
+        {!notification && renderPhaseView()}
         {renderToast()}
       </div>
 
       <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
+      
+      <NotificationOverlay
+        electionData={notification}
+        players={room?.players || []}
+        onClose={clearNotification}
+      />
     </div>
   </>);
 }

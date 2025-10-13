@@ -90,7 +90,7 @@ export default function ExecutiveActionView({
   };
 
   return (
-    <div className="overlay">
+    <div className="overlay fade-in">
       <div className="overlay-content">
         <h3 className="overlay-title">Executive Action</h3>
         <div className="overlay-subtitle">{getPowerDescription()}</div>

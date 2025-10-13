@@ -5,6 +5,7 @@ const shownRoles = {};
 
 export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
   const [showOverlay, setShowOverlay] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
     if (myRole && roomId && myPlayerId) {
@@ -18,6 +19,7 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
       const roleShownKey = `${roomId}_${myPlayerId}`;
       if (!shownRoles[roleShownKey]) {
         setShowOverlay(true);
+        setIsFadingOut(false);
       }
     }
   }, [myRole, roomId, myPlayerId]);
@@ -25,7 +27,10 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
   const handleClose = () => {
     const roleShownKey = `${roomId}_${myPlayerId}`;
     shownRoles[roleShownKey] = true;
-    setShowOverlay(false);
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setShowOverlay(false);
+    }, 300);
   };
 
   if (!showOverlay || !myRole) {
@@ -33,7 +38,7 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
   }
 
   return (
-    <div className="overlay">
+    <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
       <div className="overlay-content">
         <h2 className="overlay-title">Your Role</h2>
         <div

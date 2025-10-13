@@ -56,7 +56,7 @@ export default function PolicySelectionView({
 
     if (isPresidentPlayer) {
       return (
-        <div className="overlay">
+        <div className="overlay fade-in">
           <div className="overlay-content">
             <h3 className="overlay-title">Veto Request</h3>
             <div className="overlay-subtitle">
@@ -84,7 +84,7 @@ export default function PolicySelectionView({
       );
     } else if (isChancellorPlayer) {
       return (
-        <div className="overlay">
+        <div className="overlay fade-in">
           <div className="overlay-content">
             <h3 className="overlay-title">Veto Requested</h3>
             <div className="overlay-waiting">
@@ -102,9 +102,9 @@ export default function PolicySelectionView({
   if (!isMyTurn) {
     return null;
   }
-  
+
   return (
-    <div className="overlay">
+    <div className="overlay fade-in">
       <div className="overlay-content">
         <h3 className="overlay-title">Legislative Session</h3>
         <div className="overlay-subtitle">

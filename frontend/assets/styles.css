@@ -373,6 +373,32 @@ h1.title {
   margin-top: 10px;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.overlay.fade-in {
+  animation: fadeIn 0.3s ease-in forwards;
+}
+
+.overlay.fade-out {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
 /* VotingView Component Styles */
 
 .voting-government-box {
@@ -801,4 +827,38 @@ ul.team-mates li.hitler {
 
 .toast.slide-in {
   animation: slideInFromRight 0.5s ease-out forwards;
+}
+
+/* ElectionOverlay Component Styles */
+
+.election-announcement {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 30px;
+}
+
+.elected-role {
+  text-align: center;
+}
+
+.role-label {
+  color: #83110a;
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.role-player {
+  color: #2a4e6c;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.election-divider {
+  color: #83110a;
+  font-size: 32px;
+  font-weight: bold;
 }
