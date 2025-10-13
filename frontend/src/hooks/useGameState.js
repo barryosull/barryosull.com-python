@@ -53,7 +53,6 @@ export function useGameState(roomId) {
     // Connect to Websocket
     const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomId);
     socketRef.current = socket;
-    console.log("WebSocket connected");
 
     socket.onmessage = function(event) {
       if (event.data === 'game_state_updated') {
@@ -61,7 +60,11 @@ export function useGameState(roomId) {
       }
     }
 
-    return () => {};
+    const cleanup_func = () => {
+      socket.close();
+    };
+
+    return cleanup_func;
   }, [roomId]);
 
   const refresh = () => {
