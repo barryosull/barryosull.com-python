@@ -55,7 +55,7 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
           You are the President. Choose a player to nominate as Chancellor.
         </div>
 
-        <div className="player-grid">
+        <div className="executive-player-grid">
           {eligiblePlayers.map((player) => (
             <button
               key={player.player_id}

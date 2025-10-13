@@ -79,6 +79,7 @@
 .player-grid {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -450,13 +451,6 @@ h1.title {
 }
 
 /* NominationView Component Styles */
-
-.player-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-  margin-bottom: 20px;
-}
 
 .player-button {
   padding: 15px;
