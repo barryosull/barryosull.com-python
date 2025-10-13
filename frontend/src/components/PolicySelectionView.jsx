@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../../assets/styles.css';
 
 export default function PolicySelectionView({
@@ -10,6 +10,13 @@ export default function PolicySelectionView({
 }) {
   const [selectedPolicyIndex, setSelectedPolicyIndex] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
+
+  useEffect(() => {
+    setShouldRender(true);
+    setIsFadingOut(false);
+  }, []);
 
   const handleSelect = async () => {
     if (selectedPolicyIndex === null) return;
@@ -22,7 +29,11 @@ export default function PolicySelectionView({
 
     setLoading(true);
     try {
-      await onSelectPolicy(selectedPolicy.type);
+      setIsFadingOut(true);
+      setTimeout(async () => {
+        await onSelectPolicy(selectedPolicy.type);
+        setShouldRender(false);
+      }, 300);
     } finally {
       setLoading(false);
     }
@@ -31,7 +42,11 @@ export default function PolicySelectionView({
   const handleVeto = async (approve) => {
     setLoading(true);
     try {
-      await onVeto(approve);
+      setIsFadingOut(true);
+      setTimeout(async () => {
+        await onVeto(approve);
+        setShouldRender(false);
+      }, 300);
     } finally {
       setLoading(false);
     }
@@ -54,9 +69,9 @@ export default function PolicySelectionView({
     const isPresidentPlayer = gameState.president_id === myPlayerId;
     const isChancellorPlayer = gameState.chancellor_id === myPlayerId;
 
-    if (isPresidentPlayer) {
+    if (isPresidentPlayer && shouldRender) {
       return (
-        <div className="overlay fade-in">
+        <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
           <div className="overlay-content">
             <h3 className="overlay-title">Veto Request</h3>
             <div className="overlay-subtitle">
@@ -88,12 +103,12 @@ export default function PolicySelectionView({
     }
   }
 
-  if (!isMyTurn) {
+  if (!isMyTurn || !shouldRender) {
     return null;
   }
 
   return (
-    <div className="overlay fade-in">
+    <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
       <div className="overlay-content">
         <h3 className="overlay-title">Legislative Session</h3>
         <div className="overlay-subtitle">

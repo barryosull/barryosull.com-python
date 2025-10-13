@@ -6,12 +6,14 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
   const [selectedChancellor, setSelectedChancellor] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
-  const [isFadingIn, setIsFadingIn] = useState(true);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
 
   const isPresident = gameState.president_id === myPlayerId;
 
   useEffect(() => {
-    setIsFadingIn(true);
+    setShouldRender(true);
+    setIsFadingOut(false);
   }, []);
 
   const handleNominate = async () => {
@@ -19,7 +21,11 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
 
     setLoading(true);
     try {
-      await onNominate(selectedChancellor);
+      setIsFadingOut(true);
+      setTimeout(async () => {
+        await onNominate(selectedChancellor);
+        setShouldRender(false);
+      }, 300);
     } finally {
       setLoading(false);
     }
@@ -30,22 +36,12 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
     eligiblePlayerIds.includes(p.player_id)
   );
 
-  if (!isPresident) {
-    if (!showWaitingOverlay) {
-      return null;
-    }
-
-    return (
-      <Toast 
-        phase="Nomination Phase" 
-        message="Waiting for President to nominate a Chancellor..."
-      >  
-      </Toast>
-    )
+  if (!isPresident || !shouldRender) {
+    return null;
   }
 
   return (
-    <div className="overlay fade-in">
+    <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
       <div className="overlay-content">
         <h3 className="overlay-title">Nominate a Chancellor</h3>
         <div className="overlay-subtitle">

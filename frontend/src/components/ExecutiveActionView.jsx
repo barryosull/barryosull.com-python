@@ -16,15 +16,26 @@ export default function ExecutiveActionView({
   const [result, setResult] = useState(null);
   const [showingPolicies, setShowingPolicies] = useState(false);
   const [showingLoyalty, setShowingLoyalty] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
 
   const isPresident = gameState.president_id === myPlayerId;
   const hasPeekedPolicies = gameState.peeked_policies && gameState.peeked_policies.length > 0;
 
+  useEffect(() => {
+    setShouldRender(true);
+    setIsFadingOut(false);
+  }, []);
+
   const handleExecute = async () => {
     if (presidentialPower === 'POLICY_PEEK' && hasPeekedPolicies && !showingPolicies) {
       setShowingPolicies(true);
+      setTimeout(() => {
+        setIsFadingOut(true);
+      }, 2700);
       setTimeout(async () => {
         await onUseAction(null);
+        setShouldRender(false);
       }, 3000);
       return;
     }
@@ -36,8 +47,12 @@ export default function ExecutiveActionView({
         setResult(loyaltyResult);
         setShowingLoyalty(true);
         setLoading(false);
+        setTimeout(() => {
+          setIsFadingOut(true);
+        }, 2700);
         setTimeout(async () => {
           await onUseAction(selectedPlayerId);
+          setShouldRender(false);
         }, 3000);
       } catch (err) {
         alert(err.message);
@@ -48,15 +63,19 @@ export default function ExecutiveActionView({
 
     setLoading(true);
     try {
-      const actionResult = await onUseAction(selectedPlayerId);
-      setResult(actionResult);
-      setSelectedPlayerId(null);
+      setIsFadingOut(true);
+      setTimeout(async () => {
+        const actionResult = await onUseAction(selectedPlayerId);
+        setResult(actionResult);
+        setSelectedPlayerId(null);
+        setShouldRender(false);
+      }, 300);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isPresident) {
+  if (!isPresident || !shouldRender) {
     return null;
   }
 
@@ -90,7 +109,7 @@ export default function ExecutiveActionView({
   };
 
   return (
-    <div className="overlay fade-in">
+    <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
       <div className="overlay-content">
         <h3 className="overlay-title">Executive Action</h3>
         <div className="overlay-subtitle">{getPowerDescription()}</div>
