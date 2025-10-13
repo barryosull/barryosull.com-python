@@ -118,9 +118,9 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
         room = repository.find_by_id(room_id)
         print(f"Game phase: {room.game_state.current_phase}")
 
-        # Executive action
+        # Execute executive actions, but not the one from the last policy enactment
         executed_id = None
-        if room.game_state.current_phase == GamePhase.EXECUTIVE_ACTION:
+        if i < rounds - 1 and room.game_state.current_phase == GamePhase.EXECUTIVE_ACTION:
             power = room.game_state.get_presidential_power(len(room.active_players()))
             print(f"Executive action: {power}")
             if power == PresidentialPower.INVESTIGATE_LOYALTY:

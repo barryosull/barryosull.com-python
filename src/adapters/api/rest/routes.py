@@ -226,7 +226,11 @@ async def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
             policy_type=PolicyType(request.policy_type),
         )
         command_bus.execute(command)
-
+        enacted_message = {
+            'type': 'policy_enacted',
+            'policy_type': request.policy_type,
+        }
+        await room_manager.broadcast(room_id, enacted_message)
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         handle_value_error(e)

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import '../../assets/styles.css';
 
-export default function ElectionOverlay({ electionData, players, onClose }) {
+export default function NotificationOverlay({ notification, players, onClose }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
 
   useEffect(() => {
-    if (electionData) {
+    if (notification) {
       setIsVisible(true);
       setIsFadingOut(false);
       const timer = setTimeout(() => {
@@ -18,29 +18,51 @@ export default function ElectionOverlay({ electionData, players, onClose }) {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [electionData, onClose]);
+  }, [notification, onClose]);
 
-  if (!electionData || !isVisible) return null;
+  if (!notification || !isVisible) return null;
 
-  const president = players.find(p => p.player_id === electionData.president_id);
-  const chancellor = players.find(p => p.player_id === electionData.chancellor_id);
+  const notificationTitle = {
+    'elected': "Government Formed!",
+    'policy_enacted': "Policy Enacted!",
+    'executed': "Player Executed!",
+    'vetoed': "Election Vetoed!",
+  }
+
+  const title = notificationTitle[notification.type] ?? notification.type;
+
+  const notificationBody = () => {
+    if (notification.type === 'elected') {
+      const chancellor = players.find(p => p.player_id === notification.chancellor_id);
+
+      return (
+        <div className="election-announcement">
+            <div className="elected-role">
+              <div className="role-label">Chancellor</div>
+              <div className="role-player">{chancellor?.name}</div>
+            </div>
+          </div>
+      );
+    }
+    if (notification.type === 'policy_enacted') {
+      return (
+        <div className="policy-grid">
+          <span
+              className={`policy-card ${notification.policy_type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
+          ></span>
+        </div>
+      )
+    }
+    
+    return (<div>Something happened, I dunno, asked the dev!</div>);
+  };
 
   return (
     <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
       <div className="overlay-content">
-        <h2 className="overlay-title">Government Formed!</h2>
-        <div className="election-announcement">
-          <div className="elected-role">
-            <div className="role-label">President</div>
-            <div className="role-player">{president?.name}</div>
-          </div>
-          <div className="election-divider">+</div>
-          <div className="elected-role">
-            <div className="role-label">Chancellor</div>
-            <div className="role-player">{chancellor?.name}</div>
-          </div>
-        </div>
+        <h2 className="overlay-title">{title}</h2>
+        {notificationBody()}
       </div>
     </div>
-  );
-}
+  )
+};

@@ -139,7 +139,7 @@ export default function GameBoard() {
     const messages = {
       'NOMINATION' : "Waiting for president to nominate a chancellor",
       'ELECTION' : "Voting on chancellor",
-      'LEGISLATIVE_PRESIDENT' : "President is select a policy to discard",
+      'LEGISLATIVE_PRESIDENT' : "President is selecting a policy to discard",
       'LEGISLATIVE_CHANCELLOR' : (gameState.veto_requested)
         ? "Chancellor has requested a veto from the president"
         : "Chancellor is selecting a policy to enact",
@@ -255,7 +255,7 @@ export default function GameBoard() {
       <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
       
       <NotificationOverlay
-        electionData={notification}
+        notification={notification}
         players={room?.players || []}
         onClose={clearNotification}
       />
