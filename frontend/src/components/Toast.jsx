@@ -11,7 +11,7 @@ export default function Toast({ phase, message }) {
 
     const timer = setTimeout(() => {
       setPrevious(null);
-    }, 400);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [phase, message]);
