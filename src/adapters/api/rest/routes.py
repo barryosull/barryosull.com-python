@@ -5,6 +5,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
 
+from src.adapters.api.rest.response_factory import ResponseFactory
 from src.adapters.api.rest.room_manager import RoomManager
 from src.adapters.api.rest.schemas import (
     CastVoteRequest,
@@ -132,23 +133,7 @@ def get_room_state(room_id: UUID) -> RoomStateResponse:
         query = GetRoomStateQuery(room_id=room_id)
         result = handler.handle(query)
 
-        return RoomStateResponse(
-            room_id=result.room_id,
-            status=result.status,
-            creator_id=result.creator_id,
-            players=[
-                PlayerResponse(
-                    player_id=p.player_id,
-                    name=p.name,
-                    is_connected=p.is_connected,
-                    is_alive=p.is_alive,
-                )
-                for p in result.players
-            ],
-            player_count=result.player_count,
-            can_start=result.can_start,
-            created_at=result.created_at,
-        )
+        return ResponseFactory.make_room_state_response(result)
     except ValueError as e:
         handle_value_error(e)
 
