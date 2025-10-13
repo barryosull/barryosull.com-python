@@ -59,6 +59,14 @@ router = APIRouter(prefix="/api", tags=["rooms"])
 
 room_manager = RoomManager()
 
+
+def handle_value_error(e: ValueError) -> None:
+    error_msg = str(e)
+    if "not found" in error_msg.lower() or "not started" in error_msg.lower():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+
+
 @router.websocket("/ws/{room_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: UUID):
     await room_manager.connect(websocket, room_id)
@@ -91,7 +99,7 @@ def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
         result = command_bus.execute(command)
         return CreateRoomResponse(room_id=result.room_id, player_id=result.player_id)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        handle_value_error(e)
 
 
 @router.post(
@@ -106,13 +114,10 @@ def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse:
         result = command_bus.execute(command)
 
         room_manager.broadcast(room_id, GAME_STATE_UPDATED)
-        
+
         return JoinRoomResponse(player_id=result.player_id)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.get(
@@ -145,7 +150,7 @@ def get_room_state(room_id: UUID) -> RoomStateResponse:
             created_at=result.created_at,
         )
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        handle_value_error(e)
 
 
 @router.post(
@@ -160,10 +165,7 @@ async def start_game(room_id: UUID, request: StartGameRequest) -> None:
 
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.post(
@@ -182,10 +184,7 @@ async def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest)
 
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.post(
@@ -202,10 +201,7 @@ async def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
 
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.post(
@@ -224,10 +220,7 @@ async def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
 
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.post(
@@ -246,10 +239,7 @@ async def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
 
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.get(
@@ -316,7 +306,7 @@ def get_game_state(room_id: UUID) -> GameStateResponse:
             investigated_players=list(game_state.investigated_players),
         )
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        handle_value_error(e)
 
 
 @router.get(
@@ -370,7 +360,7 @@ def get_my_role(room_id: UUID, player_id: UUID) -> RoleResponse:
 
         return RoleResponse(team=role.team, is_hitler=role.is_hitler, teammates=teammates)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        handle_value_error(e)
 
 
 @router.get(
@@ -414,10 +404,7 @@ def investigate_loyalty(room_id: UUID, player_id: UUID, target_player_id: UUID) 
 
         return RoleResponse(team=target_role.team, is_hitler=False, teammates=[])
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.post(
@@ -439,10 +426,7 @@ async def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest)
 
         return ExecutiveActionResponse(**result)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
 
 
 @router.post(
@@ -461,7 +445,4 @@ async def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
 
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
-        error_msg = str(e)
-        if "not found" in error_msg.lower():
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=error_msg)
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
+        handle_value_error(e)
