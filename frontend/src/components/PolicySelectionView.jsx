@@ -82,17 +82,6 @@ export default function PolicySelectionView({
           </div>
         </div>
       );
-    } else if (isChancellorPlayer) {
-      return (
-        <div className="overlay fade-in">
-          <div className="overlay-content">
-            <h3 className="overlay-title">Veto Requested</h3>
-            <div className="overlay-waiting">
-              Waiting for President to respond to veto request...
-            </div>
-          </div>
-        </div>
-      );
     } else {
       // Other players
       return null;
