@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import '../../assets/styles.css';
-import Toast from './Toast';
 
 export default function NominationView({ players, gameState, myPlayerId, onNominate }) {
   const [selectedChancellor, setSelectedChancellor] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [shouldRender, setShouldRender] = useState(true);
 

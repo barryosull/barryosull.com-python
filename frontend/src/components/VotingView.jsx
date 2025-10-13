@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import '../../assets/styles.css';
 
 export default function VotingView({ gameState, players, myPlayerId, onVote }) {
-  const [hasVoted, setHasVoted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [shouldRender, setShouldRender] = useState(true);
@@ -13,7 +12,6 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
       await onVote(vote);
       setIsFadingOut(true);
       setTimeout(() => {
-        setHasVoted(true);
         setShouldRender(false);
       }, 300);
     } finally {
