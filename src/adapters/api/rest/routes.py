@@ -256,44 +256,7 @@ def get_my_role(room_id: UUID, player_id: UUID) -> RoleResponse:
         if not room:
             raise ValueError(f"Room {room_id} not found")
 
-        game_state = room.game_state
-        if not game_state:
-            raise ValueError("Game has not started yet")
-
-        role = game_state.role_assignments.get(player_id)
-        if not role:
-            raise ValueError(f"Player {player_id} not found in game")
-
-        teammates = []
-        player_count = len(room.players)
-
-        if role.team == Team.FASCIST:
-            if 5 <= player_count <= 6:
-                for other_player_id, other_role in game_state.role_assignments.items():
-                    if other_player_id != player_id and other_role.team == Team.FASCIST:
-                        teammate_player = room.get_player(other_player_id)
-                        if teammate_player:
-                            teammates.append(
-                                TeammateInfo(
-                                    player_id=other_player_id,
-                                    name=teammate_player.name,
-                                    is_hitler=other_role.is_hitler,
-                                )
-                            )
-            elif player_count >= 7 and not role.is_hitler:
-                for other_player_id, other_role in game_state.role_assignments.items():
-                    if other_player_id != player_id and other_role.team == Team.FASCIST:
-                        teammate_player = room.get_player(other_player_id)
-                        if teammate_player:
-                            teammates.append(
-                                TeammateInfo(
-                                    player_id=other_player_id,
-                                    name=teammate_player.name,
-                                    is_hitler=other_role.is_hitler,
-                                )
-                            )
-
-        return RoleResponse(team=role.team, is_hitler=role.is_hitler, teammates=teammates)
+        return ResponseFactory.make_my_role_response(room, player_id)
     except ValueError as e:
         handle_value_error(e)
 

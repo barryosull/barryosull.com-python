@@ -1,7 +1,11 @@
+from uuid import UUID
+
 from src.adapters.api.rest.schemas import (
     GameStateResponse,
     PlayerResponse,
+    RoleResponse,
     RoomStateResponse,
+    TeammateInfo,
 )
 from src.application.queries.get_room_state import RoomStateDTO
 from src.domain.entities.game_room import GameRoom
@@ -9,6 +13,7 @@ from src.domain.entities.game_state import GamePhase, PresidentialPower
 from src.domain.services.government_formation_service import (
     GovernmentFormationService,
 )
+from src.domain.value_objects.role import Team
 
 
 class ResponseFactory:
@@ -87,3 +92,44 @@ class ResponseFactory:
             presidential_power=presidential_power,
             investigated_players=list(game_state.investigated_players),
         )
+
+    @staticmethod
+    def make_my_role_response(room: GameRoom, player_id: UUID) -> RoleResponse:
+        game_state = room.game_state
+        if not game_state:
+            raise ValueError("Game has not started yet")
+
+        role = game_state.role_assignments.get(player_id)
+        if not role:
+            raise ValueError(f"Player {player_id} not found in game")
+
+        teammates = []
+        player_count = len(room.players)
+
+        if role.team == Team.FASCIST:
+            if 5 <= player_count <= 6:
+                for other_player_id, other_role in game_state.role_assignments.items():
+                    if other_player_id != player_id and other_role.team == Team.FASCIST:
+                        teammate_player = room.get_player(other_player_id)
+                        if teammate_player:
+                            teammates.append(
+                                TeammateInfo(
+                                    player_id=other_player_id,
+                                    name=teammate_player.name,
+                                    is_hitler=other_role.is_hitler,
+                                )
+                            )
+            elif player_count >= 7 and not role.is_hitler:
+                for other_player_id, other_role in game_state.role_assignments.items():
+                    if other_player_id != player_id and other_role.team == Team.FASCIST:
+                        teammate_player = room.get_player(other_player_id)
+                        if teammate_player:
+                            teammates.append(
+                                TeammateInfo(
+                                    player_id=other_player_id,
+                                    name=teammate_player.name,
+                                    is_hitler=other_role.is_hitler,
+                                )
+                            )
+
+        return RoleResponse(team=role.team, is_hitler=role.is_hitler, teammates=teammates)
