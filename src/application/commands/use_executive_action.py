@@ -59,7 +59,10 @@ class UseExecutiveActionHandler:
                 raise ValueError("Target player not found in game")
 
             game_state.investigated_players.add(command.target_player_id)
-            result = {}
+            result = {
+                'type': 'loyalty_investigated',
+                'player_id': str(command.target_player_id),
+            }
 
         elif presidential_power == PresidentialPower.POLICY_PEEK:
             result = {}
@@ -78,7 +81,10 @@ class UseExecutiveActionHandler:
             target_player.kill()
 
             target_role = game_state.role_assignments.get(command.target_player_id)
-            result = {"executed_player_id": str(command.target_player_id)}
+            result = {
+                "type": "executed",
+                "player_id": str(command.target_player_id)
+            }
 
             if target_role and target_role.is_hitler:
                 game_state.current_phase = GamePhase.GAME_OVER
@@ -105,6 +111,11 @@ class UseExecutiveActionHandler:
             )
             game_state.next_regular_president_id = next_regular_president
             game_state.move_to_nomination_phase(command.target_player_id)
+
+            result = {
+                "type": "special_election",
+                "player_id": str(command.target_player_id)
+            }
 
             self.repository.save(room)
             return result

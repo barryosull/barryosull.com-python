@@ -45,7 +45,7 @@ export function useGameState(roomId) {
     }
   };
 
-  const notifications = ['elected', 'policy_enacted', 'executed', 'vetoed'];
+  const notifications = ['elected', 'policy_enacted', 'executed', 'vetoed', 'special_election', 'loyalty_investigated'];
 
   useEffect(() => {
     if (!roomId) return;

@@ -302,6 +302,7 @@ async def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest)
         )
         result = command_bus.execute(command)
 
+        await room_manager.broadcast(room_id, result)
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
         return ExecutiveActionResponse(**result)

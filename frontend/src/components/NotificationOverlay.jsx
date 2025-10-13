@@ -27,6 +27,8 @@ export default function NotificationOverlay({ notification, players, onClose }) 
     'policy_enacted': "Policy Enacted!",
     'executed': "Player Executed!",
     'vetoed': "Election Vetoed!",
+    'special_election': "Special Election!",
+    'loyalty_investigated' : "Loyalty Investigated!"
   }
 
   const title = notificationTitle[notification.type] ?? notification.type;
@@ -52,6 +54,33 @@ export default function NotificationOverlay({ notification, players, onClose }) 
           ></span>
         </div>
       )
+    }
+
+    if (notification.type === 'executed') {
+      const executed = players.find(p => p.player_id === notification.player_id);
+      return (  
+        <h3>{executed?.name} was executed by the president</h3>
+      );
+    }
+
+    if (notification.type === 'vetoed') {
+      return (  
+        <h3>Election vetoed by the president and chancellor</h3>
+      );
+    }
+
+    if (notification.type === 'special_election') {
+      const president = players.find(p => p.player_id === notification.player_id);
+      return (  
+        <h3>{president.name} was elected president</h3>
+      );
+    }
+
+    if (notification.type === 'loyalty_investigated') {
+      const investigated = players.find(p => p.player_id === notification.player_id);
+      return (  
+        <h3>{investigated.name}'s loyalty was investigated</h3>
+      );
     }
     
     return (<div>Something happened, I dunno, asked the dev!</div>);

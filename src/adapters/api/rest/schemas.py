@@ -103,8 +103,8 @@ class UseExecutiveActionRequest(BaseModel):
 
 
 class ExecutiveActionResponse(BaseModel):
-    policies: list[dict[str, str]] | None = None
-    executed_player_id: str | None = None
+    type: str | None = None
+    player_id: str | None = None
     game_over: bool | None = None
     winning_team: str | None = None
 
