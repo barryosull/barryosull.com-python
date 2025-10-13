@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import '../../assets/styles.css';
+import Toast from './Toast';
 
 export default function NominationView({ players, gameState, myPlayerId, onNominate }) {
   const [selectedChancellor, setSelectedChancellor] = useState(null);
@@ -30,15 +31,12 @@ export default function NominationView({ players, gameState, myPlayerId, onNomin
     }
 
     return (
-      <div className="toast">
-        <div className="toast-content">
-          <h3 className="toast-title">Nomination Phase</h3>
-          <div className="toast-waiting">
-            Waiting for President to nominate a Chancellor...
-          </div>
-        </div>
-      </div>
-    );
+      <Toast 
+        phase="Nomination Phase" 
+        message="Waiting for President to nominate a Chancellor..."
+      >  
+      </Toast>
+    )
   }
 
   return (

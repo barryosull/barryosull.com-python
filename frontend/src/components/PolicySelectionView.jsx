@@ -10,7 +10,6 @@ export default function PolicySelectionView({
 }) {
   const [selectedPolicyIndex, setSelectedPolicyIndex] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
 
   const handleSelect = async () => {
     if (selectedPolicyIndex === null) return;
@@ -96,51 +95,14 @@ export default function PolicySelectionView({
       );
     } else {
       // Other players
-      if (!showWaitingOverlay) {
-        return null;
-      }
-      return (
-        <div className="overlay">
-          <div className="overlay-content">
-            <h3 className="overlay-title">Legislative Session</h3>
-            <div className="overlay-waiting">
-              Veto requested, waiting for President to respond...
-            </div>
-            <button
-              onClick={() => setShowWaitingOverlay(false)}
-              className="close-button"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      );
+      return null;
     }
   }
 
   if (!isMyTurn) {
-    if (!showWaitingOverlay) {
-      return null;
-    }
-
-    return (
-      <div className="overlay">
-        <div className="overlay-content">
-          <h3 className="overlay-title">Legislative Session</h3>
-          <div className="overlay-waiting">
-            Waiting for {roleText} to {actionText.toLowerCase()} a policy...
-          </div>
-          <button
-            onClick={() => setShowWaitingOverlay(false)}
-            className="close-button"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
-
+  
   return (
     <div className="overlay">
       <div className="overlay-content">

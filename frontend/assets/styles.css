@@ -29,7 +29,7 @@
   flex-direction: column;
   gap: 20px;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 0 auto 100px;
   padding: 0 10px;
 }
 
@@ -81,6 +81,7 @@
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 10px;
+  z-index: 9;
 }
 
 .player-item {
@@ -166,8 +167,10 @@
   top: 0px;
   left: 0px;
   width: 100%;
+  background-color: #FBB969;
   border-bottom: 3px solid #83110a;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
 h1.title {

@@ -16,7 +16,6 @@ export default function ExecutiveActionView({
   const [result, setResult] = useState(null);
   const [showingPolicies, setShowingPolicies] = useState(false);
   const [showingLoyalty, setShowingLoyalty] = useState(false);
-  const [showWaitingOverlay, setShowWaitingOverlay] = useState(true);
 
   const isPresident = gameState.president_id === myPlayerId;
   const hasPeekedPolicies = gameState.peeked_policies && gameState.peeked_policies.length > 0;
@@ -58,26 +57,7 @@ export default function ExecutiveActionView({
   };
 
   if (!isPresident) {
-    if (!showWaitingOverlay) {
-      return null;
-    }
-
-    return (
-      <div className="overlay">
-        <div className="overlay-content">
-          <h3 className="overlay-title">Executive Action</h3>
-          <div className="overlay-waiting">
-            Waiting for President to use their executive power...
-          </div>
-          <button
-            onClick={() => setShowWaitingOverlay(false)}
-            className="close-button"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   const needsTarget = presidentialPower === 'INVESTIGATE_LOYALTY'
