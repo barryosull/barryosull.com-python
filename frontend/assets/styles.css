@@ -750,21 +750,28 @@ ul.team-mates li.hitler {
 .toast {
   position: fixed;
   bottom: 0px;
-  left: 0px;
-  width: 100%;
+  left: -5%;
+  width: 110%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+.toast.toast-previous {
+  z-index: 99;
 }
 
 .toast-content {
   background-color: #FBB969;
-  border-top: 3px solid #83110a;
+  border: 3px solid #83110a;
+  border-radius: 10px;
   padding: 10px 20px 20px;
 }
 
 .toast-title {
   color: #83110a;
   font-size: 24px;
-  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   margin-top: 0;
   text-align: center;
 }
@@ -780,4 +787,19 @@ ul.team-mates li.hitler {
   text-align: center;
   color: #2a4e6c;
   font-size: 16px;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast.slide-in {
+  animation: slideInFromRight 0.4s ease-out forwards;
 }
