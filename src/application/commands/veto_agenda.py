@@ -3,6 +3,7 @@ from uuid import UUID
 
 from src.domain.entities.game_state import GamePhase
 from src.domain.services.government_formation_service import GovernmentFormationService
+from src.domain.services.increment_election_service import IncrementElectionService
 from src.ports.repository_port import RoomRepositoryPort
 
 
@@ -56,17 +57,8 @@ class VetoAgendaHandler:
                 game_state.chancellor_policies = []
                 game_state.president_policies = []
                 game_state.veto_requested = False
-                game_state.increment_election_tracker()
-
-                if game_state.next_regular_president_id:
-                    next_president = game_state.next_regular_president_id
-                    game_state.next_regular_president_id = None
-                else:
-                    next_president = GovernmentFormationService.advance_president(
-                        game_state.president_id, room.active_players()
-                    )
-                game_state.record_previous_president_and_chancellor()
-                game_state.move_to_nomination_phase(next_president)
+                
+                IncrementElectionService.handle_failed_government(room)
             else:
                 game_state.veto_requested = False
 
