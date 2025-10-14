@@ -84,7 +84,7 @@
   z-index: 9;
 }
 
-.player-item {
+.player-grid .player-item {
   color: #fff;
   padding: 12px;
   background-color: #cb6849;
@@ -861,4 +861,14 @@ ul.team-mates li.hitler {
   color: #83110a;
   font-size: 32px;
   font-weight: bold;
+}
+
+.policy-enacted {
+  width: 70%;
+  margin: 2%;
+  aspect-ratio: 280 / 434;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 0px;
 }
