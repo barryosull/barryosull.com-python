@@ -864,7 +864,7 @@ ul.team-mates li.hitler {
 }
 
 .policy-enacted {
-  width: 70%;
+  width: 65%;
   margin: 2%;
   aspect-ratio: 280 / 434;
   display: inline-block;
@@ -872,3 +872,68 @@ ul.team-mates li.hitler {
   transition: all 0.2s;
   border: 0px;
 }
+
+/* Animations */
+
+@keyframes gentle-shake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: rotate(-3deg);
+  }
+  20%, 40%, 60%, 80% {
+    transform: rotate(3deg);
+  }
+}
+
+.shake-animation {
+  animation: gentle-shake 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes pendulum-swing {
+  0%, 100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.pendulum {
+  animation: pendulum-swing 1.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes idle-wobble {
+  0%, 100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+.idle-wobble {
+  animation: idle-wobble 3s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes attention-shake {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+}
+
+.attention-shake {
+  animation: attention-shake 0.5s ease-in-out infinite;
+  transform-origin: center;
+}
+

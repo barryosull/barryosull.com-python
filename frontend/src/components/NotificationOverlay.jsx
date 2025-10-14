@@ -50,7 +50,7 @@ export default function NotificationOverlay({ notification, players, onClose }) 
       return (
         <div className="policy-grid">
           <span
-              className={`policy-enacted ${notification.policy_type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
+              className={`policy-enacted idle-wobble ${notification.policy_type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
           ></span>
         </div>
       )
