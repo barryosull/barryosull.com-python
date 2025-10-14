@@ -60,8 +60,8 @@ class UseExecutiveActionHandler:
 
             game_state.investigated_players.add(command.target_player_id)
             result = {
-                'type': 'loyalty_investigated',
-                'player_id': str(command.target_player_id),
+                "type": 'loyalty_investigated',
+                "player_id": str(command.target_player_id),
             }
 
         elif presidential_power == PresidentialPower.POLICY_PEEK:

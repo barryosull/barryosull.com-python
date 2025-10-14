@@ -48,8 +48,9 @@ def test_investigate_loyalty():
     command = UseExecutiveActionCommand(
         room_id=room.room_id, player_id=president_id, target_player_id=target_id
     )
-    command_bus.execute(command)
+    result = command_bus.execute(command)
 
+    assert result == {"type": "loyalty_investigated", "player_id": str(target_id)}
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION
 
@@ -81,8 +82,9 @@ def test_policy_peek():
     repository.save(room)
 
     command = UseExecutiveActionCommand(room_id=room.room_id, player_id=president_id)
-    command_bus.execute(command)
+    result = command_bus.execute(command)
 
+    assert result == {}
     updated_room = repository.find_by_id(room.room_id)
     assert len(updated_room.game_state.peek_policies()) == 3
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION
@@ -124,7 +126,7 @@ def test_execution_regular_player():
     )
     result = command_bus.execute(command)
 
-    assert result["executed_player_id"] == str(target_id)
+    assert result == {"type": "executed", "player_id": str(target_id)}
     assert "game_over" not in result
     updated_room = repository.find_by_id(room.room_id)
     assert not updated_room.get_player(target_id).is_alive
@@ -165,7 +167,7 @@ def test_execution_hitler_ends_game():
     )
     result = command_bus.execute(command)
 
-    assert result["executed_player_id"] == str(hitler_id)
+    assert result["player_id"] == str(hitler_id)
     assert result["game_over"] is True
     assert result["winning_team"] == "LIBERAL"
     updated_room = repository.find_by_id(room.room_id)
@@ -214,6 +216,7 @@ def test_call_special_election():
     )
     result = command_bus.execute(command)
 
+    assert result == {"type": "special_election", "player_id": str(special_president_id)}
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.president_id == special_president_id
     assert updated_room.game_state.current_phase == GamePhase.NOMINATION

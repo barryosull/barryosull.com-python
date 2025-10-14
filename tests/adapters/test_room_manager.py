@@ -90,20 +90,20 @@ def test_disconnect_keeps_room_with_remaining_connections(room_manager):
 async def test_broadcast_sends_to_all_connections(room_manager):
     room_id = uuid4()
     ws1 = Mock()
-    ws1.send_text = AsyncMock()
+    ws1.send_json = AsyncMock()
     ws2 = Mock()
-    ws2.send_text = AsyncMock()
+    ws2.send_json = AsyncMock()
     ws3 = Mock()
-    ws3.send_text = AsyncMock()
+    ws3.send_json = AsyncMock()
 
     room_manager.rooms[room_id] = [ws1, ws2, ws3]
-    message = "test message"
+    message = {"type": "message"}
 
     await room_manager.broadcast(room_id, message)
 
-    ws1.send_text.assert_called_once_with(message)
-    ws2.send_text.assert_called_once_with(message)
-    ws3.send_text.assert_called_once_with(message)
+    ws1.send_json.assert_called_once_with(message)
+    ws2.send_json.assert_called_once_with(message)
+    ws3.send_json.assert_called_once_with(message)
 
 
 @pytest.mark.asyncio
@@ -112,7 +112,7 @@ async def test_broadcast_to_nonexistent_room(room_manager, mock_websocket):
 
     await room_manager.broadcast(room_id, "test message")
 
-    mock_websocket.send_text.assert_not_called()
+    mock_websocket.send_json.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -120,11 +120,11 @@ async def test_broadcast_to_empty_room_list(room_manager):
     room_id = uuid4()
     room_manager.rooms[room_id] = []
     ws = Mock()
-    ws.send_text = AsyncMock()
+    ws.send_json = AsyncMock()
 
     await room_manager.broadcast(room_id, "test message")
 
-    ws.send_text.assert_not_called()
+    ws.send_json.assert_not_called()
 
 
 @pytest.mark.asyncio
@@ -132,18 +132,19 @@ async def test_full_lifecycle(room_manager):
     room_id = uuid4()
     ws1 = Mock()
     ws1.accept = AsyncMock()
-    ws1.send_text = AsyncMock()
+    ws1.send_json = AsyncMock()
     ws2 = Mock()
     ws2.accept = AsyncMock()
-    ws2.send_text = AsyncMock()
+    ws2.send_json = AsyncMock()
+    message = {"type": "message"}
 
     await room_manager.connect(ws1, room_id)
     await room_manager.connect(ws2, room_id)
     assert len(room_manager.rooms[room_id]) == 2
 
-    await room_manager.broadcast(room_id, "hello everyone")
-    ws1.send_text.assert_called_once_with("hello everyone")
-    ws2.send_text.assert_called_once_with("hello everyone")
+    await room_manager.broadcast(room_id, message)
+    ws1.send_json.assert_called_once_with(message)
+    ws2.send_json.assert_called_once_with(message)
 
     room_manager.disconnect(ws1, room_id)
     assert len(room_manager.rooms[room_id]) == 1
