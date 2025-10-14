@@ -8,6 +8,7 @@ import PolicyTracks from './PolicyTracks';
 import NominationView from './NominationView';
 import VotingView from './VotingView';
 import PolicySelectionView from './PolicySelectionView';
+import VetoConfirm from './VetoConfirm';
 import ExecutiveActionView from './ExecutiveActionView';
 import RoleOverlay from './RoleOverlay';
 import NotificationOverlay from './NotificationOverlay';
@@ -186,6 +187,16 @@ export default function GameBoard() {
         );
 
       case 'LEGISLATIVE_CHANCELLOR':
+        if (gameState.veto_requested) {
+          return (
+            <VetoConfirm
+              gameState={gameState}
+              myPlayerId={myPlayerId}
+              onVeto={handleVeto}
+            />
+          );
+        }
+        
         return (
           <PolicySelectionView
             gameState={gameState}

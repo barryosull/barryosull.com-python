@@ -20,12 +20,11 @@ def test_president_discards_policy():
         Policy(PolicyType.FASCIST),
         Policy(PolicyType.LIBERAL),
     ]
-    discarded = policies[1]
+    discarded = policies[0]
 
     remaining = PolicyEnactmentService.president_discards_policy(policies, discarded)
-
-    assert len(remaining) == 2
-    assert discarded not in remaining
+    
+    assert remaining == [Policy(PolicyType.FASCIST), Policy(PolicyType.LIBERAL)]
 
 
 def test_president_discards_policy_invalid_count():
@@ -39,7 +38,7 @@ def test_president_discards_policy_invalid_count():
 def test_president_discards_policy_not_in_hand():
     policies = [
         Policy(PolicyType.LIBERAL),
-        Policy(PolicyType.FASCIST),
+        Policy(PolicyType.LIBERAL),
         Policy(PolicyType.LIBERAL),
     ]
     other_policy = Policy(PolicyType.FASCIST)

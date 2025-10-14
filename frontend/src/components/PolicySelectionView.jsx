@@ -11,10 +11,8 @@ export default function PolicySelectionView({
   const [selectedPolicyIndex, setSelectedPolicyIndex] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
-    setShouldRender(true);
     setIsFadingOut(false);
   }, []);
 
@@ -32,7 +30,6 @@ export default function PolicySelectionView({
       setIsFadingOut(true);
       setTimeout(async () => {
         await onSelectPolicy(selectedPolicy.type);
-        setShouldRender(false);
       }, 300);
     } finally {
       setLoading(false);
@@ -64,46 +61,7 @@ export default function PolicySelectionView({
     ? gameState.president_id === myPlayerId
     : gameState.chancellor_id === myPlayerId;
 
-  // Check for veto state first, before isMyTurn check
-  if (gameState.veto_requested) {
-    const isPresidentPlayer = gameState.president_id === myPlayerId;
-    const isChancellorPlayer = gameState.chancellor_id === myPlayerId;
-
-    if (isPresidentPlayer && shouldRender) {
-      return (
-        <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
-          <div className="overlay-content">
-            <h3 className="overlay-title">Veto Request</h3>
-            <div className="overlay-subtitle">
-              The Chancellor has requested to veto the agenda. Do you approve?
-            </div>
-
-            <div className="veto-buttons">
-              <button
-                onClick={() => handleVeto(true)}
-                className="veto-button approve"
-                disabled={loading}
-              >
-                Approve Veto
-              </button>
-              <button
-                onClick={() => handleVeto(false)}
-                className="veto-button reject"
-                disabled={loading}
-              >
-                Reject Veto
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      // Other players
-      return null;
-    }
-  }
-
-  if (!isMyTurn || !shouldRender) {
+  if (!isMyTurn) {
     return null;
   }
 

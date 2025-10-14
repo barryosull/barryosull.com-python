@@ -42,9 +42,11 @@ class DiscardPolicyHandler:
         if not policy:
             raise ValueError(f"Policy {command.policy_type.value} not found in president policies")
 
+        print("Pre-discard: ", game_state.president_policies, policy)
         remaining = PolicyEnactmentService.president_discards_policy(
             game_state.president_policies, policy
         )
+        print("Post-discard: ", remaining)
 
         game_state.policy_deck.discard([policy])
         game_state.chancellor_policies = remaining

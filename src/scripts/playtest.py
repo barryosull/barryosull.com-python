@@ -80,7 +80,7 @@ def make_diverse_deck() -> PolicyDeck:
 def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_ids: list[UUID]):
 
     president_id = player_ids[0]
-    executed_id = None
+    executed_ids = []
 
     # Rounds of play
     for i in range(0, rounds):
@@ -96,30 +96,42 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
 
         # Elect chancellor
         for player_id in player_ids:
-            if player_id != president_id and player_id != executed_id:
+            if player_id != president_id and player_id not in executed_ids:
                 execute(CastVoteCommand(
                     room_id,
                     player_id,
                     True
                 ))
 
-        # Enact fascist policy
-        execute(DiscardPolicyCommand(
-            room_id=room_id,
-            player_id=president_id,
-            policy_type=PolicyType.LIBERAL
-        ))
-        execute(EnactPolicyCommand(
-            room_id=room_id,
-            player_id=chancellor_id,
-            policy_type=PolicyType.FASCIST
-        ))
-
+        if (i >= 6):
+            # Enact liberal so game doesn't end
+            execute(DiscardPolicyCommand(
+                room_id=room_id,
+                player_id=president_id,
+                policy_type=PolicyType.FASCIST
+            ))
+            execute(EnactPolicyCommand(
+                room_id=room_id,
+                player_id=chancellor_id,
+                policy_type=PolicyType.LIBERAL
+            )) 
+        else:
+            # Enact fascist policy
+            execute(DiscardPolicyCommand(
+                room_id=room_id,
+                player_id=president_id,
+                policy_type=PolicyType.LIBERAL
+            ))
+            execute(EnactPolicyCommand(
+                room_id=room_id,
+                player_id=chancellor_id,
+                policy_type=PolicyType.FASCIST
+            ))    
+        
         room = repository.find_by_id(room_id)
         print(f"Game phase: {room.game_state.current_phase}")
 
         # Execute executive actions, but not the one from the last policy enactment
-        executed_id = None
         if i < rounds - 1 and room.game_state.current_phase == GamePhase.EXECUTIVE_ACTION:
             power = room.game_state.get_presidential_power(len(room.active_players()))
             print(f"Executive action: {power}")
@@ -134,15 +146,24 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
                     room_id=room_id,
                     player_id=president_id,
                 ))  
+            if power == PresidentialPower.CALL_SPECIAL_ELECTION:
+                special_president_id = player_ids[(president_index + 1) % len(player_ids)]
+                execute(UseExecutiveActionCommand(
+                    room_id=room_id,
+                    player_id=president_id,
+                    target_player_id=special_president_id
+                ))  
             if power == PresidentialPower.EXECUTION:
                 executed_id = player_ids[(president_index - 1) % len(player_ids)]
                 execute(UseExecutiveActionCommand(
                     room_id=room_id,
                     player_id=president_id,
                     target_player_id=executed_id
-                ))  
-              
-        president_id = chancellor_id
+                ))
+                executed_ids.append(executed_id)
+        
+        room = repository.find_by_id(room_id)
+        president_id = room.game_state.president_id
 
 def main():
     parser = argparse.ArgumentParser(description="Create a test game with N players")
