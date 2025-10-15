@@ -110,11 +110,11 @@ async def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse
         command = JoinRoomCommand(room_id=room_id, player_name=request.player_name)
         result = command_bus.execute(command)
 
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
-
         return JoinRoomResponse(player_id=result.player_id)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
 
 @router.get(
@@ -143,10 +143,10 @@ async def start_game(room_id: UUID, request: StartGameRequest) -> None:
     try:
         command = StartGameCommand(room_id=room_id, requester_id=request.player_id)
         command_bus.execute(command)
-
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
 
 @router.post(
@@ -162,10 +162,10 @@ async def nominate_chancellor(room_id: UUID, request: NominateChancellorRequest)
             chancellor_id=request.chancellor_id,
         )
         command_bus.execute(command)
-
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
 
 @router.post(
@@ -188,10 +188,10 @@ async def cast_vote(room_id: UUID, request: CastVoteRequest) -> None:
                 'chancellor_id': str(room.game_state.chancellor_id)
             }
             await room_manager.broadcast(room_id, elected_message)
-
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
 
 @router.post(
@@ -207,10 +207,10 @@ async def discard_policy(room_id: UUID, request: DiscardPolicyRequest) -> None:
             policy_type=PolicyType(request.policy_type),
         )
         command_bus.execute(command)
-
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
 
 @router.post(
@@ -231,9 +231,10 @@ async def enact_policy(room_id: UUID, request: EnactPolicyRequest) -> None:
             'policy_type': request.policy_type,
         }
         await room_manager.broadcast(room_id, enacted_message)
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
 
 @router.get(
@@ -303,11 +304,12 @@ async def use_executive_power(room_id: UUID, request: UseExecutiveActionRequest)
         result = command_bus.execute(command)
 
         await room_manager.broadcast(room_id, result)
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
         return ExecutiveActionResponse(**result)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
 
 
 @router.post(
@@ -323,7 +325,7 @@ async def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
             approve_veto=request.approve_veto,
         )
         command_bus.execute(command)
-
-        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
     except ValueError as e:
         handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)

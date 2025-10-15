@@ -392,11 +392,11 @@ h1.title {
 }
 
 .overlay.fade-in {
-  animation: fadeIn 0.3s ease-in forwards;
+  animation: fadeIn 0.5s ease-in forwards;
 }
 
 .overlay.fade-out {
-  animation: fadeOut 0.3s ease-out forwards;
+  animation: fadeOut 0.5s ease-out forwards;
 }
 
 /* VotingView Component Styles */
@@ -535,6 +535,7 @@ h1.title {
   cursor: pointer;
   transition: all 0.2s;
   border: 0px;
+  border-radius: 3%;
 }
 
 .policy-card.selected {
@@ -776,10 +777,12 @@ ul.team-mates li.hitler {
 .toast {
   position: fixed;
   bottom: 0px;
-  left: -5%;
-  width: 110%;
+  left: 0%;
+  width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   z-index: 100;
+  background-color: #FBB969;
+  border-top: 3px solid #83110a;
 }
 
 .toast.toast-previous {
@@ -787,9 +790,6 @@ ul.team-mates li.hitler {
 }
 
 .toast-content {
-  background-color: #FBB969;
-  border: 3px solid #83110a;
-  border-radius: 10px;
   padding: 10px 20px 20px;
 }
 
@@ -817,16 +817,31 @@ ul.team-mates li.hitler {
 @keyframes slideInFromRight {
   from {
     transform: translateX(100%);
-    /*opacity: 0;*/
+    opacity: 0;
   }
   to {
     transform: translateX(0);
-    /*opacity: 1;*/
+    opacity: 1;
   }
 }
 
-.toast.slide-in {
+@keyframes slideOutFromLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+.toast-content.slide-in {
   animation: slideInFromRight 0.5s ease-out forwards;
+}
+
+.toast-content.slide-out {
+  animation: slideOutFromLeft 0.5s ease-out forwards;
 }
 
 /* ElectionOverlay Component Styles */
@@ -871,6 +886,7 @@ ul.team-mates li.hitler {
   cursor: pointer;
   transition: all 0.2s;
   border: 0px;
+  border-radius: 3%;
 }
 
 /* Animations */
