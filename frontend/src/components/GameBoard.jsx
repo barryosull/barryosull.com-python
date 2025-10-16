@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { api } from '../services/api';
 import { playerStorage, preserveParams, initializeFromUrl } from '../services/storage';
 import PlayerList from './PlayerList';
-import PolicyTracks from './PolicyTracks';
+import LiberalTrack from './LiberalTrack';
+import FascistTrack from './FascistTrack';
 import NominationView from './NominationView';
 import VotingView from './VotingView';
 import PolicySelectionView from './PolicySelectionView';
@@ -206,7 +207,7 @@ export default function GameBoard() {
         <h1 className="title">Secret Hitler</h1>
         <div className="room-id">Room: {roomId}</div>
       </div>
-      
+
       <div class="game-board">
         <div className="players-section">
           <PlayerList
@@ -215,10 +216,8 @@ export default function GameBoard() {
             myPlayerId={myPlayerId}
           />
         </div>
-
-        <div className="main-content">
-          <PolicyTracks gameState={gameState} players={room.players} />
-        </div>
+        <LiberalTrack gameState={gameState} />
+        <FascistTrack gameState={gameState} players={room.players} />
       </div>
 
       {!notification && renderPhaseView()}
