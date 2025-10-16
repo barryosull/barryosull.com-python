@@ -111,48 +111,6 @@ export default function GameBoard() {
     }
   };
 
-  const renderToast = () => {
-  
-    const getPowerDescription = (presidentialPower) => {
-      switch (presidentialPower) {
-        case 'INVESTIGATE_LOYALTY':
-          return 'President is investigating a player\'s party membership';
-        case 'POLICY_PEEK':
-          return 'President is peeking at the top 3 policies';
-        case 'EXECUTION':
-          return 'President is selection a player for execution';
-        case 'CALL_SPECIAL_ELECTION':
-          return 'President is selecting the next presidential candidate';
-        default:
-          return 'President is using their executive power';
-      }
-    };
-
-    const phases = {
-      'NOMINATION' : "Nomination Phase",
-      'ELECTION' : "Voting",
-      'LEGISLATIVE_PRESIDENT' : "Policy Selection",
-      'LEGISLATIVE_CHANCELLOR' : "Policy Selection",
-      'EXECUTIVE_ACTION' : "Executive action",
-      'GAME_OVER' : "Game over",
-    }
-
-    const messages = {
-      'NOMINATION' : "Waiting for president to nominate a chancellor",
-      'ELECTION' : "Voting on chancellor",
-      'LEGISLATIVE_PRESIDENT' : "President is selecting a policy to discard",
-      'LEGISLATIVE_CHANCELLOR' : (gameState.veto_requested)
-        ? "Chancellor has requested a veto from the president"
-        : "Chancellor is selecting a policy to enact",
-      'EXECUTIVE_ACTION' : getPowerDescription(gameState.presidential_power),
-      'GAME_OVER' : "End of game",
-    }
-
-    const phase = phases[gameState.current_phase] ??= "Unknown phase: " + gameState.current_phase
-    const message = messages[gameState.current_phase] ??= "Unknown phase, means I (the dev) missed something, whoops . . .";
-    return (<Toast phase={phase} message={message}></Toast>)
-  }
-
   const renderPhaseView = () => {
     switch (gameState.current_phase) {
       case 'NOMINATION':
@@ -196,7 +154,7 @@ export default function GameBoard() {
             />
           );
         }
-        
+
         return (
           <PolicySelectionView
             gameState={gameState}
@@ -249,27 +207,31 @@ export default function GameBoard() {
         <div className="room-id">Room: {roomId}</div>
       </div>
       
-      <div className="players-section">
-        <PlayerList
-          players={room.players}
-          gameState={gameState}
-          myPlayerId={myPlayerId}
-        />
+      <div class="game-board">
+        <div className="players-section">
+          <PlayerList
+            players={room.players}
+            gameState={gameState}
+            myPlayerId={myPlayerId}
+          />
+        </div>
+
+        <div className="main-content">
+          <PolicyTracks gameState={gameState} players={room.players} />
+        </div>
       </div>
 
-      <div className="main-content">
-        <PolicyTracks gameState={gameState} players={room.players} />
-        {!notification && renderPhaseView()}
-        {renderToast()}
-      </div>
+      {!notification && renderPhaseView()}
 
-      <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
-      
+      <Toast gameState={gameState} />
+  
       <NotificationOverlay
         notification={notification}
         players={room?.players || []}
         onClose={clearNotification}
       />
+
+      <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
     </div>
   </>);
 }
