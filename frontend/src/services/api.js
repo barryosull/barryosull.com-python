@@ -12,6 +12,9 @@ async function handleResponse(response) {
     const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
     throw new ApiError(error.detail || 'Request failed', response.status);
   }
+  if (response.status === 204) {
+    return {}
+  }
   return response.json();
 }
 

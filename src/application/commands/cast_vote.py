@@ -49,11 +49,13 @@ class CastVoteHandler:
         active_player_count = len(room.active_players())
         expected_vote_count = active_player_count - 1
         if len(game_state.votes) == expected_vote_count:
-            self._process_election_results(room)
+            result = self._process_election_results(room)
 
         self.repository.save(room)
 
-    def _process_election_results(self, room) -> None:
+        return result
+
+    def _process_election_results(self, room) -> None | dict:
         game_state = room.game_state
         if not game_state:
             return
@@ -77,7 +79,12 @@ class CastVoteHandler:
             policies = PolicyEnactmentService.draw_policies(game_state)
             game_state.president_policies = policies
             game_state.chancellor_policies = []
-            return
+
+            return {
+                'type': 'elected',
+                'president_id': str(game_state.president_id),
+                'chancellor_id': str(game_state.chancellor_id)
+            }
         
-        IncrementElectionService.handle_failed_government(room)
+        return IncrementElectionService.handle_failed_government(room)
         

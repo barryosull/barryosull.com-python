@@ -61,7 +61,7 @@ export default function GameBoard() {
       await api.nominateChancellor(roomId, myPlayerId, chancellorId);
       refresh();
     } catch (err) {
-      alert(err.message);
+      console.error(err.message)
     }
   };
 
@@ -70,7 +70,7 @@ export default function GameBoard() {
       await api.castVote(roomId, myPlayerId, vote);
       refresh();
     } catch (err) {
-      alert(err.message);
+      console.error(err)
     }
   };
 
@@ -79,7 +79,7 @@ export default function GameBoard() {
       await api.discardPolicy(roomId, myPlayerId, policyType);
       refresh();
     } catch (err) {
-      alert(err.message);
+      console.error(err.message)
     }
   };
 
@@ -88,7 +88,7 @@ export default function GameBoard() {
       await api.enactPolicy(roomId, myPlayerId, policyType);
       refresh();
     } catch (err) {
-      alert(err.message);
+      console.error(err.message)
     }
   };
 
@@ -98,7 +98,7 @@ export default function GameBoard() {
       refresh();
       return result;
     } catch (err) {
-      alert(err.message);
+      console.error(err.message)
       throw err;
     }
   };
@@ -108,7 +108,7 @@ export default function GameBoard() {
       await api.veto(roomId, myPlayerId, approveVeto);
       refresh();
     } catch (err) {
-      alert(err.message);
+      console.error(err.message)
     }
   };
 

@@ -45,8 +45,6 @@ export function useGameState(roomId) {
     }
   };
 
-  const notifications = ['elected', 'policy_enacted', 'executed', 'vetoed', 'special_election', 'loyalty_investigated'];
-
   useEffect(() => {
     if (!roomId) return;
 
@@ -64,8 +62,7 @@ export function useGameState(roomId) {
         fetchGameState();
         return;
       } 
-      
-      if (notifications.includes(message.type)) {
+      if (message.type) {
         setNotification(message);
       }
     }

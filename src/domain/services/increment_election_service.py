@@ -7,7 +7,7 @@ from src.domain.services.win_condition_service import WinConditionService
 
 class IncrementElectionService:
     @staticmethod
-    def handle_failed_government(room: GameRoom):
+    def handle_failed_government(room: GameRoom) -> None | dict:
         game_state = room.game_state
         game_state.increment_election_tracker()
 
@@ -22,9 +22,13 @@ class IncrementElectionService:
                     game_state.president_id, room.active_players()
                 )
             game_state.move_to_nomination_phase(next_president)
-            return
-        
-        PolicyEnactmentService.enact_chaos_policy(game_state)
+
+            return {
+                "type": "failed_election",
+                "election_tracker": game_state.election_tracker
+            }
+
+        chaos_policy = PolicyEnactmentService.enact_chaos_policy(game_state)
         game_state.reset_election_tracker()
         game_state.previous_chancellor_id = None
         game_state.previous_president_id = None
@@ -33,12 +37,17 @@ class IncrementElectionService:
             game_state
         )
 
+        result = {
+            "type": "chaos",
+            "policy": chaos_policy.type.value
+        }
+
         if is_game_over:
             game_state.current_phase = GamePhase.GAME_OVER
             game_state.game_over_reason = f"{winning_team}s win! {reason}"
             room.end_game()
-            return
-        
+            return result
+
         if game_state.next_regular_president_id:
             next_president = game_state.next_regular_president_id
             game_state.next_regular_president_id = None
@@ -47,5 +56,5 @@ class IncrementElectionService:
                 game_state.president_id, room.active_players()
             )
         game_state.move_to_nomination_phase(next_president)
-        
 
+        return result

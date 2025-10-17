@@ -28,7 +28,10 @@ export default function NotificationOverlay({ notification, players, onClose }) 
     'executed': "Player Executed!",
     'vetoed': "Election Vetoed!",
     'special_election': "Special Election!",
-    'loyalty_investigated' : "Loyalty Investigated!"
+    'loyalty_investigated' : "Loyalty Investigated!",
+    'failed_election': "Election failed!",
+    'chaos': "Chaos!",
+    'veto_rejected': "Veto Rejected!"
   }
 
   const title = notificationTitle[notification.type] ?? notification.type;
@@ -56,6 +59,23 @@ export default function NotificationOverlay({ notification, players, onClose }) 
       )
     }
 
+    if (notification.type === 'failed_election') {
+      return (<>
+        <h3>Not enough votes, incrementing election tracker</h3>
+      </>);
+    }
+
+    if (notification.type === 'chaos') {
+      return (  
+        <div className="policy-grid">
+          <h3>3 failed governments, chaos enacted!</h3>
+          <span
+              className={`policy-enacted idle-wobble ${notification.policy_type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
+          ></span>
+        </div>
+      );
+    }
+
     if (notification.type === 'executed') {
       const executed = players.find(p => p.player_id === notification.player_id);
       return (  
@@ -65,7 +85,13 @@ export default function NotificationOverlay({ notification, players, onClose }) 
 
     if (notification.type === 'vetoed') {
       return (  
-        <h3>Election vetoed by the president and chancellor, advancing election tracker</h3>
+        <h3>Election was vetoed by the president and chancellor, advancing election tracker</h3>
+      );
+    }
+
+    if (notification.type === 'veto_rejected') {
+      return (  
+        <h3>President has rejected veto, chancellor must select a policy</h3>
       );
     }
 
