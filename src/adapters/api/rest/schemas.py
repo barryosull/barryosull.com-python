@@ -71,6 +71,7 @@ class GameStateResponse(BaseModel):
     previous_president_id: UUID | None
     previous_chancellor_id: UUID | None
     veto_requested: bool
+    veto_rejected: bool
     liberal_policies: int
     fascist_policies: int
     election_tracker: int

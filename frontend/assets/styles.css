@@ -323,6 +323,7 @@ h1.title {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
   z-index: 1000;
 }
 

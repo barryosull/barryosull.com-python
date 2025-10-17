@@ -59,12 +59,13 @@ class VetoAgendaHandler:
                 game_state.chancellor_policies = []
                 game_state.president_policies = []
                 game_state.veto_requested = False
-                
+
                 result = IncrementElectionService.handle_failed_government(room)
                 if (result['type'] != 'chaos'):
                     result['type'] = 'vetoed'
             else:
                 game_state.veto_requested = False
+                game_state.veto_rejected = True
                 result = {
                     'type': 'veto_rejected',
                 }

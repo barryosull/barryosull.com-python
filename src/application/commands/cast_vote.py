@@ -79,6 +79,7 @@ class CastVoteHandler:
             policies = PolicyEnactmentService.draw_policies(game_state)
             game_state.president_policies = policies
             game_state.chancellor_policies = []
+            game_state.veto_rejected = False
 
             return {
                 'type': 'elected',

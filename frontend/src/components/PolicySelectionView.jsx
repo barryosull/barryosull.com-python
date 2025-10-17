@@ -55,6 +55,7 @@ export default function PolicySelectionView({
   const actionText = isPresident ? 'Discard' : 'Enact';
   const roleText = isPresident ? 'President' : 'Chancellor';
   const vetoAvailable = gameState.fascist_policies >= 5;
+  const vetoRejected = gameState.veto_rejected;
 
   const isMyTurn = isPresident
     ? gameState.president_id === myPlayerId
@@ -92,13 +93,22 @@ export default function PolicySelectionView({
         </button>
 
         {vetoAvailable && !isPresident && (
-          <button
-            onClick={() => handleVeto(true)}
-            className="veto-request-button"
-            disabled={loading}
-          >
-            Request Veto
-          </button>
+          <>
+            {!vetoRejected && (
+              <button
+                onClick={() => handleVeto(true)}
+                className="veto-request-button"
+                disabled={loading || vetoRejected}
+              >
+                Request Veto
+              </button>
+            )}
+            {vetoRejected && (
+              <p className="veto-rejected-message">
+                Veto already rejected by President
+              </p>
+            )}
+          </>
         )}
       </div>
     </div>

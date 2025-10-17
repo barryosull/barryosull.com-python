@@ -69,6 +69,7 @@ class ResponseFactory:
             previous_president_id=game_state.previous_president_id,
             previous_chancellor_id=game_state.previous_chancellor_id,
             veto_requested=game_state.veto_requested,
+            veto_rejected=game_state.veto_rejected,
             liberal_policies=game_state.liberal_policies,
             fascist_policies=game_state.fascist_policies,
             election_tracker=game_state.election_tracker,
