@@ -22,24 +22,39 @@ export default function ExecutiveActionView({
   const isPresident = gameState.president_id === myPlayerId;
   const hasPeekedPolicies = gameState.peeked_policies && gameState.peeked_policies.length > 0;
 
+  if (!isPresident || !shouldRender) {
+    return null;
+  }
+
   useEffect(() => {
     setShouldRender(true);
     setIsFadingOut(false);
-  }, []);
+    if (presidentialPower === 'POLICY_PEEK' && hasPeekedPolicies) {
+      setShowingPolicies(true);
+    }
+  }, [presidentialPower, hasPeekedPolicies]);
+
+  const handleClosePolicyPeek = async () => {
+    setLoading(true);
+    setIsFadingOut(true);
+    setTimeout(async () => {
+      await onUseAction(null);
+      setShouldRender(false);
+      setLoading(false);
+    }, 300);
+  };
+
+  const handleCloseInvestigation = async () => {
+    setLoading(true);
+    setIsFadingOut(true);
+    setTimeout(async () => {
+      await onUseAction(selectedPlayerId);
+      setShouldRender(false);
+      setLoading(false);
+    }, 300);
+  };
 
   const handleExecute = async () => {
-    if (presidentialPower === 'POLICY_PEEK' && hasPeekedPolicies && !showingPolicies) {
-      setShowingPolicies(true);
-      setTimeout(() => {
-        setIsFadingOut(true);
-      }, 2700);
-      setTimeout(async () => {
-        await onUseAction(null);
-        setShouldRender(false);
-      }, 3000);
-      return;
-    }
-
     if (presidentialPower === 'INVESTIGATE_LOYALTY' && !showingLoyalty) {
       setLoading(true);
       try {
@@ -47,13 +62,6 @@ export default function ExecutiveActionView({
         setResult(loyaltyResult);
         setShowingLoyalty(true);
         setLoading(false);
-        setTimeout(() => {
-          setIsFadingOut(true);
-        }, 2700);
-        setTimeout(async () => {
-          await onUseAction(selectedPlayerId);
-          setShouldRender(false);
-        }, 3000);
       } catch (err) {
         alert(err.message);
         setLoading(false);
@@ -74,10 +82,6 @@ export default function ExecutiveActionView({
       setLoading(false);
     }
   };
-
-  if (!isPresident || !shouldRender) {
-    return null;
-  }
 
   const needsTarget = presidentialPower === 'INVESTIGATE_LOYALTY'
     || presidentialPower === 'EXECUTION'
@@ -147,20 +151,34 @@ export default function ExecutiveActionView({
           </div>
         )}
 
+        {showingPolicies && presidentialPower === 'POLICY_PEEK' && (
+          <button
+            onClick={handleClosePolicyPeek}
+            className="confirm-button"
+            disabled={loading}
+          >
+            {loading ? 'Closing...' : 'Close'}
+          </button>
+        )}
+
+        {showingLoyalty && presidentialPower === 'INVESTIGATE_LOYALTY' && (
+          <button
+            onClick={handleCloseInvestigation}
+            className="confirm-button"
+            disabled={loading}
+          >
+            {loading ? 'Closing...' : 'Close'}
+          </button>
+        )}
+
         {!showingPolicies && !showingLoyalty && (
           <button
             onClick={handleExecute}
             className="confirm-button"
             disabled={(needsTarget && !selectedPlayerId && !result) || loading}
           >
-            {loading ? 'Using Power...' : result ? 'Continue' : hasPeekedPolicies && presidentialPower === 'POLICY_PEEK' ? 'View Policies' : 'Use Power'}
+            {loading ? 'Using Power...' : result ? 'Continue' : 'Use Power'}
           </button>
-        )}
-
-        {(showingPolicies || showingLoyalty) && (
-          <div className="overlay-subtitle">
-            Auto-advancing in 3 seconds...
-          </div>
         )}
       </div>
     </div>
