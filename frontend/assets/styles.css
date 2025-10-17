@@ -66,6 +66,7 @@ html, body, #root {
 .game-board {
   display: flex;
   flex-direction: column;
+  gap: 20px;
   justify-content: space-evenly;
   overflow-y: scroll;
   padding: 135px 20px 110px;
@@ -85,12 +86,13 @@ html, body, #root {
 .player-grid .player-item {
   color: #fff;
   padding: 9px;
-  background-color: #cb6849;
+  background-color: #83110a;
   border-radius: 4px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   flex: 1 1 calc(20% - 10px);
+  min-width: 80px;
   max-width: calc(20% - 10px);
   position: relative;
 }
@@ -689,7 +691,7 @@ h1.title {
 
 .executive-player-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 10px;
   margin-bottom: 20px;
 }

@@ -324,7 +324,9 @@ async def veto_agenda(room_id: UUID, request: VetoAgendaRequest) -> None:
             player_id=request.player_id,
             approve_veto=request.approve_veto,
         )
-        command_bus.execute(command)
+        result = command_bus.execute(command)
+        if (result is not None):
+            await room_manager.broadcast(room_id, result)
     except ValueError as e:
         handle_value_error(e)
     finally:

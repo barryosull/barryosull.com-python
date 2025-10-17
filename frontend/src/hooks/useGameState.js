@@ -62,7 +62,9 @@ export function useGameState(roomId) {
 
       if (message.type === 'game_state_updated') {
         fetchGameState();
+        return;
       } 
+      
       if (notifications.includes(message.type)) {
         setNotification(message);
       }

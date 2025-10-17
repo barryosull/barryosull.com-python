@@ -42,7 +42,6 @@ export default function PolicySelectionView({
       setIsFadingOut(true);
       setTimeout(async () => {
         await onVeto(approve);
-        setShouldRender(false);
       }, 300);
     } finally {
       setLoading(false);

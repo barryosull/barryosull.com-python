@@ -18,7 +18,7 @@ class VetoAgendaHandler:
     def __init__(self, repository: RoomRepositoryPort) -> None:
         self.repository = repository
 
-    def handle(self, command: VetoAgendaCommand) -> None:
+    def handle(self, command: VetoAgendaCommand) -> dict | None:
         room = self.repository.find_by_id(command.room_id)
         if not room:
             raise ValueError(f"Room {command.room_id} not found")
@@ -41,6 +41,8 @@ class VetoAgendaHandler:
 
         if not (is_chancellor or is_president):
             raise ValueError("Only the president or chancellor can respond to veto")
+        
+        result = None
 
         if is_chancellor:
             if not command.approve_veto:
@@ -59,7 +61,12 @@ class VetoAgendaHandler:
                 game_state.veto_requested = False
                 
                 IncrementElectionService.handle_failed_government(room)
+                result = {
+                    'type': 'vetoed',
+                }
             else:
                 game_state.veto_requested = False
 
         self.repository.save(room)
+
+        return result

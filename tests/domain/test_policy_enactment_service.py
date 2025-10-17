@@ -16,15 +16,15 @@ def test_draw_policies():
 
 def test_president_discards_policy():
     policies = [
-        Policy(PolicyType.LIBERAL),
         Policy(PolicyType.FASCIST),
         Policy(PolicyType.LIBERAL),
+        Policy(PolicyType.FASCIST),
     ]
     discarded = policies[0]
 
     remaining = PolicyEnactmentService.president_discards_policy(policies, discarded)
     
-    assert remaining == [Policy(PolicyType.FASCIST), Policy(PolicyType.LIBERAL)]
+    assert remaining == [Policy(PolicyType.LIBERAL), Policy(PolicyType.FASCIST)]
 
 
 def test_president_discards_policy_invalid_count():

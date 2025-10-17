@@ -65,7 +65,7 @@ export default function NotificationOverlay({ notification, players, onClose }) 
 
     if (notification.type === 'vetoed') {
       return (  
-        <h3>Election vetoed by the president and chancellor</h3>
+        <h3>Election vetoed by the president and chancellor, advancing election tracker</h3>
       );
     }
 

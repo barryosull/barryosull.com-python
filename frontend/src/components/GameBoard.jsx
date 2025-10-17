@@ -208,14 +208,12 @@ export default function GameBoard() {
         <div className="room-id">Room: {roomId}</div>
       </div>
 
-      <div class="game-board">
-        <div className="players-section">
-          <PlayerList
+      <div className="game-board">
+        <PlayerList
             players={room.players}
             gameState={gameState}
             myPlayerId={myPlayerId}
           />
-        </div>
         <LiberalTrack gameState={gameState} />
         <FascistTrack gameState={gameState} players={room.players} />
       </div>

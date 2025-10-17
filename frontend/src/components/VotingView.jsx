@@ -31,9 +31,10 @@ export default function VotingView({ gameState, players, myPlayerId, onVote }) {
 
   const myPlayer = players.find((p) => p.player_id === myPlayerId);
   const canVote = myPlayer && myPlayer.is_alive;
+  const hasVoted = gameState.votes[myPlayerId] !== undefined;
   const isPresident = myPlayerId === gameState.president_id;
 
-  if (!canVote || isPresident || !shouldRender) {
+  if (hasVoted || !canVote || isPresident || !shouldRender) {
     return null;
   }
 

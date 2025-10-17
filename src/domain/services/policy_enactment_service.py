@@ -17,8 +17,8 @@ class PolicyEnactmentService:
         if not any(p is discarded_policy for p in policies):
             raise ValueError("Discarded policy must be one of the drawn policies")
 
-        remaining = [p for p in policies if p is not discarded_policy]
-        return remaining
+        policies.remove(discarded_policy)
+        return policies
 
     @staticmethod
     def chancellor_enacts_policy(

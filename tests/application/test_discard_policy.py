@@ -19,9 +19,9 @@ def test_discard_policy_success():
     chancellor_id = uuid4()
 
     policies = [
-        Policy(PolicyType.LIBERAL),
         Policy(PolicyType.FASCIST),
         Policy(PolicyType.LIBERAL),
+        Policy(PolicyType.FASCIST),
     ]
 
     room = GameRoom()
@@ -45,7 +45,11 @@ def test_discard_policy_success():
     updated_room = repository.find_by_id(room.room_id)
     assert updated_room.game_state.current_phase == GamePhase.LEGISLATIVE_CHANCELLOR
     assert len(updated_room.game_state.chancellor_policies) == 2
-    assert policies[1] not in updated_room.game_state.chancellor_policies
+    print(updated_room.game_state.chancellor_policies)
+    assert updated_room.game_state.chancellor_policies == [
+        Policy(PolicyType.LIBERAL), 
+        Policy(PolicyType.FASCIST)
+    ]
     assert len(updated_room.game_state.president_policies) == 0
 
 
