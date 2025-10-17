@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import '../../assets/styles.css';
 
-export default function NotificationOverlay({ notification, players, onClose }) {
+export default function NotificationOverlay({ notification, players, onClose, autoClose = true }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
 
@@ -9,16 +9,26 @@ export default function NotificationOverlay({ notification, players, onClose }) 
     if (notification) {
       setIsVisible(true);
       setIsFadingOut(false);
-      const timer = setTimeout(() => {
-        setIsFadingOut(true);
-        setTimeout(() => {
-          setIsVisible(false);
-          onClose();
-        }, 300);
-      }, 3000);
-      return () => clearTimeout(timer);
+      if (autoClose) {
+        const timer = setTimeout(() => {
+          setIsFadingOut(true);
+          setTimeout(() => {
+            setIsVisible(false);
+            onClose();
+          }, 300);
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [notification, onClose]);
+  }, [notification, onClose, autoClose]);
+
+  const handleClose = () => {
+    setIsFadingOut(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      onClose();
+    }, 300);
+  };
 
   if (!notification || !isVisible) return null;
 
@@ -117,6 +127,11 @@ export default function NotificationOverlay({ notification, players, onClose }) 
       <div className="overlay-content">
         <h2 className="overlay-title">{title}</h2>
         {notificationBody()}
+        {!autoClose && (
+          <button onClick={handleClose} className="confirm-button">
+            Close
+          </button>
+        )}
       </div>
     </div>
   )

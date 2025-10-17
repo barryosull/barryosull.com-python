@@ -22,6 +22,7 @@ export default function GameBoard() {
   const { gameState, room, myRole, error, loading, refresh, notification, clearNotification } = useGameState(roomId);
   const myPlayerId = playerStorage.getPlayerId();
   const [showRoleOverlay, setShowRoleOverlay] = useState(false);
+  const [autoCloseNotifications, setAutoCloseNotifications] = useState(false);
 
   useEffect(() => {
     initializeFromUrl();
@@ -219,11 +220,26 @@ export default function GameBoard() {
         <FascistTrack gameState={gameState} players={room.players} />
         <div className="controls">
           <button
+            id="display-role"
             onClick={() => setShowRoleOverlay(true)}
             className="button"
           >
             View My Role
           </button>
+          <div className="toggle-control">
+            <label htmlFor="auto-close-toggle" className="toggle-label">
+              Auto close notifications
+            </label>
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                id="auto-close-toggle"
+                checked={autoCloseNotifications}
+                onChange={(e) => setAutoCloseNotifications(e.target.checked)}
+              />
+              <span className="toggle-slider"></span>
+            </label>
+          </div>
         </div>   
       </div>
 
@@ -235,6 +251,7 @@ export default function GameBoard() {
         notification={notification}
         players={room?.players || []}
         onClose={clearNotification}
+        autoClose={autoCloseNotifications}
       />
 
       <RoleOverlay
