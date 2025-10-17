@@ -9,6 +9,7 @@ export default function Lobby() {
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
   const playerId = playerStorage.getPlayerId();
 
   useEffect(() => {
@@ -56,6 +57,35 @@ export default function Lobby() {
     navigator.clipboard.writeText(roomId);
   };
 
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (dropIndex) => {
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    const reorderedPlayers = [...room.players];
+    const [draggedPlayer] = reorderedPlayers.splice(draggedIndex, 1);
+    reorderedPlayers.splice(dropIndex, 0, draggedPlayer);
+
+    const playerIds = reorderedPlayers.map(p => p.player_id);
+
+    try {
+      await api.reorderPlayers(roomId, playerId, playerIds);
+      setDraggedIndex(null);
+    } catch (err) {
+      setError(err.message);
+      setDraggedIndex(null);
+    }
+  };
+
   if (!room) {
     return (
       <div className="container lobby">
@@ -88,10 +118,18 @@ export default function Lobby() {
         <div className="section">
           <h2 className="subtitle">
             Players ({room.players.length}/10)
+            {isCreator && <span className="hint"> (drag to reorder)</span>}
           </h2>
           <ul className="player-list">
-            {room.players.map((player) => (
-              <li key={player.player_id} className="player-item">
+            {room.players.map((player, index) => (
+              <li
+                key={player.player_id}
+                className={`player-item ${isCreator ? 'draggable' : ''} ${draggedIndex === index ? 'dragging' : ''}`}
+                draggable={isCreator}
+                onDragStart={() => handleDragStart(index)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(index)}
+              >
                 {player.name}
                 {player.player_id === room.creator_id && (
                   <span className="badge">Host</span>

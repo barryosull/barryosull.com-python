@@ -18,6 +18,7 @@ from src.adapters.api.rest.schemas import (
     JoinRoomRequest,
     JoinRoomResponse,
     NominateChancellorRequest,
+    ReorderPlayersRequest,
     RoleResponse,
     RoomStateResponse,
     StartGameRequest,
@@ -32,6 +33,7 @@ from src.application.commands.discard_policy import DiscardPolicyCommand
 from src.application.commands.enact_policy import EnactPolicyCommand
 from src.application.commands.join_room import JoinRoomCommand
 from src.application.commands.nominate_chancellor import NominateChancellorCommand
+from src.application.commands.reorder_players import ReorderPlayersCommand
 from src.application.commands.start_game import StartGameCommand
 from src.application.commands.use_executive_action import UseExecutiveActionCommand
 from src.application.commands.veto_agenda import VetoAgendaCommand
@@ -111,6 +113,25 @@ async def join_room(room_id: UUID, request: JoinRoomRequest) -> JoinRoomResponse
         result = command_bus.execute(command)
 
         return JoinRoomResponse(player_id=result.player_id)
+    except ValueError as e:
+        handle_value_error(e)
+    finally:
+        await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
+
+
+@router.post(
+    "/rooms/{room_id}/reorder-players",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def reorder_players(room_id: UUID, request: ReorderPlayersRequest) -> None:
+    try:
+        command = ReorderPlayersCommand(
+            room_id=room_id,
+            requester_id=request.player_id,
+            player_ids=request.player_ids,
+        )
+        command_bus.execute(command)
     except ValueError as e:
         handle_value_error(e)
     finally:

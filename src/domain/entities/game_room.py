@@ -46,6 +46,19 @@ class GameRoom:
         if self.creator_id == player_id and self.players:
             self.creator_id = self.players[0].player_id
 
+    def reorder_players(self, player_ids: list[UUID]) -> None:
+        if self.status != RoomStatus.WAITING:
+            raise ValueError("Cannot reorder players in a game in progress")
+
+        if len(player_ids) != len(self.players):
+            raise ValueError("Player IDs list must match current player count")
+
+        if set(player_ids) != {p.player_id for p in self.players}:
+            raise ValueError("Player IDs must match existing players")
+
+        player_map = {p.player_id: p for p in self.players}
+        self.players = [player_map[pid] for pid in player_ids]
+
     def get_player(self, player_id: UUID) -> Optional[Player]:
         return next((p for p in self.players if p.player_id == player_id), None)
 

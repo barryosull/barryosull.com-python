@@ -14,6 +14,10 @@ from src.application.commands.nominate_chancellor import (
     NominateChancellorCommand,
     NominateChancellorHandler,
 )
+from src.application.commands.reorder_players import (
+    ReorderPlayersCommand,
+    ReorderPlayersHandler,
+)
 from src.application.commands.start_game import StartGameCommand, StartGameHandler
 from src.application.commands.use_executive_action import (
     UseExecutiveActionCommand,
@@ -29,6 +33,7 @@ class CommandBus:
         self._handlers = {
             CreateRoomCommand: CreateRoomHandler,
             JoinRoomCommand: JoinRoomHandler,
+            ReorderPlayersCommand: ReorderPlayersHandler,
             StartGameCommand: StartGameHandler,
             NominateChancellorCommand: NominateChancellorHandler,
             CastVoteCommand: CastVoteHandler,

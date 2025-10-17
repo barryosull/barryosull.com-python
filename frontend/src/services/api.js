@@ -51,6 +51,18 @@ export const api = {
     return handleResponse(response);
   },
 
+  async reorderPlayers(roomId, playerId, playerIds) {
+    const response = await fetch(`${API_BASE}/rooms/${roomId}/reorder-players`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        player_id: playerId,
+        player_ids: playerIds
+      })
+    });
+    return handleResponse(response);
+  },
+
   async nominateChancellor(roomId, playerId, chancellorId) {
     const response = await fetch(`${API_BASE}/games/${roomId}/nominate`, {
       method: 'POST',

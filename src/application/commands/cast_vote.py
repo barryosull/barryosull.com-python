@@ -48,6 +48,7 @@ class CastVoteHandler:
 
         active_player_count = len(room.active_players())
         expected_vote_count = active_player_count - 1
+        result = None
         if len(game_state.votes) == expected_vote_count:
             result = self._process_election_results(room)
 

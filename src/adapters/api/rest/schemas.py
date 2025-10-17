@@ -22,6 +22,11 @@ class JoinRoomResponse(BaseModel):
     player_id: UUID
 
 
+class ReorderPlayersRequest(BaseModel):
+    player_id: UUID
+    player_ids: list[UUID]
+
+
 class PlayerResponse(BaseModel):
     player_id: UUID
     name: str

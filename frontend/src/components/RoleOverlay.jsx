@@ -67,13 +67,13 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
             <span>
               {myRole.teammates.length === 1 ? 'Your Teammate:' : 'Your Teammates:'}
             </span>
-            <ul className="team-mates">
+            <div className="team-mates">
             {myRole.teammates.map((teammate) => (
-              <li className={teammate.is_hitler ? 'hitler' : 'fascist'} key={teammate.player_id}>
+              <div className={teammate.is_hitler ? 'hitler' : 'fascist'} key={teammate.player_id}>
                 {teammate.name} {teammate.is_hitler ? '(Hitler)' : '(Fascist)'}
-              </li>
+              </div>
             ))}
-            </ul>
+            </div>
           </div>
         )}
         <button onClick={handleClose} className="close-button">
