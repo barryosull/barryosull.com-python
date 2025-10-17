@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameState } from '../hooks/useGameState';
 import { api } from '../services/api';
 import { playerStorage, preserveParams, initializeFromUrl } from '../services/storage';
@@ -21,6 +21,7 @@ export default function GameBoard() {
   const navigate = useNavigate();
   const { gameState, room, myRole, error, loading, refresh, notification, clearNotification } = useGameState(roomId);
   const myPlayerId = playerStorage.getPlayerId();
+  const [showRoleOverlay, setShowRoleOverlay] = useState(false);
 
   useEffect(() => {
     initializeFromUrl();
@@ -216,6 +217,14 @@ export default function GameBoard() {
           />
         <LiberalTrack gameState={gameState} />
         <FascistTrack gameState={gameState} players={room.players} />
+        <div className="controls">
+          <button
+            onClick={() => setShowRoleOverlay(true)}
+            className="button"
+          >
+            View My Role
+          </button>
+        </div>   
       </div>
 
       {!notification && renderPhaseView()}
@@ -228,7 +237,13 @@ export default function GameBoard() {
         onClose={clearNotification}
       />
 
-      <RoleOverlay myRole={myRole} roomId={roomId} myPlayerId={myPlayerId} />
+      <RoleOverlay
+        myRole={myRole}
+        roomId={roomId}
+        myPlayerId={myPlayerId}
+        forceShow={showRoleOverlay}
+        onClose={() => setShowRoleOverlay(false)}
+      />
     </div>
   </>);
 }

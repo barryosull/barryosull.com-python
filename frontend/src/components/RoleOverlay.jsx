@@ -3,9 +3,16 @@ import '../../assets/styles.css';
 
 const shownRoles = {};
 
-export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
+export default function RoleOverlay({ myRole, roomId, myPlayerId, forceShow = false, onClose }) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+
+  useEffect(() => {
+    if (forceShow) {
+      setShowOverlay(true);
+      setIsFadingOut(false);
+    }
+  }, [forceShow]);
 
   useEffect(() => {
     if (myRole && roomId && myPlayerId) {
@@ -30,6 +37,9 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId }) {
     setIsFadingOut(true);
     setTimeout(() => {
       setShowOverlay(false);
+      if (onClose) {
+        onClose();
+      }
     }, 300);
   };
 
