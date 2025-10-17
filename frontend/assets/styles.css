@@ -966,22 +966,21 @@ ul.team-mates li.hitler {
 }
 
 .toggle-control {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  text-align: center;
 }
 
 .toggle-label {
   color: #2a4e6c;
   font-size: 14px;
   font-weight: bold;
+  display: block;
 }
 
 .toggle-switch {
   position: relative;
-  display: inline-block;
   width: 50px;
   height: 24px;
+  display: inline-block;
 }
 
 .toggle-switch input {
