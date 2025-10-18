@@ -5,7 +5,7 @@ from src.domain.entities.game_state import GamePhase
 from src.domain.services.government_formation_service import GovernmentFormationService
 from src.domain.services.increment_election_service import IncrementElectionService
 from src.domain.services.policy_enactment_service import PolicyEnactmentService
-from src.ports.repository_port import RoomRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 
 @dataclass

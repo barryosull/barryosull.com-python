@@ -8,8 +8,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/room/:roomId" element={<Lobby />} />
-        <Route path="/game/:roomId" element={<GameBoard />} />
+        <Route path="/room/:roomCode" element={<Lobby />} />
+        <Route path="/game/:roomCode" element={<GameBoard />} />
       </Routes>
     </BrowserRouter>
   );

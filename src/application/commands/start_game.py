@@ -5,7 +5,7 @@ from uuid import UUID
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.policy_deck import PolicyDeck
 from src.domain.services.role_assignment_service import RoleAssignmentService
-from src.ports.repository_port import RoomRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 
 @dataclass

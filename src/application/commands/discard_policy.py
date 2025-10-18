@@ -4,7 +4,7 @@ from uuid import UUID
 from src.domain.entities.game_state import GamePhase
 from src.domain.services.policy_enactment_service import PolicyEnactmentService
 from src.domain.value_objects.policy import PolicyType
-from src.ports.repository_port import RoomRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 
 @dataclass

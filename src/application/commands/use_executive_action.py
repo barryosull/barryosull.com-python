@@ -3,7 +3,7 @@ from uuid import UUID
 
 from src.domain.entities.game_state import GamePhase, PresidentialPower
 from src.domain.services.government_formation_service import GovernmentFormationService
-from src.ports.repository_port import RoomRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 
 @dataclass

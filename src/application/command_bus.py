@@ -24,7 +24,7 @@ from src.application.commands.use_executive_action import (
     UseExecutiveActionHandler,
 )
 from src.application.commands.veto_agenda import VetoAgendaCommand, VetoAgendaHandler
-from src.ports.repository_port import RoomRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 
 class CommandBus:

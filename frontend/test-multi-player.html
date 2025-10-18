@@ -167,7 +167,7 @@
       <li>Make sure the backend is running on <code>http://localhost:8000</code></li>
       <li>Make sure the frontend dev server is running: <code>npm run dev</code></li>
       <li><strong>New Game:</strong> Click "Reload All Players" to start fresh, create room in Player 1, join in others</li>
-      <li><strong>Continue Game:</strong> Enter Room ID below, then click "Load Game" - players are loaded automatically</li>
+      <li><strong>Continue Game:</strong> Enter Room Code below, then click "Load Game" - players are loaded automatically</li>
     </ol>
   </div>
 
@@ -179,8 +179,8 @@
   <div class="controls" style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
     <input
       type="text"
-      id="roomId"
-      placeholder="Room ID"
+      id="roomCode"
+      placeholder="Room Code"
       style="padding: 10px; background: #2a2a2a; border: 1px solid #444; color: #fff; border-radius: 4px; width: 300px;">
     <button onclick="loadGame()">🎮 Load Game</button>
     <span id="loadStatus" style="color: #888; font-size: 14px;"></span>
@@ -193,7 +193,7 @@
   <script>
     const baseUrl = 'http://localhost:3000';
     const apiUrl = 'http://localhost:8000/api';
-    let currentGameState = null; // Store current room/player IDs
+    let currentGameState = null; // Store current room code and player IDs
 
     function createPlayerFrame(playerNumber, playerName, playerUrl) {
       const container = document.createElement('div');
@@ -215,13 +215,13 @@
       return container;
     }
 
-    function initializePlayers(roomId = null, players = null) {
+    function initializePlayers(roomCode = null, players = null) {
       const grid = document.getElementById('player-grid');
       grid.innerHTML = '';
 
       if (players) {
         players.forEach((player, index) => {
-          const playerUrl = `${baseUrl}/game/${roomId}?storage=local&name=${player.name}&playerId=${player.player_id}&hide_overlay=1`;
+          const playerUrl = `${baseUrl}/game/${roomCode}?storage=local&name=${player.name}&playerId=${player.player_id}&hide_overlay=1`;
           grid.appendChild(createPlayerFrame(index + 1, player.name, playerUrl));
         });
       } else {
@@ -232,18 +232,18 @@
     }
 
     async function loadGame() {
-      const roomIdInput = document.getElementById('roomId').value.trim();
+      const roomCodeInput = document.getElementById('roomCode').value.trim();
       const statusEl = document.getElementById('loadStatus');
 
-      if (!roomIdInput) {
-        alert('Please enter a Room ID');
+      if (!roomCodeInput) {
+        alert('Please enter a Room Code');
         return;
       }
 
       statusEl.textContent = 'Loading...';
 
       try {
-        const response = await fetch(`${apiUrl}/rooms/${roomIdInput}`, {
+        const response = await fetch(`${apiUrl}/rooms/${roomCodeInput}`, {
           headers: {
             'Accept': 'application/json',
           }
@@ -264,8 +264,8 @@
           name: p.name
         }));
 
-        currentGameState = { roomId: roomIdInput, players };
-        initializePlayers(roomIdInput, players);
+        currentGameState = { roomCode: roomCodeInput, players };
+        initializePlayers(roomCodeInput, players);
         statusEl.textContent = `Loaded ${players.length} players`;
         setTimeout(() => statusEl.textContent = '', 3000);
       } catch (error) {
@@ -276,7 +276,7 @@
 
     function reloadAll() {
       if (currentGameState) {
-        initializePlayers(currentGameState.roomId, currentGameState.players);
+        initializePlayers(currentGameState.roomCode, currentGameState.players);
       } else {
         initializePlayers();
       }
@@ -285,7 +285,7 @@
     function openInTabs() {
       if (currentGameState && currentGameState.players) {
         currentGameState.players.forEach((player) => {
-          const url = `${baseUrl}/game/${currentGameState.roomId}?storage=local&name=${player.name}&playerId=${player.player_id}`;
+          const url = `${baseUrl}/game/${currentGameState.roomCode}?storage=local&name=${player.name}&playerId=${player.player_id}`;
           window.open(url, `player-${player.player_id}`);
         });
       } else {
@@ -298,10 +298,10 @@
     // Initialize on load
     function init() {
       const urlParams = new URLSearchParams(window.location.search);
-      const roomId = urlParams.get('roomId');
+      const roomCode = urlParams.get('roomCode');
 
-      if (roomId) {
-        document.getElementById('roomId').value = roomId;
+      if (roomCode) {
+        document.getElementById('roomCode').value = roomCode;
         loadGame();
       } else {
         initializePlayers();

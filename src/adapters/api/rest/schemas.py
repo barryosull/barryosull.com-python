@@ -12,6 +12,7 @@ class CreateRoomRequest(BaseModel):
 class CreateRoomResponse(BaseModel):
     room_id: UUID
     player_id: UUID
+    room_code: str
 
 
 class JoinRoomRequest(BaseModel):

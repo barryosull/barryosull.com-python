@@ -10,7 +10,7 @@ export default function ExecutiveActionView({
   onUseAction,
   presidentialPower
 }) {
-  const { roomId } = useParams();
+  const { roomCode } = useParams();
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -58,7 +58,7 @@ export default function ExecutiveActionView({
     if (presidentialPower === 'INVESTIGATE_LOYALTY' && !showingLoyalty) {
       setLoading(true);
       try {
-        const loyaltyResult = await api.investigateLoyalty(roomId, myPlayerId, selectedPlayerId);
+        const loyaltyResult = await api.investigateLoyalty(roomCode, myPlayerId, selectedPlayerId);
         setResult(loyaltyResult);
         setShowingLoyalty(true);
         setLoading(false);

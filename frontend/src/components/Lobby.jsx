@@ -4,7 +4,7 @@ import { api } from '../services/api';
 import { playerStorage, preserveParams } from '../services/storage';
 
 export default function Lobby() {
-  const { roomId } = useParams();
+  const { roomCode } = useParams();
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
   const [error, setError] = useState('');
@@ -14,9 +14,9 @@ export default function Lobby() {
 
   useEffect(() => {
     fetchRoomState();
-    
+
     // Connect to Websocket
-    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomId);
+    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomCode);
 
     socket.onmessage = function(event) {
       const message = JSON.parse(event.data);
@@ -25,15 +25,15 @@ export default function Lobby() {
       }
     }
 
-  }, [roomId]);
+  }, [roomCode]);
 
   const fetchRoomState = async () => {
     try {
-      const data = await api.getRoomState(roomId);
+      const data = await api.getRoomState(roomCode);
       setRoom(data);
 
       if (data.status === 'IN_PROGRESS') {
-        navigate(preserveParams(`/game/${roomId}`));
+        navigate(preserveParams(`/game/${roomCode}`));
       }
     } catch (err) {
       setError(err.message);
@@ -44,7 +44,7 @@ export default function Lobby() {
     setError('');
     setLoading(true);
     try {
-      await api.startGame(roomId, playerId);
+      await api.startGame(roomCode, playerId);
       await fetchRoomState();
     } catch (err) {
       setError(err.message);
@@ -53,8 +53,8 @@ export default function Lobby() {
     }
   };
 
-  const copyRoomId = () => {
-    navigator.clipboard.writeText(roomId);
+  const copyRoomCode = () => {
+    navigator.clipboard.writeText(roomCode);
   };
 
   const handleDragStart = (index) => {
@@ -78,7 +78,7 @@ export default function Lobby() {
     const playerIds = reorderedPlayers.map(p => p.player_id);
 
     try {
-      await api.reorderPlayers(roomId, playerId, playerIds);
+      await api.reorderPlayers(roomCode, playerId, playerIds);
       setDraggedIndex(null);
     } catch (err) {
       setError(err.message);
@@ -107,12 +107,12 @@ export default function Lobby() {
         {error && <div className="error">{error}</div>}
 
         <div className="room-id-section">
-          <div className="label">Room ID:</div>
-          <div className="room-id">{roomId}</div>
-          <button onClick={copyRoomId} className="copy-button">
+          <div className="label">Room Code:</div>
+          <div className="room-id">{roomCode}</div>
+          <button onClick={copyRoomCode} className="copy-button">
             Copy
           </button>
-          <div className="hint">Share this ID with your friends</div>
+          <div className="hint">Share this code with your friends</div>
         </div>
 
         <div className="section">

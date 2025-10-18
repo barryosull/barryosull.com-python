@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import { playerStorage } from '../services/storage';
 
-export function useGameState(roomId) {
+export function useGameState(roomCode) {
   const [gameState, setGameState] = useState(null);
   const [room, setRoom] = useState(null);
   const [myRole, setMyRole] = useState(null);
@@ -18,12 +18,12 @@ export function useGameState(roomId) {
 
     try {
       const promises = [
-        api.getRoomState(roomId),
-        api.getGameState(roomId).catch(() => null)
+        api.getRoomState(roomCode),
+        api.getGameState(roomCode).catch(() => null)
       ];
 
       if (playerId && !roleFetchedRef.current) {
-        promises.push(api.getMyRole(roomId, playerId).catch(() => null));
+        promises.push(api.getMyRole(roomCode, playerId).catch(() => null));
       }
 
       const results = await Promise.all(promises);
@@ -46,13 +46,13 @@ export function useGameState(roomId) {
   };
 
   useEffect(() => {
-    if (!roomId) return;
+    if (!roomCode) return;
 
     roleFetchedRef.current = false;
     fetchGameState();
 
     // Connect to Websocket
-    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomId);
+    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomCode);
     socketRef.current = socket;
 
     socket.onmessage = function(event) {
@@ -61,7 +61,7 @@ export function useGameState(roomId) {
       if (message.type === 'game_state_updated') {
         fetchGameState();
         return;
-      } 
+      }
       if (message.type) {
         setNotification(message);
       }
@@ -72,7 +72,7 @@ export function useGameState(roomId) {
     };
 
     return cleanup_func;
-  }, [roomId]);
+  }, [roomCode]);
 
   const refresh = () => {
     fetchGameState();

@@ -3,6 +3,7 @@
 
 import sys
 from pathlib import Path
+
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -19,6 +20,7 @@ from src.application.commands.nominate_chancellor import NominateChancellorComma
 from src.domain.entities.policy_deck import PolicyDeck
 from src.domain.value_objects.policy import Policy, PolicyType
 from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
+from src.adapters.api.rest.file_system_code_repository import FileSystemCodeRepository
 from src.application.command_bus import CommandBus
 from src.application.commands.create_room import CreateRoomCommand
 from src.application.commands.join_room import JoinRoomCommand
@@ -37,8 +39,9 @@ PLAYER_NAMES = [
     "Julia",
 ]
 
-repository = FileSystemRoomRepository()
-command_bus = CommandBus(repository)
+room_repository = FileSystemRoomRepository()
+code_repository = FileSystemCodeRepository()
+command_bus = CommandBus(room_repository)
 
 
 def execute(command):
@@ -128,7 +131,7 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
                 policy_type=PolicyType.FASCIST
             ))    
         
-        room = repository.find_by_id(room_id)
+        room = room_repository.find_by_id(room_id)
         print(f"Game phase: {room.game_state.current_phase}")
 
         # Execute executive actions, but not the one from the last policy enactment
@@ -162,7 +165,7 @@ def play_rounds_and_enact_fascist_policies(rounds: int, room_id: UUID, player_id
                 ))
                 executed_ids.append(executed_id)
         
-        room = repository.find_by_id(room_id)
+        room = room_repository.find_by_id(room_id)
         president_id = room.game_state.president_id
 
 def main():
@@ -205,13 +208,15 @@ def main():
 
     play_rounds_and_enact_fascist_policies(args.rounds, room_id, player_ids);
 
-    room = repository.find_by_id(room_id)
+    room = room_repository.find_by_id(room_id)
     if room and room.game_state:
         print(f"President: {room.game_state.president_id}")
         print(f"Phase: {room.game_state.current_phase.value}")
 
+    code = code_repository.generate_code_for_room(room_id)
+
     # Open the game for testing
-    webbrowser.open(f"http://localhost:3000/test-multi-player.html?roomId={room_id}", new=2)
+    webbrowser.open(f"http://localhost:3000/test-multi-player.html?roomCode={code}", new=2)
 
 if __name__ == "__main__":
     main()

@@ -8,7 +8,7 @@ export default function HomePage() {
     const params = new URLSearchParams(window.location.search);
     return params.get('name') || '';
   });
-  const [roomId, setRoomId] = useState('');
+  const [roomCode, setRoomCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ export default function HomePage() {
       const result = await api.createRoom(playerName.trim());
       playerStorage.setPlayerId(result.player_id);
       playerStorage.setPlayerName(playerName.trim());
-      navigate(preserveParams(`/room/${result.room_id}`));
+      navigate(preserveParams(`/room/${result.room_code}`));
     } catch (err) {
       setError("Something went wrong");
     } finally {
@@ -44,17 +44,17 @@ export default function HomePage() {
       return;
     }
 
-    if (!roomId.trim()) {
-      setError('Please enter a room ID');
+    if (!roomCode.trim()) {
+      setError('Please enter a room code');
       return;
     }
 
     setLoading(true);
     try {
-      const result = await api.joinRoom(roomId.trim(), playerName.trim());
+      const result = await api.joinRoom(roomCode.trim(), playerName.trim());
       playerStorage.setPlayerId(result.player_id);
       playerStorage.setPlayerName(playerName.trim());
-      navigate(preserveParams(`/room/${roomId.trim()}`));
+      navigate(preserveParams(`/room/${roomCode.trim()}`));
     } catch (err) {
       setError("Something went wrong");
     } finally {
@@ -98,9 +98,9 @@ export default function HomePage() {
           <h2 className="subtitle">Join Existing Game</h2>
           <input
             type="text"
-            placeholder="Room ID"
-            value={roomId}
-            onChange={(e) => setRoomId(e.target.value)}
+            placeholder="Room Code"
+            value={roomCode}
+            onChange={(e) => setRoomCode(e.target.value)}
             disabled={loading}
           />
           <button

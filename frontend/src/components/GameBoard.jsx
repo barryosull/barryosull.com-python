@@ -17,9 +17,9 @@ import '../../assets/styles.css';
 import Toast from './Toast';
 
 export default function GameBoard() {
-  const { roomId } = useParams();
+  const { roomCode } = useParams();
   const navigate = useNavigate();
-  const { gameState, room, myRole, error, loading, refresh, notification, clearNotification } = useGameState(roomId);
+  const { gameState, room, myRole, error, loading, refresh, notification, clearNotification } = useGameState(roomCode);
   const myPlayerId = playerStorage.getPlayerId();
   const [showRoleOverlay, setShowRoleOverlay] = useState(false);
   const [autoCloseNotifications, setAutoCloseNotifications] = useState(false);
@@ -60,7 +60,7 @@ export default function GameBoard() {
 
   const handleNominate = async (chancellorId) => {
     try {
-      await api.nominateChancellor(roomId, myPlayerId, chancellorId);
+      await api.nominateChancellor(roomCode, myPlayerId, chancellorId);
       refresh();
     } catch (err) {
       console.error(err.message)
@@ -69,7 +69,7 @@ export default function GameBoard() {
 
   const handleVote = async (vote) => {
     try {
-      await api.castVote(roomId, myPlayerId, vote);
+      await api.castVote(roomCode, myPlayerId, vote);
       refresh();
     } catch (err) {
       console.error(err)
@@ -78,7 +78,7 @@ export default function GameBoard() {
 
   const handleDiscardPolicy = async (policyType) => {
     try {
-      await api.discardPolicy(roomId, myPlayerId, policyType);
+      await api.discardPolicy(roomCode, myPlayerId, policyType);
       refresh();
     } catch (err) {
       console.error(err.message)
@@ -87,7 +87,7 @@ export default function GameBoard() {
 
   const handleEnactPolicy = async (policyType) => {
     try {
-      await api.enactPolicy(roomId, myPlayerId, policyType);
+      await api.enactPolicy(roomCode, myPlayerId, policyType);
       refresh();
     } catch (err) {
       console.error(err.message)
@@ -96,7 +96,7 @@ export default function GameBoard() {
 
   const handleExecutiveAction = async (targetPlayerId) => {
     try {
-      const result = await api.useExecutiveAction(roomId, myPlayerId, targetPlayerId);
+      const result = await api.useExecutiveAction(roomCode, myPlayerId, targetPlayerId);
       refresh();
       return result;
     } catch (err) {
@@ -107,7 +107,7 @@ export default function GameBoard() {
 
   const handleVeto = async (approveVeto) => {
     try {
-      await api.veto(roomId, myPlayerId, approveVeto);
+      await api.veto(roomCode, myPlayerId, approveVeto);
       refresh();
     } catch (err) {
       console.error(err.message)
@@ -207,7 +207,7 @@ export default function GameBoard() {
     <div className="container">
       <div className="header">
         <h1 className="title">Secret Hitler</h1>
-        <div className="room-id">Room: {roomId}</div>
+        <div className="room-id">Room: {roomCode}</div>
       </div>
 
       <div className="game-board">
@@ -256,7 +256,7 @@ export default function GameBoard() {
 
       <RoleOverlay
         myRole={myRole}
-        roomId={roomId}
+        roomCode={roomCode}
         myPlayerId={myPlayerId}
         forceShow={showRoleOverlay}
         onClose={() => setShowRoleOverlay(false)}

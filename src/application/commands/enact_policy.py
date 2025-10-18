@@ -6,7 +6,7 @@ from src.domain.services.government_formation_service import GovernmentFormation
 from src.domain.services.policy_enactment_service import PolicyEnactmentService
 from src.domain.services.win_condition_service import WinConditionService
 from src.domain.value_objects.policy import PolicyType
-from src.ports.repository_port import RoomRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 
 @dataclass

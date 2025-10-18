@@ -28,8 +28,8 @@ export const api = {
     return handleResponse(response);
   },
 
-  async joinRoom(roomId, playerName) {
-    const response = await fetch(`${API_BASE}/rooms/${roomId}/join`, {
+  async joinRoom(roomCode, playerName) {
+    const response = await fetch(`${API_BASE}/rooms/${roomCode}/join`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player_name: playerName })
@@ -37,13 +37,13 @@ export const api = {
     return handleResponse(response);
   },
 
-  async getRoomState(roomId) {
-    const response = await fetch(`${API_BASE}/rooms/${roomId}`);
+  async getRoomState(roomCode) {
+    const response = await fetch(`${API_BASE}/rooms/${roomCode}`);
     return handleResponse(response);
   },
 
-  async startGame(roomId, playerId) {
-    const response = await fetch(`${API_BASE}/rooms/${roomId}/start`, {
+  async startGame(roomCode, playerId) {
+    const response = await fetch(`${API_BASE}/rooms/${roomCode}/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player_id: playerId })
@@ -51,8 +51,8 @@ export const api = {
     return handleResponse(response);
   },
 
-  async reorderPlayers(roomId, playerId, playerIds) {
-    const response = await fetch(`${API_BASE}/rooms/${roomId}/reorder-players`, {
+  async reorderPlayers(roomCode, playerId, playerIds) {
+    const response = await fetch(`${API_BASE}/rooms/${roomCode}/reorder-players`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -63,8 +63,8 @@ export const api = {
     return handleResponse(response);
   },
 
-  async nominateChancellor(roomId, playerId, chancellorId) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/nominate`, {
+  async nominateChancellor(roomCode, playerId, chancellorId) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/nominate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -75,8 +75,8 @@ export const api = {
     return handleResponse(response);
   },
 
-  async castVote(roomId, playerId, vote) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/vote`, {
+  async castVote(roomCode, playerId, vote) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/vote`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player_id: playerId, vote })
@@ -84,8 +84,8 @@ export const api = {
     return handleResponse(response);
   },
 
-  async discardPolicy(roomId, playerId, policyType) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/discard-policy`, {
+  async discardPolicy(roomCode, playerId, policyType) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/discard-policy`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player_id: playerId, policy_type: policyType })
@@ -93,8 +93,8 @@ export const api = {
     return handleResponse(response);
   },
 
-  async enactPolicy(roomId, playerId, policyType) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/enact-policy`, {
+  async enactPolicy(roomCode, playerId, policyType) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/enact-policy`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ player_id: playerId, policy_type: policyType })
@@ -102,25 +102,25 @@ export const api = {
     return handleResponse(response);
   },
 
-  async getGameState(roomId) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/state`);
+  async getGameState(roomCode) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/state`);
     return handleResponse(response);
   },
 
-  async getMyRole(roomId, playerId) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/my-role?player_id=${playerId}`);
+  async getMyRole(roomCode, playerId) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/my-role?player_id=${playerId}`);
     return handleResponse(response);
   },
 
-  async investigateLoyalty(roomId, playerId, targetPlayerId) {
+  async investigateLoyalty(roomCode, playerId, targetPlayerId) {
     const response = await fetch(
-      `${API_BASE}/games/${roomId}/investigate-loyalty?player_id=${playerId}&target_player_id=${targetPlayerId}`
+      `${API_BASE}/games/${roomCode}/investigate-loyalty?player_id=${playerId}&target_player_id=${targetPlayerId}`
     );
     return handleResponse(response);
   },
 
-  async useExecutiveAction(roomId, playerId, targetPlayerId = null) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/use-power`, {
+  async useExecutiveAction(roomCode, playerId, targetPlayerId = null) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/use-power`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -131,8 +131,8 @@ export const api = {
     return handleResponse(response);
   },
 
-  async veto(roomId, playerId, approveVeto) {
-    const response = await fetch(`${API_BASE}/games/${roomId}/veto`, {
+  async veto(roomCode, playerId, approveVeto) {
+    const response = await fetch(`${API_BASE}/games/${roomCode}/veto`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

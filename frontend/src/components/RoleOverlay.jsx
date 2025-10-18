@@ -3,7 +3,7 @@ import '../../assets/styles.css';
 
 const shownRoles = {};
 
-export default function RoleOverlay({ myRole, roomId, myPlayerId, forceShow = false, onClose }) {
+export default function RoleOverlay({ myRole, roomCode, myPlayerId, forceShow = false, onClose }) {
   const [showOverlay, setShowOverlay] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
 
@@ -15,7 +15,7 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId, forceShow = fa
   }, [forceShow]);
 
   useEffect(() => {
-    if (myRole && roomId && myPlayerId) {
+    if (myRole && roomCode && myPlayerId) {
       const urlParams = new URLSearchParams(window.location.search);
       const hideOverlay = urlParams.get('hide_overlay') === '1';
 
@@ -23,16 +23,16 @@ export default function RoleOverlay({ myRole, roomId, myPlayerId, forceShow = fa
         return;
       }
 
-      const roleShownKey = `${roomId}_${myPlayerId}`;
+      const roleShownKey = `${roomCode}_${myPlayerId}`;
       if (!shownRoles[roleShownKey]) {
         setShowOverlay(true);
         setIsFadingOut(false);
       }
     }
-  }, [myRole, roomId, myPlayerId]);
+  }, [myRole, roomCode, myPlayerId]);
 
   const handleClose = () => {
-    const roleShownKey = `${roomId}_${myPlayerId}`;
+    const roleShownKey = `${roomCode}_${myPlayerId}`;
     shownRoles[roleShownKey] = true;
     setIsFadingOut(true);
     setTimeout(() => {

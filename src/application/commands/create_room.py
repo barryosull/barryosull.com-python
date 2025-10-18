@@ -5,7 +5,7 @@ from uuid import UUID
 
 from src.domain.entities.game_room import GameRoom
 from src.domain.entities.player import Player
-from src.ports.repository_port import RoomRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 
 @dataclass
