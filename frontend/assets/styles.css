@@ -642,6 +642,7 @@ h1.title {
   margin: 5% 10%;
   height: 90%;
   width: 80%;
+  border-radius: 3%;
 }
 
 .liberal-card {
@@ -676,7 +677,7 @@ h1.title {
   width: 37%;
   height: 90%;
   margin: 5% auto;
-  background-color: #000;
+  background-color: #83110a;
   border-radius: 50%;
 }
 
