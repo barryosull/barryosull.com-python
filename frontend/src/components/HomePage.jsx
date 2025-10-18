@@ -65,13 +65,20 @@ export default function HomePage() {
   return (
     <div className="container lobby">
       <div className="card">
-        <div className="header">
-          <h1 className="title">Secret Hitler</h1>
+        <div className="logo"></div>
+
+        <div className="game-description">
+          Welcome to Secret Hitler! A deception game for 5 to 10 players.
+          This is an online version that can be played in person or remotely.<br/>
+          <a href="https://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf" target="__blank">
+            Find a refresher on the rules here
+          </a>
         </div>
 
         {error && <div className="error">{error}</div>}
 
-        <div>
+        <div className="name-input">
+          <h2 className="subtitle">Player Name</h2>
           <input
             type="text"
             placeholder="Your Name"

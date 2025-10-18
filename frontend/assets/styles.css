@@ -2,11 +2,11 @@
 
 html, body, #root {
   height: 100%;
+  background-color: #FBB969;
 }
 
 .container {
   min-height: 100vh;
-  background-color: #FBB969;
   font-family: "Germania One", system-ui;
   font-weight: 400;
   font-style: normal;
@@ -144,20 +144,30 @@ html, body, #root {
 
 /* Lobby Styles */
 
-.container.lobby {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #8e693b;
-}
-
 .lobby .card {
-  background-color: #FBB969;
-  border-radius: 8px;
   padding: 40px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.lobby .logo {
+  width: 70%;
+  margin: 0 auto 20px;
+  max-width: 500px;
+  aspect-ratio: 1200/838;
+  background-image: url("/assets/images/logo.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.game-description {
+  text-align: center;
+  color: #83110a;
+}
+
+.game-description a {
+  padding-top: 10px;
+  color: #2a4e6c;
 }
 
 .header {
@@ -180,6 +190,12 @@ h1.title {
   display: inline-block;
   padding: 6px 12px;
   border-radius: 12px;
+}
+
+.name-input {
+  padding-bottom: 20px;
+  margin: 20px 0px;
+  border-bottom: 4px solid #83110a;
 }
 
 .lobby .subtitle {

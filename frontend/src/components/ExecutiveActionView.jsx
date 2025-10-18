@@ -22,10 +22,6 @@ export default function ExecutiveActionView({
   const isPresident = gameState.president_id === myPlayerId;
   const hasPeekedPolicies = gameState.peeked_policies && gameState.peeked_policies.length > 0;
 
-  if (!isPresident || !shouldRender) {
-    return null;
-  }
-
   useEffect(() => {
     setShouldRender(true);
     setIsFadingOut(false);
@@ -111,6 +107,10 @@ export default function ExecutiveActionView({
         return 'Use your executive power';
     }
   };
+
+  if (!isPresident || !shouldRender) {
+    return null;
+  }
 
   return (
     <div className={`overlay ${isFadingOut ? 'fade-out' : 'fade-in'}`}>
