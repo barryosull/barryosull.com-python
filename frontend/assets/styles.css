@@ -69,7 +69,7 @@ html, body, #root {
   gap: 20px;
   justify-content: space-evenly;
   overflow-y: scroll;
-  padding: 135px 20px 110px;
+  padding: 110px 20px 110px;
   height: 100%;
 }
 
@@ -185,7 +185,6 @@ html, body, #root {
 h1.title {
   color: #fff;
   font-size: 32px;
-  margin-bottom: 10px;
   background-color: #83110a;
   display: inline-block;
   padding: 6px 12px;
@@ -996,6 +995,7 @@ ul.team-mates li.hitler {
   font-size: 14px;
   font-weight: bold;
   display: block;
+  margin-bottom: 5px;
 }
 
 .toggle-switch {

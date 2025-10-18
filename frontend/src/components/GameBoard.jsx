@@ -207,7 +207,6 @@ export default function GameBoard() {
     <div className="container">
       <div className="header">
         <h1 className="title">Secret Hitler</h1>
-        <div className="room-id">Room: {roomCode}</div>
       </div>
 
       <div className="game-board">
