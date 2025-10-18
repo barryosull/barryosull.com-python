@@ -64,7 +64,7 @@ export default function HomePage() {
 
   return (
     <div className="container lobby">
-      <div className="card">
+      <div className="home">
         <div className="logo"></div>
 
         <div className="game-description">

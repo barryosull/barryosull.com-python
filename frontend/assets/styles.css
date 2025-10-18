@@ -144,7 +144,14 @@ html, body, #root {
 
 /* Lobby Styles */
 
+.home {
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+}
+
 .lobby .card {
+  margin: 95px auto 0px;
   padding: 40px;
   max-width: 500px;
   width: 100%;
@@ -202,10 +209,6 @@ h1.title {
   font-size: 18px;
   margin-bottom: 15px;
 }
-  
-.lobby .section {
-    margin-bottom: 25px;
-}
 
 .lobby input {
   width: 100%;
@@ -251,26 +254,28 @@ h1.title {
   margin-bottom: 20px;
 }
 
-.lobby .room-id-section {
+.lobby .room-code-section {
   margin-bottom: 30px;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
+  text-align: center;
 }
 
 .lobby .label {
   color: #2a4e6c;
-  font-size: 14px;
+  font-size: 24px;
   margin-bottom: 8px;
 }
 
-.lobby .room-id {
-  color: #2596be;
+.lobby .room-code {
+  color: #83110a;
   font-size: 24px;
   margin-bottom: 20px;
 }
 
 .lobby .copy-button {
+  margin-top: 20px;
   padding: 8px 16px;
   font-size: 14px;
   border-radius: 4px;
@@ -294,10 +299,10 @@ h1.title {
 }
 
 .lobby .player-item {
-  color: #2a4e6c;
+  color: #fff;
   padding: 12px;
   margin-bottom: 8px;
-  background-color: #ffffff;
+  background-color: #cb6849;
   border-radius: 4px;
   display: flex;
   align-items: center;
