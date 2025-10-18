@@ -68,8 +68,10 @@ export default function HomePage() {
         <div className="logo"></div>
 
         <div className="game-description">
+          <p>
           Welcome to Secret Hitler! A deception game for 5 to 10 players.
           This is an online version that can be played in person or remotely.<br/>
+          </p>
           <a href="https://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf" target="__blank">
             Find a refresher on the rules here
           </a>
