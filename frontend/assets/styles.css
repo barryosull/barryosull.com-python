@@ -594,21 +594,26 @@ h1.title {
   position: relative;
   max-width: 1400px;
   margin: 0 auto;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .policy-track.liberal {
+  background-color: #2a4e6c;
   background-image: url("/assets/images/liberal-board.png");
 }
 
 .policy-track.fascist-5-to-6 {
+  background-color: #83110a;
   background-image: url("/assets/images/fascist-board-5-to-6-players.png");
 }
 
 .policy-track.fascist-7-to-8 {
+  background-color: #83110a;
   background-image: url("/assets/images/fascist-board-7-to-8-players.png");
 }
 
 .policy-track.fascist-9-to-10 {
+  background-color: #83110a;
   background-image: url("/assets/images/fascist-board-9-to-10-players.png");
 }
 
