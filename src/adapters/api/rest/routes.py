@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
 
-from src.adapters.api.rest.file_system_code_repository import FileSystemCodeRepository
+from src.adapters.persistence.file_system_code_repository import FileSystemCodeRepository
 from src.adapters.api.rest.response_factory import ResponseFactory
 from src.adapters.api.rest.room_manager import RoomManager
 from src.adapters.api.rest.schemas import (
@@ -26,7 +26,7 @@ from src.adapters.api.rest.schemas import (
     UseExecutiveActionRequest,
     VetoAgendaRequest,
 )
-from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
+from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
 from src.application.command_bus import CommandBus
 from src.application.commands.cast_vote import CastVoteCommand
 from src.application.commands.create_room import CreateRoomCommand

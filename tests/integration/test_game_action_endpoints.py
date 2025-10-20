@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 from src.adapters.api.main import app
 from src.adapters.api.rest.code_factory import CodeFactory
-from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.adapters.persistence.in_memory_room_repository import InMemoryRoomRepository
 from src.application.command_bus import CommandBus
 from src.domain.entities.game_room import GameRoom
 from src.domain.entities.game_state import GamePhase, GameState

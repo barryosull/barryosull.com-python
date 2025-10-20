@@ -19,8 +19,8 @@ from src.application.commands.enact_policy import EnactPolicyCommand
 from src.application.commands.nominate_chancellor import NominateChancellorCommand
 from src.domain.entities.policy_deck import PolicyDeck
 from src.domain.value_objects.policy import Policy, PolicyType
-from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
-from src.adapters.api.rest.file_system_code_repository import FileSystemCodeRepository
+from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
+from src.adapters.persistence.file_system_code_repository import FileSystemCodeRepository
 from src.application.command_bus import CommandBus
 from src.application.commands.create_room import CreateRoomCommand
 from src.application.commands.join_room import JoinRoomCommand

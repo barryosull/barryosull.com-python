@@ -12,8 +12,8 @@ from uuid import uuid4
 
 import pytest
 
-from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
+from src.adapters.persistence.in_memory_room_repository import InMemoryRoomRepository
+from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player

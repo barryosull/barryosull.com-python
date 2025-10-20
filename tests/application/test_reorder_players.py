@@ -2,7 +2,7 @@ from uuid import uuid4
 
 import pytest
 
-from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.adapters.persistence.in_memory_room_repository import InMemoryRoomRepository
 from src.application.command_bus import CommandBus
 from src.application.commands.reorder_players import ReorderPlayersCommand
 from src.domain.entities.game_room import GameRoom, RoomStatus

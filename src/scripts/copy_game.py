@@ -10,7 +10,7 @@ import webbrowser
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
+from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
 
 
 def main():
