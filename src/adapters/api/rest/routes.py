@@ -50,14 +50,6 @@ import os
 from src.ports.code_repository_port import CodeRepositoryPort
 from src.ports.room_repository_port import RoomRepositoryPort
 
-# Boot deps
-room_repository = FileSystemRoomRepository()
-
-command_bus = CommandBus(room_repository)
-room_manager = RoomManager()
-
-router = APIRouter(prefix="/api", tags=["rooms"])
-
 
 # Update messages
 GAME_STATE_UPDATED = {
@@ -65,20 +57,32 @@ GAME_STATE_UPDATED = {
 }
 
 
+# Dependency management
+room_manager = RoomManager()
+router = APIRouter(prefix="/api", tags=["rooms"])
+
+
+def make_db_connection() -> sqlite3.Connection:
+    return sqlite3.connect(os.environ["SQLITE_FILE"])
+
 def make_code_repository() -> CodeRepositoryPort:
-    connection = sqlite3.connect(os.environ["SQLITE_FILE"])
-    return SqliteCodeRepository(connection)
+    return SqliteCodeRepository(make_db_connection())
 
 
 def make_room_repository() -> RoomRepositoryPort:
-    connection = sqlite3.connect(os.environ["SQLITE_FILE"])
-    return SqliteRoomRepository(connection)
+    return SqliteRoomRepository(make_db_connection())
 
 
 def make_command_bus() -> CommandBus:
     return CommandBus(make_room_repository())
 
 
+# Prep DBs (bad and lazy, but good enough for this simple web app)
+SqliteCodeRepository(make_db_connection()).init_tables()
+SqliteRoomRepository(make_db_connection()).init_tables()
+
+
+# Helper methods
 def get_room_id_from_code(room_code: str) -> UUID:
     room_id = make_code_repository().find_room_by_code(room_code)
     if room_id is None:
@@ -96,6 +100,7 @@ def handle_value_error(e: ValueError) -> None:
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=error_msg)
 
 
+# Routes
 @router.websocket("/ws/{room_code}")
 async def websocket_endpoint(websocket: WebSocket, room_code: str):
     room_id = get_room_id_from_code(room_code)

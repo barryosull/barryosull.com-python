@@ -49,6 +49,7 @@ def repository(request):
     elif request.param == "sqlite":
         conn = sqlite3.connect(":memory:", check_same_thread=False)
         repo = SqliteRoomRepository(conn)
+        repo.init_tables()
         yield repo
         conn.close()
 

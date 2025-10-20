@@ -37,6 +37,7 @@ def repository(request):
             db_path = Path(tmpdir) / "test.db"
             conn = sqlite3.connect(str(db_path))
             repo = SqliteCodeRepository(conn)
+            repo.init_tables()
             yield repo
             conn.close()
 

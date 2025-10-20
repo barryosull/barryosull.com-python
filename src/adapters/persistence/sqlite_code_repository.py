@@ -9,9 +9,8 @@ from src.ports.code_repository_port import CodeRepositoryPort
 class SqliteCodeRepository(CodeRepositoryPort):
     def __init__(self, conn: sqlite3.Connection) -> None:
         self._conn = conn
-        self._init_database()
 
-    def _init_database(self) -> None:
+    def init_tables(self) -> None:
         cursor = self._conn.cursor()
         cursor.execute(
             """

@@ -10,9 +10,8 @@ from src.ports.room_repository_port import RoomRepositoryPort
 class SqliteRoomRepository(RoomRepositoryPort):
     def __init__(self, conn: sqlite3.Connection) -> None:
         self._conn = conn
-        self._init_database()
 
-    def _init_database(self) -> None:
+    def init_tables(self) -> None:
         cursor = self._conn.cursor()
         cursor.execute(
             """

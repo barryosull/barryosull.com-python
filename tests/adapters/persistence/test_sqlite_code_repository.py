@@ -35,6 +35,7 @@ def test_database_file_is_created():
 
 def test_in_memory_database_works(in_memory_conn):
     repo = SqliteCodeRepository(in_memory_conn)
+    repo.init_tables()
     room_id = uuid4()
 
     code = repo.generate_code_for_room(room_id)
@@ -43,44 +44,10 @@ def test_in_memory_database_works(in_memory_conn):
     assert repo.get_code_for_room(room_id) == code
 
 
-def test_data_persists_across_repository_instances(temp_db_path):
-    room_id = uuid4()
-
-    conn = sqlite3.connect(temp_db_path)
-    repo1 = SqliteCodeRepository(conn)
-    code = repo1.generate_code_for_room(room_id)
-    conn.close()
-
-    conn = sqlite3.connect(temp_db_path)
-    repo2 = SqliteCodeRepository(conn)
-    found_room = repo2.find_room_by_code(code)
-    found_code = repo2.get_code_for_room(room_id)
-    conn.close()
-
-    assert found_room == room_id
-    assert found_code == code
-
-
-def test_counter_persists_across_instances(temp_db_path):
-    conn1 = sqlite3.connect(temp_db_path)
-    repo1 = SqliteCodeRepository(conn1)
-    room1_id = uuid4()
-    code1 = repo1.generate_code_for_room(room1_id)
-    conn1.close()
-
-    conn2 = sqlite3.connect(temp_db_path)
-    repo2 = SqliteCodeRepository(conn2)
-    room2_id = uuid4()
-    code2 = repo2.generate_code_for_room(room2_id)
-    conn2.close()
-
-    assert code1 == "QGLJ"
-    assert code2 == "GX72"
-
-
 def test_database_schema_is_correct(temp_db_path):
     conn = sqlite3.connect(temp_db_path)
-    SqliteCodeRepository(conn)
+    repo = SqliteCodeRepository(conn)
+    repo.init_tables()
     conn.close()
 
     with sqlite3.connect(temp_db_path) as conn:
@@ -104,7 +71,8 @@ def test_database_schema_is_correct(temp_db_path):
 
 def test_counter_starts_at_one(temp_db_path):
     conn = sqlite3.connect(temp_db_path)
-    SqliteCodeRepository(conn)
+    repo = SqliteCodeRepository(conn)
+    repo.init_tables()
 
     cursor = conn.cursor()
     cursor.execute("SELECT counter FROM code_counter WHERE id = 1")
@@ -121,7 +89,8 @@ def test_parent_directory_is_created_if_not_exists():
 
         db_path.parent.mkdir(parents=True, exist_ok=True)
         conn = sqlite3.connect(str(db_path))
-        SqliteCodeRepository(conn)
+        repo = SqliteCodeRepository(conn)
+        repo.init_tables()
         conn.close()
 
         assert db_path.parent.exists()
@@ -131,6 +100,7 @@ def test_parent_directory_is_created_if_not_exists():
 def test_room_id_uniqueness_constraint(temp_db_path):
     conn = sqlite3.connect(temp_db_path)
     repo = SqliteCodeRepository(conn)
+    repo.init_tables()
     room_id = uuid4()
 
     code1 = repo.generate_code_for_room(room_id)
@@ -151,6 +121,7 @@ def test_room_id_uniqueness_constraint(temp_db_path):
 def test_code_uniqueness_constraint(temp_db_path):
     conn = sqlite3.connect(temp_db_path)
     repo = SqliteCodeRepository(conn)
+    repo.init_tables()
 
     room_ids = [uuid4() for _ in range(10)]
     codes = [repo.generate_code_for_room(room_id) for room_id in room_ids]

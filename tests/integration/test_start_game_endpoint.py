@@ -1,6 +1,5 @@
 from uuid import uuid4, UUID
 
-import pytest
 from fastapi.testclient import TestClient
 
 from src.adapters.api.main import app

@@ -6,10 +6,8 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.sqlite_room_repository import SqliteRoomRepository
-from src.domain.entities.game_room import GameRoom, RoomStatus
-from src.domain.entities.game_state import GamePhase, GameState
+from src.domain.entities.game_room import GameRoom
 from src.domain.entities.player import Player
-from src.domain.services.role_assignment_service import RoleAssignmentService
 
 
 @pytest.fixture
@@ -39,6 +37,8 @@ def test_database_file_is_created():
 
 def test_in_memory_database_works(in_memory_conn):
     repo = SqliteRoomRepository(in_memory_conn)
+    repo.init_tables()
+
     room = GameRoom()
     player = Player(uuid4(), "Alice")
     room.add_player(player)
@@ -54,7 +54,8 @@ def test_in_memory_database_works(in_memory_conn):
 
 def test_database_schema_is_correct(temp_db_path):
     conn = sqlite3.connect(temp_db_path)
-    SqliteRoomRepository(conn)
+    repo = SqliteRoomRepository(conn)
+    repo.init_tables()
     conn.close()
 
     with sqlite3.connect(temp_db_path) as conn:
@@ -73,7 +74,8 @@ def test_database_schema_is_correct(temp_db_path):
 
 def test_corrupted_data_is_handled_gracefully(in_memory_conn):
     repo = SqliteRoomRepository(in_memory_conn)
-
+    repo.init_tables()
+    
     cursor = in_memory_conn.cursor()
     cursor.execute(
         "INSERT INTO rooms (room_id, room_data) VALUES (?, ?)",
