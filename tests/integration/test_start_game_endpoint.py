@@ -47,9 +47,13 @@ class InMemoryCodeRepository(CodeRepositoryPort):
         return self.room_to_code.get(room_id_str)
 
 
+code_repository = InMemoryCodeRepository()
+def mock_make_code_repository():
+    return code_repository
+
+
 def test_start_game_success(monkeypatch):
     repository = InMemoryRoomRepository()
-    code_repository = InMemoryCodeRepository()
 
     room = GameRoom()
     creator_id = uuid4()
@@ -63,9 +67,9 @@ def test_start_game_success(monkeypatch):
 
     import src.adapters.api.rest.routes as routes_module
 
-    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "room_repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "code_repository", code_repository)
+    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
 
     response = client.post(
         f"/api/rooms/{room_code}/start", json={"player_id": str(creator_id)}
@@ -80,10 +84,9 @@ def test_start_game_success(monkeypatch):
 
 def test_start_game_not_creator(monkeypatch):
     repository = InMemoryRoomRepository()
-    code_repository = InMemoryCodeRepository()
     import src.adapters.api.rest.routes as routes_module
 
-    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "room_repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
 
     room = GameRoom()
@@ -99,8 +102,8 @@ def test_start_game_not_creator(monkeypatch):
 
     import src.adapters.api.rest.routes as routes_module
 
-    monkeypatch.setattr(routes_module, "repository", repository)
-    monkeypatch.setattr(routes_module, "code_repository", code_repository)
+    monkeypatch.setattr(routes_module, "room_repository", repository)
+    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
 
     response = client.post(
         f"/api/rooms/{room_code}/start", json={"player_id": str(other_player_id)}
@@ -112,12 +115,11 @@ def test_start_game_not_creator(monkeypatch):
 
 def test_start_game_not_enough_players(monkeypatch):
     repository = InMemoryRoomRepository()
-    code_repository = InMemoryCodeRepository()
     import src.adapters.api.rest.routes as routes_module
 
-    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "room_repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "code_repository", code_repository)
+    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
 
     room = GameRoom()
     creator_id = uuid4()
@@ -139,12 +141,11 @@ def test_start_game_not_enough_players(monkeypatch):
 
 def test_start_game_room_not_found(monkeypatch):
     repository = InMemoryRoomRepository()
-    code_repository = InMemoryCodeRepository()
     import src.adapters.api.rest.routes as routes_module
 
-    monkeypatch.setattr(routes_module, "repository", repository)
+    monkeypatch.setattr(routes_module, "room_repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "code_repository", code_repository)
+    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
 
     fake_room_code = "FAKE"
     fake_player_id = uuid4()

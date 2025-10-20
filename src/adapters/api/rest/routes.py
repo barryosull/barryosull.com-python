@@ -49,8 +49,6 @@ import os
 from src.ports.code_repository_port import CodeRepositoryPort
 
 # Boot deps
-connection = sqlite3.connect(os.environ["SQLITE_FILE"])
-code_repository = SqliteCodeRepository(connection)
 room_repository = FileSystemRoomRepository()
 
 command_bus = CommandBus(room_repository)

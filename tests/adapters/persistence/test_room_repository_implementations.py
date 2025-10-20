@@ -6,6 +6,7 @@ to the interface contract. Tests are run against all implementations using
 parametrized fixtures.
 """
 
+import sqlite3
 import tempfile
 from pathlib import Path
 from uuid import uuid4
@@ -13,7 +14,10 @@ from uuid import uuid4
 import pytest
 
 from src.adapters.persistence.in_memory_room_repository import InMemoryRoomRepository
-from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
+from src.adapters.persistence.file_system_room_repository import (
+    FileSystemRoomRepository,
+)
+from src.adapters.persistence.sqlite_room_repository import SqliteRoomRepository
 from src.domain.entities.game_room import GameRoom, RoomStatus
 from src.domain.entities.game_state import GamePhase, GameState
 from src.domain.entities.player import Player
@@ -24,6 +28,7 @@ from src.domain.services.role_assignment_service import RoleAssignmentService
     params=[
         pytest.param("in_memory", id="InMemoryRoomRepository"),
         pytest.param("file_system", id="FileSystemRoomRepository"),
+        pytest.param("sqlite", id="SqliteRoomRepository"),
     ]
 )
 def repository(request):
@@ -40,6 +45,12 @@ def repository(request):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = FileSystemRoomRepository(base_path=tmpdir)
             yield repo
+
+    elif request.param == "sqlite":
+        conn = sqlite3.connect(":memory:", check_same_thread=False)
+        repo = SqliteRoomRepository(conn)
+        yield repo
+        conn.close()
 
 
 def test_save_and_find_by_id(repository):
