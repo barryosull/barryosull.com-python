@@ -1,3 +1,4 @@
+import sqlite3
 import tempfile
 from pathlib import Path
 from uuid import uuid4
@@ -9,10 +10,12 @@ from src.adapters.persistence.file_system_code_repository import (
 )
 from src.adapters.persistence.sqlite_code_repository import SqliteCodeRepository
 
+
 @pytest.fixture
 def temp_dir():
     with tempfile.TemporaryDirectory() as tmpdir:
         yield tmpdir
+
 
 @pytest.fixture(
     params=[
@@ -32,8 +35,10 @@ def repository(request):
     elif request.param == "sqlite":
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "test.db"
-            repo = SqliteCodeRepository(db_path=str(db_path))
+            conn = sqlite3.connect(str(db_path))
+            repo = SqliteCodeRepository(conn)
             yield repo
+            conn.close()
 
 
 def test_generate_code_for_room_creates_valid_code(repository):
