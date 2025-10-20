@@ -1,7 +1,7 @@
 
 import pytest
 
-from src.domain.value_objects.policy import Policy, PolicyType
+from backend.domain.value_objects.policy import Policy, PolicyType
 
 
 def test_policy_creation_liberal():

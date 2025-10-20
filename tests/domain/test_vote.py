@@ -1,5 +1,5 @@
 
-from src.domain.value_objects.vote import Vote, VoteChoice
+from backend.domain.value_objects.vote import Vote, VoteChoice
 
 
 def test_vote_ja_creation():

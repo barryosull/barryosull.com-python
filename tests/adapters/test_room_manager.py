@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock, Mock
 from uuid import UUID, uuid4
 import pytest
-from src.adapters.api.rest.room_manager import RoomManager
+from backend.adapters.api.rest.room_manager import RoomManager
 
 
 @pytest.fixture

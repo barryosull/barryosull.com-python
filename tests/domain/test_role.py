@@ -1,7 +1,7 @@
 
 import pytest
 
-from src.domain.value_objects.role import Role, Team
+from backend.domain.value_objects.role import Role, Team
 
 
 def test_role_liberal_creation():

@@ -1,8 +1,8 @@
 from uuid import uuid4
 
-from src.domain.entities.game_state import GameState
-from src.domain.services.win_condition_service import WinConditionService
-from src.domain.value_objects.role import Role, Team
+from backend.domain.entities.game_state import GameState
+from backend.domain.services.win_condition_service import WinConditionService
+from backend.domain.value_objects.role import Role, Team
 
 
 def test_check_liberal_victory_5_policies():

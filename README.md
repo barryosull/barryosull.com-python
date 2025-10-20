@@ -21,7 +21,7 @@ python3 -m venv venv
 ./venv/bin/pytest tests/ --cov=src --cov-report=html
 
 # Run web server
-./venv/bin/python -m uvicorn src.adapters.api.main:app --reload
+./venv/bin/python -m uvicorn backend.adapters.api.main:app --port=8000 --reload
 
 # Format code
 ./venv/bin/black src/ tests/

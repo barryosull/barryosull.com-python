@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from src.domain.entities.game_state import GamePhase, GameState
+from backend.domain.entities.game_state import GamePhase, GameState
 
 
 def test_move_to_nomination_phase():

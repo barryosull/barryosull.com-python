@@ -1,9 +1,9 @@
 
 import pytest
 
-from src.domain.entities.game_room import GameRoom, RoomStatus
-from src.domain.entities.game_state import GameState
-from src.domain.entities.player import Player
+from backend.domain.entities.game_room import GameRoom, RoomStatus
+from backend.domain.entities.game_state import GameState
+from backend.domain.entities.player import Player
 
 
 def test_game_room_creation():

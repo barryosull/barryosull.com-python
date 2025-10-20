@@ -2,12 +2,12 @@ from uuid import uuid4
 
 import pytest
 
-from src.domain.entities.game_state import GameState
-from src.domain.entities.player import Player
-from src.domain.services.government_formation_service import (
+from backend.domain.entities.game_state import GameState
+from backend.domain.entities.player import Player
+from backend.domain.services.government_formation_service import (
     GovernmentFormationService,
 )
-from src.domain.value_objects.role import Role
+from backend.domain.value_objects.role import Role
 
 
 def test_can_nominate_chancellor_valid():

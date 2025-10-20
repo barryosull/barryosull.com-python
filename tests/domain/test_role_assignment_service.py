@@ -2,8 +2,8 @@ from uuid import uuid4
 
 import pytest
 
-from src.domain.services.role_assignment_service import RoleAssignmentService
-from src.domain.value_objects.role import Role
+from backend.domain.services.role_assignment_service import RoleAssignmentService
+from backend.domain.value_objects.role import Role
 
 
 def test_assign_roles_5_players():

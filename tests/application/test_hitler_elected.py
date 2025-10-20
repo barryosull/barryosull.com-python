@@ -1,12 +1,12 @@
 from uuid import uuid4
 
-from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from src.application.command_bus import CommandBus
-from src.application.commands.cast_vote import CastVoteCommand
-from src.domain.entities.game_room import GameRoom, RoomStatus
-from src.domain.entities.game_state import GamePhase, GameState
-from src.domain.entities.player import Player
-from src.domain.value_objects.role import Role
+from backend.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from backend.application.command_bus import CommandBus
+from backend.application.commands.cast_vote import CastVoteCommand
+from backend.domain.entities.game_room import GameRoom, RoomStatus
+from backend.domain.entities.game_state import GamePhase, GameState
+from backend.domain.entities.player import Player
+from backend.domain.value_objects.role import Role
 
 
 def test_hitler_elected_after_3_fascist_policies_ends_game():

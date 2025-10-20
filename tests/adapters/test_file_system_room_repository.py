@@ -4,11 +4,11 @@ from uuid import uuid4
 
 import pytest
 
-from src.adapters.persistence.file_system_repository import FileSystemRoomRepository
-from src.domain.entities.game_room import GameRoom, RoomStatus
-from src.domain.entities.game_state import GamePhase, GameState
-from src.domain.entities.player import Player
-from src.domain.services.role_assignment_service import RoleAssignmentService
+from backend.adapters.persistence.file_system_repository import FileSystemRoomRepository
+from backend.domain.entities.game_room import GameRoom, RoomStatus
+from backend.domain.entities.game_state import GamePhase, GameState
+from backend.domain.entities.player import Player
+from backend.domain.services.role_assignment_service import RoleAssignmentService
 
 
 @pytest.fixture

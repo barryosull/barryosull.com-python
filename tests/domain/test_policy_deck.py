@@ -1,8 +1,8 @@
 
 import pytest
 
-from src.domain.entities.policy_deck import PolicyDeck
-from src.domain.value_objects.policy import Policy, PolicyType
+from backend.domain.entities.policy_deck import PolicyDeck
+from backend.domain.value_objects.policy import Policy, PolicyType
 
 
 def test_create_initial_deck():
