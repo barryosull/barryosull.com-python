@@ -28,6 +28,7 @@ from src.adapters.api.rest.schemas import (
 )
 from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
 from src.adapters.persistence.sqlite_code_repository import SqliteCodeRepository
+from src.adapters.persistence.sqlite_room_repository import SqliteRoomRepository
 from src.application.command_bus import CommandBus
 from src.application.commands.cast_vote import CastVoteCommand
 from src.application.commands.create_room import CreateRoomCommand
@@ -47,6 +48,7 @@ from src.domain.value_objects.policy import PolicyType
 import os
 
 from src.ports.code_repository_port import CodeRepositoryPort
+from src.ports.room_repository_port import RoomRepositoryPort
 
 # Boot deps
 room_repository = FileSystemRoomRepository()
@@ -62,9 +64,19 @@ GAME_STATE_UPDATED = {
     'type': 'game_state_updated'
 }
 
+
 def make_code_repository() -> CodeRepositoryPort:
     connection = sqlite3.connect(os.environ["SQLITE_FILE"])
     return SqliteCodeRepository(connection)
+
+
+def make_room_repository() -> RoomRepositoryPort:
+    connection = sqlite3.connect(os.environ["SQLITE_FILE"])
+    return SqliteRoomRepository(connection)
+
+
+def make_command_bus() -> CommandBus:
+    return CommandBus(make_room_repository())
 
 
 def get_room_id_from_code(room_code: str) -> UUID:
@@ -114,7 +126,7 @@ def health() -> dict[str, str]:
 async def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
     try:
         command = CreateRoomCommand(player_name=request.player_name)
-        result = command_bus.execute(command)
+        result = make_command_bus().execute(command)
         room_code = make_code_repository().generate_code_for_room(result.room_id)
         return CreateRoomResponse(
             room_id=result.room_id,
@@ -135,7 +147,7 @@ async def join_room(room_code: str, request: JoinRoomRequest) -> JoinRoomRespons
     room_id = get_room_id_from_code(room_code)
     try:
         command = JoinRoomCommand(room_id=room_id, player_name=request.player_name)
-        result = command_bus.execute(command)
+        result = make_command_bus().execute(command)
 
         return JoinRoomResponse(player_id=result.player_id)
     except ValueError as e:
@@ -157,7 +169,7 @@ async def reorder_players(room_code: str, request: ReorderPlayersRequest) -> Non
             requester_id=request.player_id,
             player_ids=request.player_ids,
         )
-        command_bus.execute(command)
+        make_command_bus().execute(command)
     except ValueError as e:
         handle_value_error(e)
     finally:
@@ -173,7 +185,7 @@ async def reorder_players(room_code: str, request: ReorderPlayersRequest) -> Non
 def get_room_state(room_code: str) -> RoomStateResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        handler = GetRoomStateHandler(room_repository)
+        handler = GetRoomStateHandler(make_room_repository())
         query = GetRoomStateQuery(room_id=room_id)
         result = handler.handle(query)
 
@@ -191,7 +203,7 @@ async def start_game(room_code: str, request: StartGameRequest) -> None:
     room_id = get_room_id_from_code(room_code)
     try:
         command = StartGameCommand(room_id=room_id, requester_id=request.player_id)
-        command_bus.execute(command)
+        make_command_bus().execute(command)
     except ValueError as e:
         handle_value_error(e)
     finally:
@@ -211,7 +223,7 @@ async def nominate_chancellor(room_code: str, request: NominateChancellorRequest
             nominating_player_id=request.player_id,
             chancellor_id=request.chancellor_id,
         )
-        command_bus.execute(command)
+        make_command_bus().execute(command)
     except ValueError as e:
         handle_value_error(e)
     finally:
@@ -229,7 +241,7 @@ async def cast_vote(room_code: str, request: CastVoteRequest) -> None:
         command = CastVoteCommand(
             room_id=room_id, player_id=request.player_id, vote=request.vote
         )
-        result = command_bus.execute(command)
+        result = make_command_bus().execute(command)
         if result is not None:
             await room_manager.broadcast(room_id, result)
     except ValueError as e:
@@ -251,7 +263,7 @@ async def discard_policy(room_code: str, request: DiscardPolicyRequest) -> None:
             player_id=request.player_id,
             policy_type=PolicyType(request.policy_type),
         )
-        command_bus.execute(command)
+        make_command_bus().execute(command)
     except ValueError as e:
         handle_value_error(e)
     finally:
@@ -271,7 +283,7 @@ async def enact_policy(room_code: str, request: EnactPolicyRequest) -> None:
             player_id=request.player_id,
             policy_type=PolicyType(request.policy_type),
         )
-        command_bus.execute(command)
+        make_command_bus().execute(command)
         enacted_message = {
             'type': 'policy_enacted',
             'policy_type': request.policy_type,
@@ -292,7 +304,7 @@ async def enact_policy(room_code: str, request: EnactPolicyRequest) -> None:
 def get_game_state(room_code: str) -> GameStateResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        room = room_repository.find_by_id(room_id)
+        room = make_room_repository().find_by_id(room_id)
         if not room:
             raise ValueError(f"Room {room_id} not found")
 
@@ -310,7 +322,7 @@ def get_game_state(room_code: str) -> GameStateResponse:
 def get_my_role(room_code: str, player_id: UUID) -> RoleResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        room = room_repository.find_by_id(room_id)
+        room = make_room_repository().find_by_id(room_id)
         if not room:
             raise ValueError(f"Room {room_id} not found")
 
@@ -328,7 +340,7 @@ def get_my_role(room_code: str, player_id: UUID) -> RoleResponse:
 def investigate_loyalty(room_code: str, player_id: UUID, target_player_id: UUID) -> RoleResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        room = room_repository.find_by_id(room_id)
+        room = make_room_repository().find_by_id(room_id)
         if not room:
             raise ValueError(f"Room {room_id} not found")
 
@@ -351,7 +363,7 @@ async def use_executive_power(room_code: str, request: UseExecutiveActionRequest
             player_id=request.player_id,
             target_player_id=request.target_player_id,
         )
-        result = command_bus.execute(command)
+        result = make_command_bus().execute(command)
 
         await room_manager.broadcast(room_id, result)
 

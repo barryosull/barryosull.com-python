@@ -61,14 +61,29 @@ def start_game_for_room(room: GameRoom) -> None:
     )
     room.start_game(game_state)
 
+
+# Deps and dep injection
+room_repository = InMemoryRoomRepository()
 code_repository = InMemoryCodeRepository()
-def mock_make_code_repository():
-    return code_repository
+
+def monkeypatch_deps(monkeypatch):
+    import src.adapters.api.rest.routes as routes_module
+
+    def mock_make_code_repository():
+        return code_repository
+    
+    def mock_make_room_repository():
+        return room_repository
+    
+    def make_command_bus():
+        return CommandBus(room_repository)
+
+    monkeypatch.setattr(routes_module, "make_room_repository", mock_make_room_repository)
+    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch.setattr(routes_module, "make_command_bus", make_command_bus)
 
 
 def test_nominate_chancellor_success(monkeypatch):
-    room_repository = InMemoryRoomRepository()
-    
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
@@ -82,11 +97,7 @@ def test_nominate_chancellor_success(monkeypatch):
     president_id = room.game_state.president_id
     chancellor_id = [pid for pid in player_ids if pid != president_id][0]
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", room_repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(room_repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.post(
         f"/api/games/{room_code}/nominate",
@@ -100,8 +111,6 @@ def test_nominate_chancellor_success(monkeypatch):
 
 
 def test_nominate_chancellor_not_president(monkeypatch):
-    repository = InMemoryRoomRepository()
-    
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
@@ -109,18 +118,14 @@ def test_nominate_chancellor_not_president(monkeypatch):
         room.add_player(Player(player_id, f"Player{i}"))
 
     start_game_for_room(room)
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
     president_id = room.game_state.president_id
     other_player_id = [pid for pid in player_ids if pid != president_id][0]
     chancellor_id = [pid for pid in player_ids if pid not in [president_id, other_player_id]][0]
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.post(
         f"/api/games/{room_code}/nominate",
@@ -131,8 +136,6 @@ def test_nominate_chancellor_not_president(monkeypatch):
 
 
 def test_cast_vote_success(monkeypatch):
-    repository = InMemoryRoomRepository()
-    
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
@@ -144,14 +147,10 @@ def test_cast_vote_success(monkeypatch):
     chancellor_id = [pid for pid in player_ids if pid != president_id][0]
     room.game_state.nominated_chancellor_id = chancellor_id
     room.game_state.current_phase = GamePhase.ELECTION
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     for player_id in player_ids:
         if player_id == president_id:
@@ -164,8 +163,6 @@ def test_cast_vote_success(monkeypatch):
 
 
 def test_discard_policy_success(monkeypatch):
-    repository = InMemoryRoomRepository()
-
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
@@ -185,16 +182,12 @@ def test_discard_policy_success(monkeypatch):
     room.game_state.current_phase = GamePhase.LEGISLATIVE_PRESIDENT
     room.game_state.president_policies = room.game_state.policy_deck.draw(3)
 
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
     policy_type = room.game_state.president_policies[0].type.value
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.post(
         f"/api/games/{room_code}/discard-policy",
@@ -205,8 +198,6 @@ def test_discard_policy_success(monkeypatch):
 
 
 def test_enact_policy_success(monkeypatch):
-    repository = InMemoryRoomRepository()
-    
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
@@ -230,16 +221,12 @@ def test_enact_policy_success(monkeypatch):
     room.game_state.chancellor_policies = [p for p in room.game_state.president_policies if p is not policy_to_discard]
     room.game_state.current_phase = GamePhase.LEGISLATIVE_CHANCELLOR
 
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
     policy_type = room.game_state.chancellor_policies[0].type.value
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.post(
         f"/api/games/{room_code}/enact-policy",
@@ -250,7 +237,7 @@ def test_enact_policy_success(monkeypatch):
 
 
 def test_get_game_state_success(monkeypatch):
-    repository = InMemoryRoomRepository()
+    
     
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
@@ -259,14 +246,10 @@ def test_get_game_state_success(monkeypatch):
         room.add_player(Player(player_id, f"Player{i}"))
 
     start_game_for_room(room)
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(f"/api/games/{room_code}/state")
 
@@ -279,22 +262,16 @@ def test_get_game_state_success(monkeypatch):
 
 
 def test_get_game_state_not_started(monkeypatch):
-    repository = InMemoryRoomRepository()
-
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
     for i, player_id in enumerate(player_ids):
         room.add_player(Player(player_id, f"Player{i}"))
 
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(f"/api/games/{room_code}/state")
 
@@ -303,8 +280,6 @@ def test_get_game_state_not_started(monkeypatch):
 
 
 def test_get_my_role_success(monkeypatch):
-    repository = InMemoryRoomRepository() 
-
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
@@ -312,14 +287,10 @@ def test_get_my_role_success(monkeypatch):
         room.add_player(Player(player_id, f"Player{i}"))
 
     start_game_for_room(room)
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(
         f"/api/games/{room_code}/my-role", params={"player_id": str(player_ids[0])}
@@ -334,22 +305,16 @@ def test_get_my_role_success(monkeypatch):
 
 
 def test_get_my_role_not_started(monkeypatch):
-    repository = InMemoryRoomRepository()
-
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
     for i, player_id in enumerate(player_ids):
         room.add_player(Player(player_id, f"Player{i}"))
 
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(
         f"/api/games/{room_code}/my-role", params={"player_id": str(player_ids[0])}
@@ -360,10 +325,8 @@ def test_get_my_role_not_started(monkeypatch):
 
 
 def test_get_my_role_includes_teammate_for_small_games(monkeypatch):
-    from src.domain.value_objects.role import Role, Team
+    from src.domain.value_objects.role import  Team
 
-    repository = InMemoryRoomRepository()
-    
     room = GameRoom()
     player_ids = [uuid4() for _ in range(5)]
 
@@ -383,14 +346,10 @@ def test_get_my_role_includes_teammate_for_small_games(monkeypatch):
     assert hitler_id is not None, f"Hitler not found in role assignments"
     assert fascist_id is not None, f"Fascist not found in role assignments"
 
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     fascist_response = client.get(
         f"/api/games/{room_code}/my-role", params={"player_id": str(fascist_id)}
@@ -418,9 +377,7 @@ def test_get_my_role_includes_teammate_for_small_games(monkeypatch):
 
 
 def test_get_my_role_fascists_see_teammates_in_large_games(monkeypatch):
-    from src.domain.value_objects.role import Role, Team
-
-    repository = InMemoryRoomRepository() 
+    from src.domain.value_objects.role import Team
 
     room = GameRoom()
     player_ids = [uuid4() for _ in range(7)]
@@ -439,14 +396,10 @@ def test_get_my_role_fascists_see_teammates_in_large_games(monkeypatch):
             else:
                 fascist_ids.append(player_id)
 
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     fascist_response = client.get(
         f"/api/games/{room_code}/my-role", params={"player_id": str(fascist_ids[0])}
@@ -480,8 +433,6 @@ def test_investigate_loyalty_success(monkeypatch):
     from src.domain.entities.game_state import GamePhase
     from src.domain.value_objects.role import Role, Team
 
-    repository = InMemoryRoomRepository() 
-
     room = GameRoom()
     player_ids = [uuid4() for _ in range(7)]
 
@@ -496,14 +447,10 @@ def test_investigate_loyalty_success(monkeypatch):
         player_ids[1]: Role(team=Team.LIBERAL, is_hitler=False),
     }
     room.game_state.president_id = player_ids[0]
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(
         f"/api/games/{room_code}/investigate-loyalty",
@@ -520,8 +467,6 @@ def test_investigate_loyalty_not_president(monkeypatch):
     from src.domain.entities.game_state import GamePhase
     from src.domain.value_objects.role import Role, Team
 
-    repository = InMemoryRoomRepository()
-
     room = GameRoom()
     player_ids = [uuid4() for _ in range(7)]
 
@@ -536,14 +481,10 @@ def test_investigate_loyalty_not_president(monkeypatch):
         player_ids[1]: Role(team=Team.LIBERAL, is_hitler=False),
     }
     room.game_state.president_id = player_ids[0]
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(
         f"/api/games/{room_code}/investigate-loyalty",
@@ -557,8 +498,6 @@ def test_investigate_loyalty_not_president(monkeypatch):
 def test_get_game_state_includes_presidential_power(monkeypatch):
     from src.domain.entities.game_state import GamePhase
 
-    repository = InMemoryRoomRepository()
-
     room = GameRoom()
     player_ids = [uuid4() for _ in range(7)]
 
@@ -568,14 +507,10 @@ def test_get_game_state_includes_presidential_power(monkeypatch):
     start_game_for_room(room)
     room.game_state.current_phase = GamePhase.EXECUTIVE_ACTION
     room.game_state.fascist_policies = 2
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(f"/api/games/{room_code}/state")
 
@@ -588,8 +523,6 @@ def test_get_game_state_includes_presidential_power(monkeypatch):
 def test_investigate_loyalty_cannot_investigate_self(monkeypatch):
     from src.domain.entities.game_state import GamePhase
     from src.domain.value_objects.role import Role, Team
-
-    repository = InMemoryRoomRepository()
 
     room = GameRoom()
     player_ids = [uuid4() for _ in range(7)]
@@ -604,14 +537,10 @@ def test_investigate_loyalty_cannot_investigate_self(monkeypatch):
         player_ids[0]: Role(team=Team.FASCIST, is_hitler=False),
     }
     room.game_state.president_id = player_ids[0]
-    repository.save(room)
+    room_repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import src.adapters.api.rest.routes as routes_module
-
-    monkeypatch.setattr(routes_module, "room_repository", repository)
-    monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
-    monkeypatch.setattr(routes_module, "make_code_repository", mock_make_code_repository)
+    monkeypatch_deps(monkeypatch)
 
     response = client.get(
         f"/api/games/{room_code}/investigate-loyalty",
