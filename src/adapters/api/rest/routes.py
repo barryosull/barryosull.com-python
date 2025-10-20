@@ -1,10 +1,10 @@
 """REST API routes for game room management."""
 
+import sqlite3
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
 
-from src.adapters.persistence.file_system_code_repository import FileSystemCodeRepository
 from src.adapters.api.rest.response_factory import ResponseFactory
 from src.adapters.api.rest.room_manager import RoomManager
 from src.adapters.api.rest.schemas import (
@@ -27,6 +27,7 @@ from src.adapters.api.rest.schemas import (
     VetoAgendaRequest,
 )
 from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
+from src.adapters.persistence.sqlite_code_repository import SqliteCodeRepository
 from src.application.command_bus import CommandBus
 from src.application.commands.cast_vote import CastVoteCommand
 from src.application.commands.create_room import CreateRoomCommand
@@ -42,27 +43,34 @@ from src.application.queries.get_room_state import (
     GetRoomStateHandler,
     GetRoomStateQuery,
 )
-from src.domain.entities.game_state import GamePhase
 from src.domain.value_objects.policy import PolicyType
+import os
 
+from src.ports.code_repository_port import CodeRepositoryPort
 
-repository = FileSystemRoomRepository()
-command_bus = CommandBus(repository)
-code_repository = FileSystemCodeRepository()
+# Boot deps
+connection = sqlite3.connect(os.environ["SQLITE_FILE"])
+code_repository = SqliteCodeRepository(connection)
+room_repository = FileSystemRoomRepository()
+
+command_bus = CommandBus(room_repository)
+room_manager = RoomManager()
+
+router = APIRouter(prefix="/api", tags=["rooms"])
+
 
 # Update messages
 GAME_STATE_UPDATED = {
     'type': 'game_state_updated'
 }
 
-# Create router
-router = APIRouter(prefix="/api", tags=["rooms"])
-
-room_manager = RoomManager()
+def make_code_repository() -> CodeRepositoryPort:
+    connection = sqlite3.connect(os.environ["SQLITE_FILE"])
+    return SqliteCodeRepository(connection)
 
 
 def get_room_id_from_code(room_code: str) -> UUID:
-    room_id = code_repository.find_room_by_code(room_code)
+    room_id = make_code_repository().find_room_by_code(room_code)
     if room_id is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -109,7 +117,7 @@ async def create_room(request: CreateRoomRequest) -> CreateRoomResponse:
     try:
         command = CreateRoomCommand(player_name=request.player_name)
         result = command_bus.execute(command)
-        room_code = code_repository.generate_code_for_room(result.room_id)
+        room_code = make_code_repository().generate_code_for_room(result.room_id)
         return CreateRoomResponse(
             room_id=result.room_id,
             player_id=result.player_id,
@@ -167,7 +175,7 @@ async def reorder_players(room_code: str, request: ReorderPlayersRequest) -> Non
 def get_room_state(room_code: str) -> RoomStateResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        handler = GetRoomStateHandler(repository)
+        handler = GetRoomStateHandler(room_repository)
         query = GetRoomStateQuery(room_id=room_id)
         result = handler.handle(query)
 
@@ -286,7 +294,7 @@ async def enact_policy(room_code: str, request: EnactPolicyRequest) -> None:
 def get_game_state(room_code: str) -> GameStateResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        room = repository.find_by_id(room_id)
+        room = room_repository.find_by_id(room_id)
         if not room:
             raise ValueError(f"Room {room_id} not found")
 
@@ -304,7 +312,7 @@ def get_game_state(room_code: str) -> GameStateResponse:
 def get_my_role(room_code: str, player_id: UUID) -> RoleResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        room = repository.find_by_id(room_id)
+        room = room_repository.find_by_id(room_id)
         if not room:
             raise ValueError(f"Room {room_id} not found")
 
@@ -322,7 +330,7 @@ def get_my_role(room_code: str, player_id: UUID) -> RoleResponse:
 def investigate_loyalty(room_code: str, player_id: UUID, target_player_id: UUID) -> RoleResponse:
     room_id = get_room_id_from_code(room_code)
     try:
-        room = repository.find_by_id(room_id)
+        room = room_repository.find_by_id(room_id)
         if not room:
             raise ValueError(f"Room {room_id} not found")
 

@@ -1,16 +1,15 @@
 """Main FastAPI application."""
 
-import socketio
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from src.adapters.api.rest.routes import router
+import os
 
 
 # Configure logger
 logging.basicConfig(
-    filename='/var/log/secret-hitler.log',  # or '/tmp/secret-hitler.log'
+    filename=os.getenv("LOG_FILE", "/tmp/secret-hitler.log"),
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
