@@ -7,6 +7,7 @@ import pytest
 from src.adapters.persistence.file_system_code_repository import (
     FileSystemCodeRepository,
 )
+from src.adapters.persistence.sqlite_code_repository import SqliteCodeRepository
 
 @pytest.fixture
 def temp_dir():
@@ -16,6 +17,7 @@ def temp_dir():
 @pytest.fixture(
     params=[
         pytest.param("file_system", id="FileSystemCodeRepository"),
+        pytest.param("sqlite", id="SqliteCodeRepository"),
     ]
 )
 def repository(request):
@@ -26,6 +28,11 @@ def repository(request):
     if request.param == "file_system":
         with tempfile.TemporaryDirectory() as tmpdir:
             repo = FileSystemCodeRepository(base_path=tmpdir)
+            yield repo
+    elif request.param == "sqlite":
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "test.db"
+            repo = SqliteCodeRepository(db_path=str(db_path))
             yield repo
 
 
