@@ -2,11 +2,11 @@ from uuid import uuid4
 
 import pytest
 
-from backend.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from backend.application.command_bus import CommandBus
-from backend.application.commands.reorder_players import ReorderPlayersCommand
-from backend.domain.entities.game_room import GameRoom, RoomStatus
-from backend.domain.entities.player import Player
+from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.application.command_bus import CommandBus
+from src.application.commands.reorder_players import ReorderPlayersCommand
+from src.domain.entities.game_room import GameRoom, RoomStatus
+from src.domain.entities.player import Player
 
 
 def test_reorder_players_success():

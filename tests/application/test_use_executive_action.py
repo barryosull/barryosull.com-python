@@ -2,13 +2,13 @@ from uuid import uuid4
 
 import pytest
 
-from backend.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from backend.application.command_bus import CommandBus
-from backend.application.commands.use_executive_action import UseExecutiveActionCommand
-from backend.domain.entities.game_room import GameRoom, RoomStatus
-from backend.domain.entities.game_state import GamePhase, GameState
-from backend.domain.entities.player import Player
-from backend.domain.value_objects.role import Role, Team
+from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.application.command_bus import CommandBus
+from src.application.commands.use_executive_action import UseExecutiveActionCommand
+from src.domain.entities.game_room import GameRoom, RoomStatus
+from src.domain.entities.game_state import GamePhase, GameState
+from src.domain.entities.player import Player
+from src.domain.value_objects.role import Role, Team
 
 
 def test_investigate_loyalty():
@@ -443,8 +443,8 @@ def test_investigate_loyalty_cannot_investigate_same_player_twice():
 
 
 def test_special_election_returns_to_normal_rotation():
-    from backend.application.commands.enact_policy import EnactPolicyCommand
-    from backend.domain.value_objects.policy import Policy, PolicyType
+    from src.application.commands.enact_policy import EnactPolicyCommand
+    from src.domain.value_objects.policy import Policy, PolicyType
 
     repository = InMemoryRoomRepository()
     command_bus = CommandBus(repository)

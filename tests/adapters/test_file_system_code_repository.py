@@ -4,7 +4,7 @@ from uuid import uuid4
 
 import pytest
 
-from backend.adapters.api.rest.file_system_code_repository import (
+from src.adapters.api.rest.file_system_code_repository import (
     FileSystemCodeRepository,
 )
 

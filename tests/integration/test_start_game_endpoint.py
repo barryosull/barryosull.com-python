@@ -3,13 +3,13 @@ from uuid import uuid4, UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.adapters.api.main import app
-from backend.adapters.api.rest.code_factory import CodeFactory
-from backend.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from backend.application.command_bus import CommandBus
-from backend.domain.entities.game_room import GameRoom
-from backend.domain.entities.player import Player
-from backend.ports.code_repository_port import CodeRepositoryPort
+from src.adapters.api.main import app
+from src.adapters.api.rest.code_factory import CodeFactory
+from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.application.command_bus import CommandBus
+from src.domain.entities.game_room import GameRoom
+from src.domain.entities.player import Player
+from src.ports.code_repository_port import CodeRepositoryPort
 
 client = TestClient(app)
 
@@ -61,7 +61,7 @@ def test_start_game_success(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -81,7 +81,7 @@ def test_start_game_success(monkeypatch):
 def test_start_game_not_creator(monkeypatch):
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -97,7 +97,7 @@ def test_start_game_not_creator(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "code_repository", code_repository)
@@ -113,7 +113,7 @@ def test_start_game_not_creator(monkeypatch):
 def test_start_game_not_enough_players(monkeypatch):
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -140,7 +140,7 @@ def test_start_game_not_enough_players(monkeypatch):
 def test_start_game_room_not_found(monkeypatch):
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))

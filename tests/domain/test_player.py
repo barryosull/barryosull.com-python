@@ -1,7 +1,7 @@
 
 from uuid import uuid4
 
-from backend.domain.entities.player import Player
+from src.domain.entities.player import Player
 
 
 def test_player_creation():

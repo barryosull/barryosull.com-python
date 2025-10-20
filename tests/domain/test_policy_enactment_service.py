@@ -1,8 +1,8 @@
 import pytest
 
-from backend.domain.entities.game_state import GameState
-from backend.domain.services.policy_enactment_service import PolicyEnactmentService
-from backend.domain.value_objects.policy import Policy, PolicyType
+from src.domain.entities.game_state import GameState
+from src.domain.services.policy_enactment_service import PolicyEnactmentService
+from src.domain.value_objects.policy import Policy, PolicyType
 
 
 def test_draw_policies():

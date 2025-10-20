@@ -4,15 +4,15 @@ from uuid import uuid4, UUID
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.adapters.api.main import app
-from backend.adapters.api.rest.code_factory import CodeFactory
-from backend.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from backend.application.command_bus import CommandBus
-from backend.domain.entities.game_room import GameRoom
-from backend.domain.entities.game_state import GamePhase, GameState
-from backend.domain.entities.player import Player
-from backend.domain.services.role_assignment_service import RoleAssignmentService
-from backend.ports.code_repository_port import CodeRepositoryPort
+from src.adapters.api.main import app
+from src.adapters.api.rest.code_factory import CodeFactory
+from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.application.command_bus import CommandBus
+from src.domain.entities.game_room import GameRoom
+from src.domain.entities.game_state import GamePhase, GameState
+from src.domain.entities.player import Player
+from src.domain.services.role_assignment_service import RoleAssignmentService
+from src.ports.code_repository_port import CodeRepositoryPort
 
 client = TestClient(app)
 
@@ -80,7 +80,7 @@ def test_nominate_chancellor_success(monkeypatch):
     president_id = room.game_state.president_id
     chancellor_id = [pid for pid in player_ids if pid != president_id][0]
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -115,7 +115,7 @@ def test_nominate_chancellor_not_president(monkeypatch):
     other_player_id = [pid for pid in player_ids if pid != president_id][0]
     chancellor_id = [pid for pid in player_ids if pid not in [president_id, other_player_id]][0]
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -147,7 +147,7 @@ def test_cast_vote_success(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -191,7 +191,7 @@ def test_discard_policy_success(monkeypatch):
 
     policy_type = room.game_state.president_policies[0].type.value
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -237,7 +237,7 @@ def test_enact_policy_success(monkeypatch):
 
     policy_type = room.game_state.chancellor_policies[0].type.value
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -265,7 +265,7 @@ def test_get_game_state_success(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -294,7 +294,7 @@ def test_get_game_state_not_started(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -320,7 +320,7 @@ def test_get_my_role_success(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -351,7 +351,7 @@ def test_get_my_role_not_started(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -366,7 +366,7 @@ def test_get_my_role_not_started(monkeypatch):
 
 
 def test_get_my_role_includes_teammate_for_small_games(monkeypatch):
-    from backend.domain.value_objects.role import Role, Team
+    from src.domain.value_objects.role import Role, Team
 
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
@@ -393,7 +393,7 @@ def test_get_my_role_includes_teammate_for_small_games(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -425,7 +425,7 @@ def test_get_my_role_includes_teammate_for_small_games(monkeypatch):
 
 
 def test_get_my_role_fascists_see_teammates_in_large_games(monkeypatch):
-    from backend.domain.value_objects.role import Role, Team
+    from src.domain.value_objects.role import Role, Team
 
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
@@ -450,7 +450,7 @@ def test_get_my_role_fascists_see_teammates_in_large_games(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -485,8 +485,8 @@ def test_get_my_role_fascists_see_teammates_in_large_games(monkeypatch):
 
 
 def test_investigate_loyalty_success(monkeypatch):
-    from backend.domain.entities.game_state import GamePhase
-    from backend.domain.value_objects.role import Role, Team
+    from src.domain.entities.game_state import GamePhase
+    from src.domain.value_objects.role import Role, Team
 
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
@@ -508,7 +508,7 @@ def test_investigate_loyalty_success(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -526,8 +526,8 @@ def test_investigate_loyalty_success(monkeypatch):
 
 
 def test_investigate_loyalty_not_president(monkeypatch):
-    from backend.domain.entities.game_state import GamePhase
-    from backend.domain.value_objects.role import Role, Team
+    from src.domain.entities.game_state import GamePhase
+    from src.domain.value_objects.role import Role, Team
 
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
@@ -549,7 +549,7 @@ def test_investigate_loyalty_not_president(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -565,7 +565,7 @@ def test_investigate_loyalty_not_president(monkeypatch):
 
 
 def test_get_game_state_includes_presidential_power(monkeypatch):
-    from backend.domain.entities.game_state import GamePhase
+    from src.domain.entities.game_state import GamePhase
 
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
@@ -582,7 +582,7 @@ def test_get_game_state_includes_presidential_power(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))
@@ -597,8 +597,8 @@ def test_get_game_state_includes_presidential_power(monkeypatch):
 
 
 def test_investigate_loyalty_cannot_investigate_self(monkeypatch):
-    from backend.domain.entities.game_state import GamePhase
-    from backend.domain.value_objects.role import Role, Team
+    from src.domain.entities.game_state import GamePhase
+    from src.domain.value_objects.role import Role, Team
 
     repository = InMemoryRoomRepository()
     code_repository = InMemoryCodeRepository()
@@ -619,7 +619,7 @@ def test_investigate_loyalty_cannot_investigate_self(monkeypatch):
     repository.save(room)
     room_code = code_repository.generate_code_for_room(room.room_id)
 
-    import backend.adapters.api.rest.routes as routes_module
+    import src.adapters.api.rest.routes as routes_module
 
     monkeypatch.setattr(routes_module, "repository", repository)
     monkeypatch.setattr(routes_module, "command_bus", CommandBus(repository))

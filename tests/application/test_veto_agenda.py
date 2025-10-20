@@ -2,13 +2,13 @@ from uuid import uuid4
 
 import pytest
 
-from backend.adapters.persistence.in_memory_repository import InMemoryRoomRepository
-from backend.application.command_bus import CommandBus
-from backend.application.commands.veto_agenda import VetoAgendaCommand
-from backend.domain.entities.game_room import GameRoom, RoomStatus
-from backend.domain.entities.game_state import GamePhase, GameState
-from backend.domain.entities.player import Player
-from backend.domain.value_objects.policy import Policy, PolicyType
+from src.adapters.persistence.in_memory_repository import InMemoryRoomRepository
+from src.application.command_bus import CommandBus
+from src.application.commands.veto_agenda import VetoAgendaCommand
+from src.domain.entities.game_room import GameRoom, RoomStatus
+from src.domain.entities.game_state import GamePhase, GameState
+from src.domain.entities.player import Player
+from src.domain.value_objects.policy import Policy, PolicyType
 
 
 def test_chancellor_initiates_veto():

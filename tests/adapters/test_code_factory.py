@@ -1,6 +1,6 @@
 import pytest
 
-from backend.adapters.api.rest.code_factory import CodeFactory
+from src.adapters.api.rest.code_factory import CodeFactory
 
 
 def test_int_to_code_returns_four_character_string():
