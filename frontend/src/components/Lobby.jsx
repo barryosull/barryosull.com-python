@@ -15,8 +15,10 @@ export default function Lobby() {
   useEffect(() => {
     fetchRoomState();
 
+    const wsUrl = import.meta.env.VITE_WS_URL;
+
     // Connect to Websocket
-    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomCode);
+    const socket = new WebSocket(wsUrl + '/' + roomCode);
 
     socket.onmessage = function(event) {
       const message = JSON.parse(event.data);

@@ -51,8 +51,10 @@ export function useGameState(roomCode) {
     roleFetchedRef.current = false;
     fetchGameState();
 
+    const wsUrl = import.meta.env.VITE_WS_URL;
+
     // Connect to Websocket
-    const socket = new WebSocket('ws://localhost:8000/api/ws/' + roomCode);
+    const socket = new WebSocket(wsUrl + '/' + roomCode);
     socketRef.current = socket;
 
     socket.onmessage = function(event) {
