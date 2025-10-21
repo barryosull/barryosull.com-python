@@ -29,7 +29,7 @@ export default function HomePage() {
       playerStorage.setPlayerName(playerName.trim());
       navigate(preserveParams(`/room/${result.room_code}`));
     } catch (err) {
-      setError("Something went wrong");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,8 @@ export default function HomePage() {
       playerStorage.setPlayerName(playerName.trim());
       navigate(preserveParams(`/room/${roomCode.trim()}`));
     } catch (err) {
-      setError("Something went wrong");
+      console.log(err)
+      setError(err.message);
     } finally {
       setLoading(false);
     }

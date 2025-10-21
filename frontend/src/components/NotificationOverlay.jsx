@@ -4,21 +4,27 @@ import '../../assets/styles.css';
 export default function NotificationOverlay({ notification, players, onClose, autoClose = true }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [secondsToClose, setSecondsToClose] = useState(3);
 
   useEffect(() => {
     if (notification) {
       setIsVisible(true);
       setIsFadingOut(false);
       if (autoClose) {
-        const timer = setTimeout(() => {
+        const closeTimer = setTimeout(() => {
           setIsFadingOut(true);
           setTimeout(() => {
             setIsVisible(false);
             onClose();
           }, 300);
         }, 3000);
-        return () => clearTimeout(timer);
-      }
+        const countDownTimer = setTimeout(() => {
+          setSecondsToClose(secondsToClose - 1);
+        }, 1000);
+        return () => {
+          clearTimeout(closeTimer);
+          clearTimeout(countDownTimer);
+        }}
     }
   }, [notification, onClose, autoClose]);
 
@@ -152,6 +158,9 @@ export default function NotificationOverlay({ notification, players, onClose, au
           <button onClick={handleClose} className="confirm-button">
             Close
           </button>
+        )}
+        {autoClose && (
+          <span>(Auto closing in {secondsToClose} {secondsToClose === 1 ? "second" : "seconds"}...)</span>
         )}
       </div>
     </div>

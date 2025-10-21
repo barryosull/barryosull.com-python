@@ -22,7 +22,9 @@ export default function GameBoard() {
   const { gameState, room, myRole, error, loading, refresh, notification, clearNotification } = useGameState(roomCode);
   const myPlayerId = playerStorage.getPlayerId();
   const [showRoleOverlay, setShowRoleOverlay] = useState(false);
-  const [autoCloseNotifications, setAutoCloseNotifications] = useState(false);
+  const [autoCloseNotifications, setAutoCloseNotifications] = useState(
+    new URLSearchParams(window.location.search).get('auto_close_notifications') === '1'
+  );
 
   useEffect(() => {
     initializeFromUrl();
@@ -184,8 +186,11 @@ export default function GameBoard() {
           <div className="overlay fade-in">
             <div className = "overlay-content">
               <h2 className="overlay-title">Game Over!</h2>
+              <div
+                className={`role-display ${gameState.game_over_reason.toUpperCase().includes('LIBERAL') ? 'liberal' : 'fascist'}`}
+              ></div>
               {gameState.game_over_reason && (
-                <p className="overlay-subtitle">{gameState.game_over_reason}</p>
+                <h3 className="overlay-subtitle">{gameState.game_over_reason}</h3>
               )}
               <button onClick={() => navigate(preserveParams('/'))} className="confirm-button">
                 Return to Home

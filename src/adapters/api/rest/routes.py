@@ -90,7 +90,7 @@ def get_room_id_from_code(room_code: str) -> UUID:
     if room_id is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Room code {room_code} not found"
+            detail=f"Room code \"{room_code}\" not found"
         )
     return room_id
 
