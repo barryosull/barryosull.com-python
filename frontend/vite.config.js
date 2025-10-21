@@ -7,5 +7,13 @@ export default defineConfig({
   envDir: path.resolve(__dirname, '..'),
   server: {
     port: 3000,
-  }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        test: path.resolve(__dirname, 'test-multi-player.html'),
+      },
+    },
+  },
 })

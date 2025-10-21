@@ -108,7 +108,7 @@ export default function Lobby() {
 
         {error && <div className="error">{error}</div>}
 
-        <div className="room-code-section">
+        <div className="section room-code-section">
           <span className="label">Room Code: </span>
           <span className="room-code">{roomCode}</span>
           <button onClick={copyRoomCode} className="copy-button">

@@ -256,8 +256,11 @@ h1.title {
   margin-bottom: 20px;
 }
 
+.lobby .section {
+    margin-bottom: 30px;
+}
+
 .lobby .room-code-section {
-  margin-bottom: 30px;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
