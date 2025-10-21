@@ -77,12 +77,17 @@ export default function RoleOverlay({ myRole, roomCode, myPlayerId, forceShow = 
             <span>
               {myRole.teammates.length === 1 ? 'Your Teammate:' : 'Your Teammates:'}
             </span>
-            <div className="team-mates">
-            {myRole.teammates.map((teammate) => (
-              <div className={teammate.is_hitler ? 'hitler' : 'fascist'} key={teammate.player_id}>
-                {teammate.name} {teammate.is_hitler ? '(Hitler)' : '(Fascist)'}
-              </div>
-            ))}
+            <div className="player-grid">
+              {myRole.teammates.map((teammate) => (
+                <div key={teammate.player_id} className="player-item">
+                  <span className="player-name">
+                    {teammate.name.length > 10 ? teammate.name.slice(0, 10) + '...' : teammate.name}
+                  </span>
+                  <div className="player-badges">
+                    {teammate.is_hitler && <span className="player-badge president-badge">Hitler</span>}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

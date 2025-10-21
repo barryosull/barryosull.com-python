@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Script to create a test game using the command bus."""
 
+import sqlite3
 import sys
 from pathlib import Path
 
@@ -11,6 +12,7 @@ import argparse
 import webbrowser
 from uuid import UUID
 
+import src.config
 from src.application.commands.use_executive_action import UseExecutiveActionCommand
 from src.domain.entities.game_state import GamePhase, PresidentialPower
 from src.application.commands.cast_vote import CastVoteCommand
@@ -19,12 +21,13 @@ from src.application.commands.enact_policy import EnactPolicyCommand
 from src.application.commands.nominate_chancellor import NominateChancellorCommand
 from src.domain.entities.policy_deck import PolicyDeck
 from src.domain.value_objects.policy import Policy, PolicyType
-from src.adapters.persistence.file_system_room_repository import FileSystemRoomRepository
-from src.adapters.persistence.file_system_code_repository import FileSystemCodeRepository
 from src.application.command_bus import CommandBus
 from src.application.commands.create_room import CreateRoomCommand
 from src.application.commands.join_room import JoinRoomCommand
 from src.application.commands.start_game import StartGameCommand
+from src.adapters.persistence.sqlite_code_repository import SqliteCodeRepository
+from src.adapters.persistence.sqlite_room_repository import SqliteRoomRepository
+
 
 PLAYER_NAMES = [
     "Alice",
@@ -39,8 +42,9 @@ PLAYER_NAMES = [
     "Julia",
 ]
 
-room_repository = FileSystemRoomRepository()
-code_repository = FileSystemCodeRepository()
+conn = sqlite3.connect(src.config.SQLITE_FILE)
+room_repository = SqliteRoomRepository(conn)
+code_repository = SqliteCodeRepository(conn)
 command_bus = CommandBus(room_repository)
 
 

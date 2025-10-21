@@ -784,27 +784,25 @@ h1.title {
 .role-description {
   color: #2a4e6c;
   font-size: 16px;
-  line-height: 1.6;
   margin-bottom: 15px;
 }
 
 .overlay .player-grid {
-  margin-bottom: 40px;
-}
-ul.team-mates {
-  margin: 0;
+  margin: 20px 0 40px;
+  justify-content: space-evenly;
 }
 
-ul.team-mates li {
-  font-size: 16px;
+.overlay .player-grid .player-item {
+  max-width: calc(50% - 10px);
+  padding: 15px;
 }
 
-ul.team-mates li.fascist {
-  color: #83110a;
+.overlay .player-grid .player-item .player-name {
+  font-size: 20px;
 }
 
-ul.team-mates li.hitler {
-  color: #000000;
+.overlay .player-grid .player-item .player-badge {
+  font-size: 18px;
 }
 
 .toast {

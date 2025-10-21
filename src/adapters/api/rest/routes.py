@@ -2,6 +2,7 @@
 
 import sqlite3
 from uuid import UUID
+import src.config
 
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
 
@@ -64,7 +65,7 @@ router = APIRouter(prefix="/api", tags=["rooms"])
 
 
 def make_db_connection() -> sqlite3.Connection:
-    return sqlite3.connect(os.environ["SQLITE_FILE"])
+    return sqlite3.connect(src.config.SQLITE_FILE)
 
 def make_code_repository() -> CodeRepositoryPort:
     return SqliteCodeRepository(make_db_connection())

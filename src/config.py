@@ -7,3 +7,4 @@ env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
 API_ROOT_URL = os.getenv("API_ROOT_URL")
+SQLITE_FILE = os.getenv("SQLITE_FILE")
