@@ -23,6 +23,7 @@ from src.adapters.api.rest.schemas import (
     RoleResponse,
     RoomStateResponse,
     StartGameRequest,
+    TriggerNotification,
     UseExecutiveActionRequest,
     VetoAgendaRequest,
 )
@@ -392,10 +393,28 @@ async def veto_agenda(room_code: str, request: VetoAgendaRequest) -> None:
             player_id=request.player_id,
             approve_veto=request.approve_veto,
         )
-        result = command_bus.execute(command)
+        result = make_command_bus().execute(command)
         if (result is not None):
             await room_manager.broadcast(room_id, result)
     except ValueError as e:
         handle_value_error(e)
     finally:
         await room_manager.broadcast(room_id, GAME_STATE_UPDATED)
+
+# Used to test notifications, triggers a specific one in the UI
+@router.post(
+    "/games/{room_code}/trigger_notification",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+async def trigger_notification(room_code: str, request: TriggerNotification) -> None:
+    room_id = get_room_id_from_code(room_code)
+    if request.type == "failed_election":
+        room = make_room_repository().find_by_id(room_id)
+        room.players
+        fake_notification = {
+            "type": request.type,
+            "no_votes": [str(p.player_id) for p in room.players]
+        }
+        await room_manager.broadcast(room_id, fake_notification)
+    return

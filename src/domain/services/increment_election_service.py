@@ -1,3 +1,4 @@
+from uuid import UUID
 from src.domain.entities.game_room import GameRoom
 from src.domain.entities.game_state import GamePhase
 from src.domain.services.government_formation_service import GovernmentFormationService
@@ -21,11 +22,13 @@ class IncrementElectionService:
                 next_president = GovernmentFormationService.advance_president(
                     game_state.president_id, room.active_players()
                 )
+            votes = game_state.votes
             game_state.move_to_nomination_phase(next_president)
 
             return {
                 "type": "failed_election",
-                "election_tracker": game_state.election_tracker
+                "election_tracker": game_state.election_tracker,
+                "no_votes": IncrementElectionService._extract_no_votes(votes),
             }
 
         chaos_policy = PolicyEnactmentService.enact_chaos_policy(game_state)
@@ -58,3 +61,13 @@ class IncrementElectionService:
         game_state.move_to_nomination_phase(next_president)
 
         return result
+
+    # TODO: Move to HTTP layer, as this is a JSON encoding issue for WS, not a domain concept 
+    @staticmethod
+    def _extract_no_votes(votes: dict[UUID, bool]) -> list[str]:
+        no_votes = []
+        for uuid, vote in votes.items():
+            if vote == False:
+                no_votes.append(str(uuid))
+        
+        return no_votes

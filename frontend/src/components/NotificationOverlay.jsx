@@ -71,7 +71,21 @@ export default function NotificationOverlay({ notification, players, onClose, au
 
     if (notification.type === 'failed_election') {
       return (<>
-        <h3>Not enough votes, incrementing election tracker</h3>
+        <h3>"Nein" votes cast by:</h3>
+        <div className="team-mates">
+          {players.map((player) => {
+            const noVote = notification?.no_votes?.includes(player.player_id);
+            if (!noVote) {
+              return;
+            }
+            
+            return (
+              <div key={player.player_id}>
+                {player.name}
+              </div>
+            )
+          })}
+        </div>
       </>);
     }
 

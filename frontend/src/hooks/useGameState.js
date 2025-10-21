@@ -64,6 +64,7 @@ export function useGameState(roomCode) {
         fetchGameState();
         return;
       }
+      console.log(message)
       if (message.type) {
         setNotification(message);
       }

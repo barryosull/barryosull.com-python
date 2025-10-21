@@ -120,6 +120,8 @@ class VetoAgendaRequest(BaseModel):
     player_id: UUID
     approve_veto: bool
 
+class TriggerNotification(BaseModel):
+    type: str
 
 class ErrorResponse(BaseModel):
     error: str
