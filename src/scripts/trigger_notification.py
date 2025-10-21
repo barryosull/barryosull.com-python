@@ -14,11 +14,8 @@ room_code = sys.argv[1]
 url = src.config.API_ROOT_URL
 params = {"type": "failed_election"}
 
-print(url)
-
 conn = http.client.HTTPConnection("localhost", 8000)
 conn.request('POST', f"/api/games/{room_code}/trigger_notification", json.dumps(params))
 response = conn.getresponse()
 
-print(response.read())
 

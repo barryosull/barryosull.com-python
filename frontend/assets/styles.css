@@ -788,6 +788,9 @@ h1.title {
   margin-bottom: 15px;
 }
 
+.overlay .player-grid {
+  margin-bottom: 20px;
+}
 ul.team-mates {
   margin: 0;
 }

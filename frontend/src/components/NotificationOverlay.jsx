@@ -72,7 +72,7 @@ export default function NotificationOverlay({ notification, players, onClose, au
     if (notification.type === 'failed_election') {
       return (<>
         <h3>"Nein" votes cast by:</h3>
-        <div className="team-mates">
+        <div className="player-grid">
           {players.map((player) => {
             const noVote = notification?.no_votes?.includes(player.player_id);
             if (!noVote) {
@@ -80,8 +80,10 @@ export default function NotificationOverlay({ notification, players, onClose, au
             }
             
             return (
-              <div key={player.player_id}>
-                {player.name}
+              <div key={player.player_id} className="player-item voted-no">
+                <span className="player-name">
+                  {player.name.length > 10 ? player.name.slice(0, 10) + '...' : player.name}
+                </span>
               </div>
             )
           })}
