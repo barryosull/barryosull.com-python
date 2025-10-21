@@ -88,18 +88,15 @@ export default function NotificationOverlay({ notification, players, onClose, au
             )
           })}
         </div>
+        {notification?.policy_type && (
+          <div className="policy-grid">
+            <h3>3 failed governments, chaos enacted!</h3>
+            <span
+                className={`policy-enacted idle-wobble ${notification.policy_type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
+            ></span>
+          </div>
+        )}
       </>);
-    }
-
-    if (notification.type === 'chaos') {
-      return (  
-        <div className="policy-grid">
-          <h3>3 failed governments, chaos enacted!</h3>
-          <span
-              className={`policy-enacted idle-wobble ${notification.policy_type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
-          ></span>
-        </div>
-      );
     }
 
     if (notification.type === 'executed') {
@@ -110,9 +107,17 @@ export default function NotificationOverlay({ notification, players, onClose, au
     }
 
     if (notification.type === 'vetoed') {
-      return (  
+      return (<>
         <h3>Election was vetoed by the president and chancellor, advancing election tracker</h3>
-      );
+        {notification?.policy_type && (
+          <div className="policy-grid">
+          <h3>3 failed governments, chaos enacted!</h3>
+          <span
+              className={`policy-enacted idle-wobble ${notification.policy_type === 'LIBERAL' ? 'liberal-card' : 'fascist-card'}`}
+          ></span>
+        </div>
+        )}
+      </>);
     }
 
     if (notification.type === 'veto_rejected') {

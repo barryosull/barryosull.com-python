@@ -11,6 +11,7 @@ class IncrementElectionService:
     def handle_failed_government(room: GameRoom) -> None | dict:
         game_state = room.game_state
         game_state.increment_election_tracker()
+        votes = game_state.votes
 
         if not game_state.is_chaos_threshold():
             game_state.previous_president_id = game_state.president_id
@@ -27,7 +28,6 @@ class IncrementElectionService:
 
             return {
                 "type": "failed_election",
-                "election_tracker": game_state.election_tracker,
                 "no_votes": IncrementElectionService._extract_no_votes(votes),
             }
 
@@ -41,7 +41,8 @@ class IncrementElectionService:
         )
 
         result = {
-            "type": "chaos",
+            "type": "failed_election",
+            "no_votes": IncrementElectionService._extract_no_votes(votes),
             "policy": chaos_policy.type.value
         }
 

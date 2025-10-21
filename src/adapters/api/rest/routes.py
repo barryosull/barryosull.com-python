@@ -414,7 +414,8 @@ async def trigger_notification(room_code: str, request: TriggerNotification) -> 
         room.players
         fake_notification = {
             "type": request.type,
-            "no_votes": [str(p.player_id) for p in room.players]
+            "no_votes": [str(p.player_id) for p in room.players],
+            "policy_type": PolicyType.FASCIST.name
         }
         await room_manager.broadcast(room_id, fake_notification)
     return
