@@ -10,9 +10,12 @@ import http.client
 import src.config
 
 room_code = sys.argv[1]
+type = sys.argv[2]
 
 url = src.config.API_ROOT_URL
-params = {"type": "failed_election"}
+params = {"type": type}
+
+print(params)
 
 conn = http.client.HTTPConnection("localhost", 8000)
 conn.request('POST', f"/api/games/{room_code}/trigger_notification", json.dumps(params))

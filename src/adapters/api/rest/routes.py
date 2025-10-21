@@ -419,4 +419,10 @@ async def trigger_notification(room_code: str, request: TriggerNotification) -> 
             "policy_type": PolicyType.FASCIST.name
         }
         await room_manager.broadcast(room_id, fake_notification)
+    if request.type == "vetoed":
+        fake_notification = {
+            "type": request.type,
+            #"policy_type": PolicyType.FASCIST.name
+        }
+        await room_manager.broadcast(room_id, fake_notification)
     return
