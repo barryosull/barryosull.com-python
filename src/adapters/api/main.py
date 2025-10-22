@@ -33,6 +33,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:8000",
+        "http://localhost:8080",
     ],  # React dev servers and production
     allow_credentials=True,
     allow_methods=["*"],
