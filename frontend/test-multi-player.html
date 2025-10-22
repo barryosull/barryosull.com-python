@@ -164,8 +164,7 @@
   <div class="instructions">
     <h2>How to Test:</h2>
     <ol>
-      <li>Make sure the backend is running on <code>http://localhost:8000</code></li>
-      <li>Make sure the frontend dev server is running: <code>npm run dev</code></li>
+      <li>Make sure the application is running and accessible</li>
       <li><strong>New Game:</strong> Click "Reload All Players" to start fresh, create room in Player 1, join in others</li>
       <li><strong>Continue Game:</strong> Enter Room Code below, then click "Load Game" - players are loaded automatically</li>
     </ol>
@@ -191,8 +190,9 @@
   </div>
 
   <script>
-    const baseUrl = 'http://localhost:8000';
-    const apiUrl = 'http://localhost:8000/api';
+    // Use relative URLs - works with any domain/port
+    const baseUrl = window.location.origin;
+    const apiUrl = `${window.location.origin}/api`;
     let currentGameState = null; // Store current room code and player IDs
 
     function createPlayerFrame(playerNumber, playerName, playerUrl) {
