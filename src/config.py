@@ -9,3 +9,4 @@ load_dotenv(dotenv_path=env_path)
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 API_ROOT_URL = os.getenv("API_ROOT_URL")
 SQLITE_FILE = os.getenv("SQLITE_FILE")
+IS_PRODUCTION = os.getenv('ENVIRONMENT', 'development') == 'production'

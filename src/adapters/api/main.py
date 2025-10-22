@@ -3,6 +3,7 @@
 import src.config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import logging
@@ -37,6 +38,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if src.config.IS_PRODUCTION:
+    app.add_middleware(HTTPSRedirectMiddleware)
 
 # Include API routes first (before static files)
 app.include_router(router)

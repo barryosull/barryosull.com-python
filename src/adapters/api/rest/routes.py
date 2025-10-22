@@ -5,7 +5,6 @@ from uuid import UUID
 import src.config
 
 from fastapi import APIRouter, HTTPException, status, WebSocket, WebSocketDisconnect
-
 from src.adapters.api.rest.response_factory import ResponseFactory
 from src.adapters.api.rest.room_manager import RoomManager
 from src.adapters.api.rest.schemas import (
