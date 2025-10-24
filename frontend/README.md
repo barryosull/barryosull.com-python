@@ -2,20 +2,37 @@
 
 React-based frontend for the Secret Hitler online game.
 
-## Setup
+## Quick Start (Docker)
+
+The easiest way to run the entire application (frontend + backend) is using Docker Compose from the project root:
+
+```bash
+# From project root
+docker-compose up -d
+```
+
+The app will be available at http://localhost:8080
+
+## Local Development
+
+For frontend development with hot-reload:
+
+### Setup
 
 ```bash
 cd frontend
 npm install
 ```
 
-## Development
+### Development Server
 
 ```bash
 npm run dev
 ```
 
-The app will be available at http://localhost:3000
+The development server will be available at http://localhost:3000
+
+**Note:** Make sure the backend is running (either via Docker or locally) for the app to function.
 
 ### URL Parameters
 
@@ -27,12 +44,12 @@ Available storage options:
 
 - **localStorage** (default): Persists across browser restarts, shared across all tabs
   ```
-  http://localhost:3000/
+  http://localhost:8080/
   ```
 
 - **In-memory**: Stored in JavaScript variable, lost on page refresh, fully isolated per iframe
   ```
-  http://localhost:3000/?storage=local
+  http://localhost:8080/?storage=local
   ```
 
 **Note:** The `?storage=local` parameter is automatically preserved across all route changes within the app, ensuring consistent storage behavior throughout the session.
@@ -42,13 +59,13 @@ Available storage options:
 You can pre-fill the player name field using the `name` parameter:
 
 ```
-http://localhost:3000/?name=Alice
+http://localhost:8080/?name=Alice
 ```
 
 **Combine parameters:**
 
 ```
-http://localhost:3000/?storage=local&name=Player1
+http://localhost:8080/?storage=local&name=Player1
 ```
 
 ## Build
@@ -73,8 +90,14 @@ npm run build
 
 ## Multi-Player Testing
 
-For easy testing with multiple players in one browser, open `test-multi-player.html`:
+For easy testing with multiple players in one browser, use the test page:
 
+**With Docker:**
+```
+http://localhost:8080/test-multi-player.html
+```
+
+**With Dev Server:**
 ```
 http://localhost:3000/test-multi-player.html
 ```

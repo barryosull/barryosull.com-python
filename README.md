@@ -4,9 +4,46 @@ Online implementation of the Secret Hitler board game using Python and FastAPI.
 
 Rules can be found here: https://www.secrethitler.com/assets/Secret_Hitler_Rules.pdf
 
+## Quick Start (Docker - Recommended)
+
+The easiest way to run the application is using Docker Compose:
+
+```bash
+# Start the application
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up -d --build
+```
+
+The application will be available at:
+- **Web App**: http://localhost:8080
+- **Multi-Player Test Page**: http://localhost:8080/test-multi-player.html
+- **API Documentation**: http://localhost:8080/docs
+
+### Architecture
+
+The Docker setup includes:
+- **Nginx** (port 8080) - Reverse proxy with gzip compression
+- **FastAPI Backend** (internal port 8000) - Python API server
+- **React Frontend** - Single-page application served by nginx
+- **SQLite Database** - Persisted in `./data/` directory
+
+### Database Persistence
+
+Game data is stored in `./data/db.sqlite` on your host machine, so it persists between container restarts.
+
 ## Local Development
 
-### Setup
+For active development without Docker:
+
+### Backend Setup
 ```bash
 # Create virtual environment
 python3 -m venv venv
@@ -33,26 +70,13 @@ python3 -m venv venv
 ./venv/bin/mypy src/
 ```
 
-## Docker
-
-### Build and Run
+### Frontend Setup
 ```bash
-# Build the Docker image
-docker build -t barryosull-app .
-
-# Run the web server
-docker run -p 8000:8000 barryosull-app
-
-# Run CLI commands
-docker run barryosull-app my-app hello World
-
-# Run with environment variables
-docker run -e DEBUG=true -p 8000:8000 barryosull-app
+cd frontend
+npm install
+npm run dev
 ```
 
-### Docker Compose (optional)
-```bash
-docker-compose up
-```
+The frontend dev server will run on http://localhost:3000
 
-The web app will be available at http://localhost:8000
+See [frontend/README.md](frontend/README.md) for more frontend development details.
