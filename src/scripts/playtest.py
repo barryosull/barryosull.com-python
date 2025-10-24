@@ -219,6 +219,7 @@ def main():
 
     code = code_repository.generate_code_for_room(room_id)
 
+    print(f"Room code: {code}")
     # Open the game for testing
     webbrowser.open(f"http://localhost:3000/test-multi-player.html?roomCode={code}", new=2)
 

@@ -191,9 +191,9 @@
   </div>
 
   <script>
-    // Use relative URLs - works with any domain/port
-    const baseUrl = window.location.origin;
-    const apiUrl = `${window.location.origin}/api`;
+    // Environment configuration injected by backend
+    const baseUrl = '{{ base_url }}';
+    const apiUrl = '{{ api_url }}';
     let currentGameState = null; // Store current room code and player IDs
 
     function createPlayerFrame(playerNumber, playerName, playerUrl) {
