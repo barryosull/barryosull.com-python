@@ -9,7 +9,7 @@ Rules can be found here: https://www.secrethitler.com/assets/Secret_Hitler_Rules
 The easiest way to run the application is using Docker Compose:
 
 ```bash
-# Start the application
+# Start the application (development mode with live reload)
 docker-compose up -d
 
 # View logs
@@ -17,15 +17,17 @@ docker-compose logs -f
 
 # Stop the application
 docker-compose down
-
-# Rebuild after code changes
-docker-compose up -d --build
 ```
 
 The application will be available at:
-- **Web App**: http://localhost:8080
-- **Multi-Player Test Page**: http://localhost:8080/test-multi-player.html
+- **Frontend Dev Server** (with hot reload): http://localhost:3001
+- **Production Build** (via nginx): http://localhost:8080
+- **API**: http://localhost:8080/api
 - **API Documentation**: http://localhost:8080/docs
+
+> **💡 Development Tip:** Use http://localhost:3001 for frontend development (instant hot reload). Changes to backend code (`src/`) automatically reload the server.
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development workflows.
 
 ### Architecture
 

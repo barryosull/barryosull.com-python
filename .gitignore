@@ -148,3 +148,5 @@ node_modules/
 frontend/dist/
 frontend/.vite/
 *.local
+
+docker-compose.override.yml

@@ -7,6 +7,7 @@ export default defineConfig({
   envDir: path.resolve(__dirname, '..'),
   server: {
     port: 3000,
+    host: '0.0.0.0', // Listen on all interfaces for Docker
   },
   build: {
     rollupOptions: {

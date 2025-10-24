@@ -1,0 +1,28 @@
+version: '3.8'
+
+# Development overrides - automatically loaded by docker-compose
+# This file should be git-ignored for local development only
+
+services:
+  app:
+    # Mount source code for backend live reload
+    volumes:
+      - ./data:/app/data
+      - ./src:/app/src:ro
+      - ./pyproject.toml:/app/pyproject.toml:ro
+    # Override command to enable hot reload
+    command: uvicorn src.adapters.api.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend development server with hot reload
+  frontend-dev:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3001:3000"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+      - VITE_WS_URL=ws://localhost:8080/api/ws
