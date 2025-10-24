@@ -94,12 +94,12 @@ For easy testing with multiple players in one browser, use the test page:
 
 **With Docker:**
 ```
-http://localhost:8080/test-multi-player.html
+http://localhost:8080/test/multi-player
 ```
 
 **With Dev Server:**
 ```
-http://localhost:3000/test-multi-player.html
+http://localhost:3000/test/multi-player
 ```
 
 This loads 5 iframes, each with:
@@ -107,6 +107,18 @@ This loads 5 iframes, each with:
 - `?name=Player1` through `Player5` (pre-filled names)
 
 Perfect for testing the full game flow without opening multiple browsers!
+
+**Booting into a known state**
+There is a play-test script that will boot a game into a known state and print a link to said game for play-testing.
+
+There are two args to the script:
+1. Number of players
+2. Rounds to play (always enacts fascist policies)
+
+Here is how this looks with docker:
+```bash
+docker-compose exec app python src/scripts/playtest.py 6 1
+```
 
 ## Mobile Optimized
 
